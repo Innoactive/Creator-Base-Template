@@ -1,0 +1,25 @@
+fileFormatVersion: 2
+guid: bcbc4b0ca344e94418b8435dec9ce1aa
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Good Headline Pro
+  fontNames:
+  - Good Headline Pro
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 8459b0754e36f9c4cacf4c9e5630174f, type: 3}
+  - {fileID: 12800000, guid: 13d0322ccdd91c04fa8fc47f765a50e0, type: 3}
+  - {fileID: 12800000, guid: 895ae0bcda978c3489cd9da15e13d4e9, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
