@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Common.Logging;
 using Innoactive.Hub.Threading;
 using Innoactive.Hub.Training.Utils.Serialization;
 using Innoactive.Hub.TextToSpeech;
@@ -8,6 +12,7 @@ using Innoactive.Hub.Training.Utils;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using LogManager = Innoactive.Hub.Logging.LogManager;
 
 namespace Innoactive.Hub.Training.Template
 {
@@ -16,6 +21,8 @@ namespace Innoactive.Hub.Training.Template
     /// </summary>
     public class AdvancedTrainingController : MonoBehaviour
     {
+        private static readonly ILog logger = LogManager.GetLogger<AdvancedTrainingController>();
+
         #region UI elements
         [Tooltip("The image next to a step name which is visible when a training is running.")]
         [SerializeField]
@@ -60,20 +67,18 @@ namespace Innoactive.Hub.Training.Template
         [Tooltip("Language picker dropdown.")]
         [SerializeField]
         private Dropdown languagePicker;
-        
+
         [Tooltip("Mode picker dropdown.")]
         [SerializeField]
         private Dropdown modePicker;
         #endregion
 
         [Space]
-        [Tooltip("Text asset with a serialized training.")]
+        [Tooltip("The folder and file name (without the extension .json) of the serialized training in the 'Training' directory of the 'StreamingAssets' directory which should be loaded.")]
         [SerializeField]
-        private TextAsset serializedTraining;
+        private string trainingName;
 
-        [Tooltip("Json files with localizations for different languages.")]
-        [SerializeField]
-        private TextAsset[] localizationFiles;
+        private List<String> localizationFileNames;
 
         private string selectedLanguage;
 
@@ -87,6 +92,9 @@ namespace Innoactive.Hub.Training.Template
 
             // Get the current system language as default language.
             selectedLanguage = LocalizationUtils.GetSystemLanguageAsTwoLetterIsoCode();
+
+            // Get all the available localization files for the selected training.
+            localizationFileNames = FetchAvailableLocalizationsForTraining();
 
             // Setup UI controls.
             SetupStepInfoToggle();
@@ -121,17 +129,83 @@ namespace Innoactive.Hub.Training.Template
             // If TTS config overload is set, it is used instead the config that is located at `[YOUR_PROJECT_ROOT_FOLDER]/Config/text-to-speech-config.json`.
             TrainingConfiguration.Instance.TextToSpeechConfig = ttsConfig;
 
-            // Determine which localization is used.
-            string serializedLocalization;
-            // If the localization was found,
-            if (LocalizationUtils.TryFindLocalizationForLanguage(selectedLanguage, localizationFiles, out serializedLocalization))
-            {
-                // Parse the json text as a dictionary of strings and pass it to the localization system.
-                Localization.entries = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(serializedLocalization);
-            }
+            // Load the localization file of the current selected language.
+            LoadLocalizationForTraining();
 
             // Load training from a file. That will synthesize an audio for the training instructions, too.
-            training = JsonTrainingSerializer.Deserialize(serializedTraining.text);
+            training = LoadTraining();
+        }
+
+        private List<string> FetchAvailableLocalizationsForTraining()
+        {
+            // Get the directory of all localization files of the selected training.
+            // It should be in the '[YOUR_PROJECT_ROOT_FOLDER]/StreamingAssets/Training/[TRAINING_NAME]' folder.
+            string pathToLocalizations = string.Format("{0}/Training/{1}/Localization/", Application.streamingAssetsPath, trainingName);
+
+            // Save all existing localization files in a list.
+            List<string> availableLocalizations = new List<string>();
+
+            // Check if the "Localization" directory really exists.
+            if (Directory.Exists(pathToLocalizations))
+            {
+                // Parse the names without extension (.json) of all localization files.
+                // The name should be a valid two-letter ISO code (which also can be three letters long).
+                availableLocalizations = Directory.GetFiles(pathToLocalizations, "*.json").ToList()
+                    .ConvertAll(Path.GetFileNameWithoutExtension)
+                    .Where(f => f.Length <= 3 && f.TryConvertToTwoLetterIsoCode(out f))
+                    .ToList();
+
+                // If there are no valid files, log a warning.
+                if (availableLocalizations.Count == 0)
+                {
+                    logger.WarnFormat("There are no valid localization files in '{0}'. Make sure that the JSON files are named after their languages in the two-letter ISO code format.", pathToLocalizations);
+                }
+            }
+            else
+            {
+                // If there is no "Localization" directory, log a warning.
+                logger.WarnFormat("The localization path '{0}' does not exist. No localization files can be loaded.", pathToLocalizations);
+            }
+
+            // Return the list of all available valid localizations.
+            return availableLocalizations;
+        }
+
+        private bool LoadLocalizationForTraining()
+        {
+            // Find the correct file name of the current selected language.
+            string language = localizationFileNames.Find(f => string.Equals(f, selectedLanguage, StringComparison.CurrentCultureIgnoreCase));
+
+            // Get the path to the file.
+            // It should be in the '[YOUR_PROJECT_ROOT_FOLDER]/StreamingAssets/Training/[TRAINING_NAME]/Localization' folder.
+            string pathToLocalization = string.Format("{0}/Training/{1}/Localization/{2}.json", Application.streamingAssetsPath, trainingName, language);
+
+            // Check if the file really exists and load it.
+            if (File.Exists(pathToLocalization))
+            {
+                Localization.LoadLocalization(pathToLocalization);
+                return true;
+            }
+
+            // Log a warning if no language file was found.
+            logger.WarnFormat("No language file for language '{0}' found for training {1} at '{2}'.", selectedLanguage, trainingName, pathToLocalization);
+            return false;
+        }
+
+        private ITraining LoadTraining()
+        {
+            // Get the path to the file.
+            // It should be in the '[YOUR_PROJECT_ROOT_FOLDER]/StreamingAssets/Training/[TRAINING_NAME]' folder.
+            string pathToTraining = string.Format("{0}/Training/{1}/{1}.json", Application.streamingAssetsPath, trainingName);
+
+            // Check if the file really exists and return the deserialized file text.
+            if (File.Exists(pathToTraining))
+            {
+                return JsonTrainingSerializer.Deserialize(File.ReadAllText(pathToTraining));
+            }
+
+            // Otherwise, throw an exception.
+            throw new ArgumentException("The file or the path to the file does not exist. Thus, no serialized training can be loaded.", pathToTraining);
         }
 
         #region Setup UI
@@ -193,22 +267,11 @@ namespace Innoactive.Hub.Training.Template
         {
             // List of the options to display to user.
             List<string> supportedLanguages = new List<string>();
-            foreach (TextAsset file in localizationFiles)
+
+            // Add each language in capital letters to the list of supported languages.
+            foreach (string file in localizationFileNames)
             {
-                string twoLetterIsoCode;
-
-                // Try to convert filename to two-letter ISO code.
-                if (file.name.TryConvertToTwoLetterIsoCode(out twoLetterIsoCode) == false)
-                {
-                    // If file's name can't be converted to ISO code, skip it.
-                    continue;
-                }
-
-                // Capitalize it so it would look prettier.
-                twoLetterIsoCode = twoLetterIsoCode.ToUpper();
-
-                // Add it to the list of supported languages.
-                supportedLanguages.Add(twoLetterIsoCode);
+                supportedLanguages.Add(file.ToUpper());
             }
 
             // Setup the dropdown menu.
@@ -238,16 +301,16 @@ namespace Innoactive.Hub.Training.Template
         {
             // List of the options to display to user.
             List<string> availableModes = new List<string>();
-            
+
+            // Add each mode name to the list of available modes.
             foreach (IMode mode in TrainingConfiguration.Instance.AvailableModes)
             {
-                // Add it to the list of available modes.
                 availableModes.Add(mode.Name);
             }
-            
+
             // Setup the dropdown menu.
             modePicker.AddOptions(availableModes);
-            
+
             // Set the picker value to the current selected mode.
             modePicker.value = TrainingConfiguration.Instance.GetCurrentModeIndex();
 

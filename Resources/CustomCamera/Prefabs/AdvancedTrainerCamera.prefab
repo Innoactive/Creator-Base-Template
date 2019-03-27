@@ -2315,8 +2315,7 @@ MonoBehaviour:
   soundOffImage: {fileID: 114591201797063944}
   languagePicker: {fileID: 114615517547003016}
   modePicker: {fileID: 114082708116295526}
-  serializedTraining: {fileID: 0}
-  localizationFiles: []
+  trainingName: DefaultTraining
 --- !u!114 &114964195895322434
 MonoBehaviour:
   m_ObjectHideFlags: 1
