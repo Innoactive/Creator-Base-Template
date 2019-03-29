@@ -78,6 +78,10 @@ namespace Innoactive.Hub.Training.Template
         [SerializeField]
         private string trainingName;
 
+        [Tooltip("The two-letter ISO language code (e.g. \"EN\") of the fallback language which is used by the text to speech engine if no valid localization file is found.")]
+        [SerializeField]
+        private string fallbackLanguage = "EN";
+
         private List<String> localizationFileNames;
 
         private string selectedLanguage;
@@ -92,6 +96,20 @@ namespace Innoactive.Hub.Training.Template
 
             // Get the current system language as default language.
             selectedLanguage = LocalizationUtils.GetSystemLanguageAsTwoLetterIsoCode();
+
+            // Check if the fallback language is a valid language.
+            fallbackLanguage = fallbackLanguage.Trim();
+            string validFallbackLanguage;
+            if (fallbackLanguage.TryConvertToTwoLetterIsoCode(out validFallbackLanguage))
+            {
+                fallbackLanguage = validFallbackLanguage;
+            }
+            // If not, use "EN" instead.
+            else
+            {
+                logger.WarnFormat("'{0}' is no valid language. Changed fallback language to 'EN'.", fallbackLanguage);
+                fallbackLanguage = "EN";
+            }
 
             // Get all the available localization files for the selected training.
             localizationFileNames = FetchAvailableLocalizationsForTraining();
@@ -232,6 +250,8 @@ namespace Innoactive.Hub.Training.Template
                 startTrainingButton.interactable = false;
                 // Disable the language picker as it is not allowed to change the language during the training's execution.
                 languagePicker.interactable = false;
+                // Disable the mode picker as it is not allowed to change the mode during the training's execution.
+                modePicker.interactable = false;
             });
         }
 
@@ -283,6 +303,22 @@ namespace Innoactive.Hub.Training.Template
             if (languageValue > -1)
             {
                 languagePicker.value = languageValue;
+            }
+            // If the selected language (system language when starting the scene) has no valid localization file.
+            else
+            {
+                // Either choose the first language of all languages as selected language.
+                if (supportedLanguages.Count > 0)
+                {
+                    selectedLanguage = supportedLanguages[languagePicker.value];
+                }
+                // Or use the fallback language, if there is no valid localization file at all.
+                else
+                {
+                    selectedLanguage = fallbackLanguage;
+                    // Add the fallback language as option of the dropdown menu. Otherwise, the picker would be empty.
+                    languagePicker.AddOptions(new List<string>(){ fallbackLanguage.ToUpper() });
+                }
             }
 
             // When the selected language is changed, setup a training from scratch.

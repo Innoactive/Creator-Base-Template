@@ -2316,6 +2316,7 @@ MonoBehaviour:
   languagePicker: {fileID: 114615517547003016}
   modePicker: {fileID: 114082708116295526}
   trainingName: DefaultTraining
+  fallbackLanguage: EN
 --- !u!114 &114964195895322434
 MonoBehaviour:
   m_ObjectHideFlags: 1
