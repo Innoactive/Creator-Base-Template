@@ -680,6 +680,7 @@ GameObject:
   - component: {fileID: 114242302271441964}
   - component: {fileID: 81253692697238436}
   - component: {fileID: 114279343429792998}
+  - component: {fileID: 114730943776278608}
   m_Layer: 0
   m_Name: AdvancedTrainerCamera
   m_TagString: Untagged
@@ -1843,6 +1844,18 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Start Training
+--- !u!114 &114730943776278608
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1818117099851566}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff26db721962cdf4a8edcdfa9a767d2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  profile: {fileID: 11400000, guid: fc227aea05340df4bbd3a20a31a4412f, type: 2}
 --- !u!114 &114750579820476582
 MonoBehaviour:
   m_ObjectHideFlags: 1
