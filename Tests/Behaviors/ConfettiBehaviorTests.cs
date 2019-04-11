@@ -11,7 +11,7 @@ using Object = UnityEngine.Object;
 
 namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
 {
-    public class ConfettiBehaviorTests
+    public class ConfettiBehaviorTests : RuntimeTests
     {
         private const string pathToPrefab = "Confetti/Prefabs/InnoactiveConfettiMachine";
         private const string pathToMockPrefab = "Confetti/Prefabs/MockConfettiMachine";

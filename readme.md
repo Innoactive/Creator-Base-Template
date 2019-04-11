@@ -139,7 +139,13 @@ Take a look at `DefaultDefinition` to see how basic options could be implemented
 
 ## Training configuration
 
-Training configuration is used to adjust the way the training application executes in a runtime. It has the following properties and methods:
+Training configuration is used to adjust the way the training application executes in a runtime.
+ 
+There should be one and only one training configuration game object in a training scene. To create one, you can use `Innoactive > Training > Setup Scene` menu option.
+
+A training configuration instance is just a container for its definition, which provides the actual means for template customization.
+ 
+The definition has the following properties and methods:
 
 1. `TrainingObjectRegistry` provides the access to all training objects and properties of the current scene.
 2. `Trainee` is a shortcut to a trainee's headset.
@@ -152,7 +158,9 @@ Training configuration is used to adjust the way the training application execut
 
 TTS config and training modes are described in detail in the following chapters.
 
-You can modify the training configuration in the same way as the editor configuration, using `Innoactive.Hub.Training.Configuration` namespace types instead.
+Unless you explicitly assign the `TrainingConfiguration.Definition` property, the `DefaultDefinition` is used.
+
+You can modify the training configuration definition in the same way as the editor configuration, using `Innoactive.Hub.Training.Configuration` namespace types instead.
 
 It is recommended to inherit from `DefaultDefinition` rather than implement `IDefinition` directly, as it already provides some basic functionality.
 
@@ -213,21 +221,15 @@ A `PlayAudioBehavior` uses `TrainingConguration.InstructionPlayer` property to d
 
 # Training modes
 
-A training mode defines behaviors and conditions are enabled during a training execution. If a behavior or condition is disabled, it's simply skipped.
+A training mode is defined by its activation policy and the parameters.
 
-By default, there is only one training mode defined, which allows all the training.
+An activation policy determines which behaviors and conditions are enabled during a training execution. If a behavior or condition is disabled, it's simply skipped.
 
-To define your own training modes, override the `AvailableModes` property. You could create your own implementation of the `IMode` interface of `Innoactive.Hub.Training.Configuration` namespace, but generally it is not required: you could simply use `BlacklistMode` and `WhitelistMode` classes.
+The training mode parameters is a string-to-object dictionary which can be used by any behavior or condition which was designed to be configurable (see the `Extend Training SDK` chapter).
 
-`BlacklistMode` disables all behavior and condition types that were defined with its `.Add<T>()` method. BlacklistMode is immutable (in the same way strings are). For example, if you want to disable audio hints and skip all delays, the `BlacklistMode` initialization would look like this:
+There is only one training mode that is defined in the default training definition. It allows any condition or behavior, and has no parameters.
 
-```c#
-new BlacklistMode("no_hints")
-    .Add<PlayAudioBehavior>()
-    .Add<DelayBehavior>();
-```
-
-`WhitelistMode` allows only behavior and condition types that were defined with its `.Add<T>()` method. WhitelistMode is immutable.
+To define your own training modes, override the `AvailableModes` property. Define a `Mode` when invoking its constructor. You will not be able to do it later, as modes are immutable by design.
 
 To switch between modes, call `SetMode(index)` method.
 
@@ -402,6 +404,35 @@ public class PointedCondition : Condition
 }
 ```
 
+## Mode parameters
+
+All conditions and behaviors can be enabled or disabled by a training mode activation policy, but sometimes you need it to be more customizable than that.
+
+To achieve that, you could use `ModeParameter` class. An instance of `ModeParameter` automatically fetches the training mode parameter of a given type by its `key`. If the current mode does not define the parameter, it uses default value instead. You can subscribe to the `ParameterModified` event to handle the training mode change.
+
+You can use the following code snippet as an example:
+
+```c#
+// Declare the property.
+public ModeParameter<bool> IsShowingHighlight { get; private set; }
+
+[...]
+
+// Initialise the property (usually in constructor, at Awake() or OnEnable()).
+protected void Initialise()
+{
+    // Create a new mode parameter that binds to a training mode entry with a key `ShowSnapzoneHighlight`. 
+    // It expects the value to be a bool, and if it isn't defined, it uses `true` as a default value.
+    IsShowingHighlight = new ModeParameter<bool>("ShowSnapzoneHighlight", true);
+    
+    // Perform necessary changes 
+    IsShowingHighlight.ParameterModified += (sender, args) =>
+    {
+        HighlightObject.SetActive(IsShowingHighlight.Value);
+    };
+}
+```
+
 ## Custom behavior
 
 Create new C# script named `ScalingBehavior` and change its contents to the following:
@@ -570,7 +601,7 @@ string label = "#" + index;
 entryDrawer.Draw(entryRect, entry, entryValueChangedCallback, label);
 ```
 
-# Custom overlay
+## Custom overlay
 
 To make your own controls define your own `Spectator Cam Prefab Overload` in [`[HUB-PLAYER-SETUP-MANAGER]`](http://docs.hub.innoactive.de/api/Innoactive.Hub.PlayerSetup.PlayerSetupManager.html) scene object. 
 

@@ -145,7 +145,7 @@ namespace Innoactive.Hub.Training.Template
             };
 
             // If TTS config overload is set, it is used instead the config that is located at `[YOUR_PROJECT_ROOT_FOLDER]/Config/text-to-speech-config.json`.
-            TrainingConfiguration.Instance.TextToSpeechConfig = ttsConfig;
+            TrainingConfiguration.Definition.TextToSpeechConfig = ttsConfig;
 
             // Load the localization file of the current selected language.
             LoadLocalizationForTraining();
@@ -279,7 +279,7 @@ namespace Innoactive.Hub.Training.Template
                 soundOnImage.enabled = newValue;
                 soundOffImage.enabled = newValue == false;
 
-                TrainingConfiguration.Instance.InstructionPlayer.mute = newValue == false;
+                TrainingConfiguration.Definition.InstructionPlayer.mute = newValue == false;
             });
         }
 
@@ -339,7 +339,7 @@ namespace Innoactive.Hub.Training.Template
             List<string> availableModes = new List<string>();
 
             // Add each mode name to the list of available modes.
-            foreach (IMode mode in TrainingConfiguration.Instance.AvailableModes)
+            foreach (IMode mode in TrainingConfiguration.Definition.AvailableModes)
             {
                 availableModes.Add(mode.Name);
             }
@@ -348,13 +348,13 @@ namespace Innoactive.Hub.Training.Template
             modePicker.AddOptions(availableModes);
 
             // Set the picker value to the current selected mode.
-            modePicker.value = TrainingConfiguration.Instance.GetCurrentModeIndex();
+            modePicker.value = TrainingConfiguration.Definition.GetCurrentModeIndex();
 
             // When the selected mode is changed, setup a training from scratch.
             modePicker.onValueChanged.AddListener(itemIndex =>
             {
                 // Set the mode based on the user selection.
-                TrainingConfiguration.Instance.SetMode(itemIndex);
+                TrainingConfiguration.Definition.SetMode(itemIndex);
                 // Load the training.
                 SetupTraining();
                 // Update the UI.
