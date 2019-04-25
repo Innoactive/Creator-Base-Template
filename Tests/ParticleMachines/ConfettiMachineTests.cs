@@ -8,14 +8,14 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
 
-namespace Innoactive.Hub.Unity.Tests.Training.ParticleMachine
+namespace Innoactive.Hub.Unity.Tests.Training.Template.ParticleMachine
 {
-    public class ConfettiMachineTests
+    public class ConfettiMachineTests : RuntimeTests
     {
         private const string pathToDefaultPrefab = "Confetti/Prefabs/InnoactiveConfettiMachine";
 
         [UnityTest]
-        public IEnumerator InstantiateDefaultPrefabTest()
+        public IEnumerator InstantiateDefaultPrefab()
         {
             // Given a valid path to the prefab,
             // When I instantiate the prefab,
@@ -24,13 +24,11 @@ namespace Innoactive.Hub.Unity.Tests.Training.ParticleMachine
             // Then it is not null.
             Assert.IsFalse(machineObject == null);
 
-            // Cleanup created game objects.
-            Object.DestroyImmediate(machineObject);
-            yield return null;
+            yield break;
         }
 
         [UnityTest]
-        public IEnumerator DefaultPrefabHasConfettiMachineComponentTest()
+        public IEnumerator DefaultPrefabHasConfettiMachineComponent()
         {
             // Given a valid path to the prefab,
             // When I instantiate the prefab,
@@ -39,13 +37,11 @@ namespace Innoactive.Hub.Unity.Tests.Training.ParticleMachine
             // Then it has the "ConfettiMachine" component
             Assert.IsFalse(machineObject.GetComponent(typeof(ConfettiMachine)) == null);
 
-            // Cleanup created game objects.
-            Object.DestroyImmediate(machineObject);
-            yield return null;
+            yield break;
         }
 
         [UnityTest]
-        public IEnumerator DefaultPrefabHasChildrenWithParticleSystemsTest()
+        public IEnumerator DefaultPrefabHasChildrenWithParticleSystems()
         {
             // Given a valid path to the prefab,
             // When I instantiate the prefab,
@@ -54,9 +50,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.ParticleMachine
             // Then it has "ParticleSystems" as children.
             Assert.IsFalse(machineObject.GetComponentInChildren(typeof(ParticleSystem), true) == null);
 
-            // Cleanup created game objects.
-            Object.DestroyImmediate(machineObject);
-            yield return null;
+            yield break;
         }
 
         [UnityTest]
@@ -80,9 +74,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.ParticleMachine
                 Assert.IsTrue(particleSystem.isPlaying);
             }
 
-            // Cleanup created game objects.
-            Object.DestroyImmediate(machineObject);
-            yield return null;
+            yield break;
         }
 
         [UnityTest]
@@ -115,9 +107,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.ParticleMachine
 
             Assert.IsTrue(Math.Abs(particleSystems[0].emission.rateOverTimeMultiplier - (oldRate * newRadius * newRadius)) < 0.001f);
 
-            // Cleanup created game objects.
-            Object.DestroyImmediate(machineObject);
-            yield return null;
+            yield break;
         }
 
         [UnityTest]
@@ -144,9 +134,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.ParticleMachine
                 Assert.IsFalse(particleSystem.gameObject.activeSelf);
             }
 
-            // Cleanup created game objects.
-            Object.DestroyImmediate(machineObject);
-            yield return null;
+            yield break;
         }
 
         [UnityTest]
@@ -171,9 +159,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.ParticleMachine
                 Assert.IsFalse(particleSystem.gameObject.activeSelf);
             }
 
-            // Cleanup created game objects.
-            Object.DestroyImmediate(machineObject);
-            yield return null;
+            yield break;
         }
 
         [UnityTest]
@@ -199,9 +185,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.ParticleMachine
                 Assert.IsTrue(Math.Abs(particleSystem.main.duration - newDuration) < 0.001f);
             }
 
-            // Cleanup created game objects.
-            Object.DestroyImmediate(machineObject);
-            yield return null;
+            yield break;
         }
 
         [UnityTest]
@@ -227,9 +211,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.ParticleMachine
                 Assert.IsTrue(Math.Abs(particleSystem.main.duration) < 0.001f);
             }
 
-            // Cleanup created game objects.
-            Object.DestroyImmediate(machineObject);
-            yield return null;
+            yield break;
         }
 
 
@@ -256,9 +238,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.ParticleMachine
                 Assert.IsTrue(Math.Abs(particleSystem.main.duration) < 0.001f);
             }
 
-            // Cleanup created game objects.
-            Object.DestroyImmediate(machineObject);
-            yield return null;
+            yield break;
         }
 
         [UnityTest]
@@ -289,9 +269,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.ParticleMachine
                 Assert.IsTrue(Math.Abs(particleSystems[i].emission.rateOverTimeMultiplier - (oldRates[i] * multiplier * multiplier)) < 0.001f);
             }
 
-            // Cleanup created game objects.
-            Object.DestroyImmediate(machineObject);
-            yield return null;
+            yield break;
         }
 
         [UnityTest]
@@ -322,9 +300,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.ParticleMachine
                 Assert.IsTrue(Math.Abs(particleSystems[i].emission.rateOverTimeMultiplier - (oldRates[i] * 0.01f * 0.01f)) < 0.001f);
             }
 
-            // Cleanup created game objects.
-            Object.DestroyImmediate(machineObject);
-            yield return null;
+            yield break;
         }
 
         [UnityTest]
@@ -355,9 +331,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.ParticleMachine
                 Assert.IsTrue(Math.Abs(particleSystems[i].emission.rateOverTimeMultiplier - (oldRates[i] * 0.01f * 0.01f)) < 0.001f);
             }
 
-            // Cleanup created game objects.
-            Object.DestroyImmediate(machineObject);
-            yield return null;
+            yield break;
         }
 
         [UnityTest]
@@ -381,9 +355,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.ParticleMachine
                 Assert.IsTrue(Math.Abs(particleSystem.shape.radius - newRadius) < 0.001f);
             }
 
-            // Cleanup created game objects.
-            Object.DestroyImmediate(machineObject);
-            yield return null;
+            yield break;
         }
 
         [UnityTest]
@@ -407,9 +379,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.ParticleMachine
                 Assert.IsTrue(Math.Abs(particleSystem.shape.radius - 0.01f) < 0.001f);
             }
 
-            // Cleanup created game objects.
-            Object.DestroyImmediate(machineObject);
-            yield return null;
+            yield break;
         }
 
         [UnityTest]
@@ -433,9 +403,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.ParticleMachine
                 Assert.IsTrue(Math.Abs(particleSystem.shape.radius - 0.01f) < 0.001f);
             }
 
-            // Cleanup created game objects.
-            Object.DestroyImmediate(machineObject);
-            yield return null;
+            yield break;
         }
     }
 }

@@ -3,9 +3,8 @@ using Newtonsoft.Json;
 
 namespace Innoactive.Hub.Training.Template
 {
-    // Uncomment this attribute to use this condition in the Step Inspector.
-    // [ShowInTrainingMenu("Point at Object")]
     [DataContract(IsReference = true)]
+    [DisplayName("Point at Object")]
     // Condition which is completed when Pointer points at Target.
     public class PointedCondition : Condition
     {
@@ -20,10 +19,14 @@ namespace Innoactive.Hub.Training.Template
 
         [JsonConstructor]
         // Make sure that references are initialized.
-        public PointedCondition()
+        public PointedCondition() : this(new TrainingPropertyReference<PointingProperty>(), new TrainingPropertyReference<ColliderWithTriggerProperty>())
         {
-            Pointer = new TrainingPropertyReference<PointingProperty>();
-            Target = new TrainingPropertyReference<ColliderWithTriggerProperty>();
+        }
+
+        public PointedCondition(TrainingPropertyReference<PointingProperty> pointer, TrainingPropertyReference<ColliderWithTriggerProperty> target)
+        {
+            Pointer = pointer;
+            Target = target;
         }
 
         // This method is called when the step with that condition has completed activation of its behaviors.
@@ -36,6 +39,17 @@ namespace Innoactive.Hub.Training.Template
         public override void OnDeactivate()
         {
             Pointer.Value.PointerEnter -= OnPointerEnter;
+        }
+
+        // This method is called when the condition should complete itself immediately.
+        // We will fake that the target was actually pointed there.
+        protected override void FastForward()
+        {
+            // Only fast-forward the condition, if it is active.
+            if (ActivationState == ActivationState.Active)
+            {
+                Pointer.Value.FastForwardPoint(Target);
+            }
         }
 
         // When PointerProperty points at something,

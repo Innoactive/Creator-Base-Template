@@ -374,9 +374,9 @@ namespace Innoactive.Hub.Training.Template
         private void SetupTrainingIndicator()
         {
             // When training is started show the indicator.
-            training.TrainingStarted += (sender, args) => trainingStateIndicator.enabled = true;
+            training.ActivationStarted += (sender, args) => trainingStateIndicator.enabled = true;
             // When training is completed, hide it again.
-            training.TrainingCompleted += (sender, args) => trainingStateIndicator.enabled = false;
+            training.Activated += (sender, args) => trainingStateIndicator.enabled = false;
         }
 
         private void SetupStepName()

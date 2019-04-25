@@ -20,7 +20,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
         private const float areaRadius = 11f;
 
         [UnityTest]
-        public IEnumerator CreateByReferenceTest()
+        public IEnumerator CreateByReference()
         {
             // Given the path to the confetti machine prefab, the position provider name, the duration, the bool isAboveTrainee, the area radius, and the activation mode,
             GameObject target = new GameObject(positionProviderName);
@@ -40,14 +40,11 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             Assert.AreEqual(duration, confettiBehavior.Duration);
             Assert.AreEqual(mode, confettiBehavior.ActivationMode);
 
-            // Cleanup created game objects.
-            Object.DestroyImmediate(target);
-
-            yield return null;
+            yield break;
         }
 
         [UnityTest]
-        public IEnumerator CreateByNameTest()
+        public IEnumerator CreateByName()
         {
             // Given the path to the confetti machine prefab, the position provider name, the duration, the bool isAboveTrainee, the area radius, and the activation mode,
             GameObject target = new GameObject(positionProviderName);
@@ -67,14 +64,11 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             Assert.AreEqual(duration, confettiBehavior.Duration);
             Assert.AreEqual(mode, confettiBehavior.ActivationMode);
 
-            // Cleanup created game objects.
-            Object.DestroyImmediate(target);
-
-            yield return null;
+            yield break;
         }
 
         [UnityTest]
-        public IEnumerator ActivationWithSpawnedMachineTest()
+        public IEnumerator ActivationWithSpawnedMachine()
         {
             // Given a positive duration, a position provider, some valid default settings, and the activation mode = Activation,
             GameObject target = new GameObject(positionProviderName);
@@ -93,17 +87,10 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             // Then the activation state of the behavior is "activating" and the ConfettiMachine exists in the scene.
             Assert.AreEqual(ActivationState.Activating, behavior.ActivationState);
             Assert.IsTrue(machine != null);
-
-            yield return new WaitForSeconds(duration + 0.1f);
-
-            // Cleanup created game objects.
-            Object.DestroyImmediate(target);
-
-            yield return null;
         }
 
         [UnityTest]
-        public IEnumerator RemovedMachineAfterPositiveDurationTest()
+        public IEnumerator RemovedMachineAfterPositiveDuration()
         {
             // Given a positive duration, a position provider, some valid default settings, and the activation mode = Activation,
             GameObject target = new GameObject(positionProviderName);
@@ -123,15 +110,10 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             Assert.AreEqual(ActivationState.Active, behavior.ActivationState);
             string prefabName = "Behavior" + pathToPrefab.Substring(pathToPrefab.LastIndexOf("/", StringComparison.Ordinal) + 1);
             Assert.IsTrue(GameObject.Find(prefabName) == null);
-
-            // Cleanup created game objects.
-            Object.DestroyImmediate(target);
-
-            yield return null;
         }
 
         [UnityTest]
-        public IEnumerator NegativeDurationTest()
+        public IEnumerator NegativeDuration()
         {
             // Given a negative duration, a position provider, some valid default settings, and the activation mode = Activation,
             float newDuration = -0.25f;
@@ -152,15 +134,10 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
 
             Assert.AreEqual(ActivationState.Active, behavior.ActivationState);
             Assert.IsTrue(machine == null);
-
-            // Cleanup created game objects.
-            Object.DestroyImmediate(target);
-
-            yield return null;
         }
 
         [UnityTest]
-        public IEnumerator ZeroDurationTest()
+        public IEnumerator ZeroDuration()
         {
             // Given a duration equals zero, a position provider, some valid default settings, and the activation mode = Activation,
             float newDuration = 0f;
@@ -184,12 +161,10 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
 
             // Cleanup created game objects.
             Object.DestroyImmediate(target);
-
-            yield return null;
         }
 
         [UnityTest]
-        public IEnumerator SpawnAtPositionProviderTest()
+        public IEnumerator SpawnAtPositionProvider()
         {
             // Given the position provider training object, some valid default settings, and the activation mode = Activation,
             GameObject target = new GameObject(positionProviderName);
@@ -209,15 +184,11 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             Assert.IsFalse(machine == null);
             Assert.IsTrue(machine.transform.position == target.transform.position);
 
-            // Cleanup created game objects.
-            Object.DestroyImmediate(target);
-            Object.DestroyImmediate(machine);
-
-            yield return null;
+            yield break;
         }
 
         [UnityTest]
-        public IEnumerator SpawnAboveTraineeTest()
+        public IEnumerator SpawnAboveTrainee()
         {
             // TODO: VRTK_DeviceFinder does not work in test scenes. So it is not possible to actually spawn the confetti machine above the trainee that way.
 
@@ -225,7 +196,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
         }
 
         [UnityTest]
-        public IEnumerator StillActivatingWhenBlockingTest()
+        public IEnumerator StillActivatingWhenBlocking()
         {
             // Given the position provider training object, some valid default settings, and the activation mode = Activation,
             GameObject target = new GameObject(positionProviderName);
@@ -240,16 +211,10 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
 
             // Then the activation state of the behavior is "deactivating".
             Assert.AreEqual(ActivationState.Activating, behavior.ActivationState);
-
-            // Cleanup created game objects.
-            yield return new WaitForSeconds(duration + 0.1f);
-            Object.DestroyImmediate(target);
-
-            yield return null;
         }
 
         [UnityTest]
-        public IEnumerator IsActiveAfterBlockingTest()
+        public IEnumerator IsActiveAfterBlocking()
         {
             // Given the position provider training object, some valid default settings, and the activation mode = Activation,
             GameObject target = new GameObject(positionProviderName);
@@ -264,15 +229,10 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
 
             // Then the activation state of the behavior is "active".
             Assert.AreEqual(ActivationState.Active, behavior.ActivationState);
-
-            // Cleanup created game objects.
-            Object.DestroyImmediate(target);
-
-            yield return null;
         }
 
         [UnityTest]
-        public IEnumerator StillDeactivatingWhenBlockingTest()
+        public IEnumerator StillDeactivatingWhenBlocking()
         {
             // Given the position provider training object, some valid default settings, and the activation mode = Deactivation,
             GameObject target = new GameObject(positionProviderName);
@@ -288,16 +248,10 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
 
             // Then the activation state of the behavior is "deactivating".
             Assert.AreEqual(ActivationState.Deactivating, behavior.ActivationState);
-
-            // Cleanup created game objects.
-            yield return new WaitForSeconds(duration + 0.1f);
-            Object.DestroyImmediate(target);
-
-            yield return null;
         }
 
         [UnityTest]
-        public IEnumerator IsDeactivatedAfterBlockingTest()
+        public IEnumerator IsDeactivatedAfterBlocking()
         {
             // Given the position provider training object, some valid default settings, and the activation mode = Deactivation,
             GameObject target = new GameObject(positionProviderName);
@@ -314,15 +268,10 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
 
             // Then the activation state of the behavior is "deactivated".
             Assert.AreEqual(ActivationState.Deactivated, behavior.ActivationState);
-
-            // Cleanup created game objects.
-            Object.DestroyImmediate(target);
-
-            yield return null;
         }
 
         [UnityTest]
-        public IEnumerator NotExistingPrefabTest()
+        public IEnumerator NotExistingPrefab()
         {
             // Given the position provider training object, an invalid path to a not existing prefab, some valid default settings, and the activation mode = Activation,
             GameObject target = new GameObject(positionProviderName);
@@ -342,11 +291,110 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             Assert.AreEqual(null, machine);
 
             yield return new WaitForSeconds(duration + 0.1f);
+        }
+        
+        [UnityTest]
+        public IEnumerator FastForwardInactiveBehavior()
+        {
+            // Given a ConfettiBehavior with activation mode "Activation",
+            GameObject target = new GameObject(positionProviderName);
+            TrainingObject positionProvider = target.AddComponent<TrainingObject>();
+            positionProvider.ChangeUniqueName(positionProviderName);
 
-            // Cleanup created game objects.
-            Object.DestroyImmediate(target);
+            ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorActivationMode.Activation);
 
-            yield return null;
+            // When we mark it to fast-forward,
+            behavior.MarkToFastForward();
+
+            // Then it doesn't autocomplete because it hasn't been activated yet.
+            Assert.AreEqual(ActivationState.PendingActivation, behavior.ActivationState);
+
+            yield break;
+        }
+
+        [UnityTest]
+        public IEnumerator FastForwardInactiveBehaviorAndActivateIt()
+        {
+            // Given a ConfettiBehavior with activation mode "Activation",
+            GameObject target = new GameObject(positionProviderName);
+            TrainingObject positionProvider = target.AddComponent<TrainingObject>();
+            positionProvider.ChangeUniqueName(positionProviderName);
+
+            ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorActivationMode.Activation);
+
+            // When we mark it to fast-forward and activate it,
+            behavior.MarkToFastForward();
+            behavior.Activate();
+
+            // Then it autocompletes immediately.
+            Assert.AreEqual(ActivationState.Active, behavior.ActivationState);
+
+            yield break;
+        }
+
+        [UnityTest]
+        public IEnumerator FastForwardInactiveBehaviorAndDeactivateIt()
+        {
+            // Given a ConfettiBehavior with activation mode "Deactivation",
+            GameObject target = new GameObject(positionProviderName);
+            TrainingObject positionProvider = target.AddComponent<TrainingObject>();
+            positionProvider.ChangeUniqueName(positionProviderName);
+
+            ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorActivationMode.Deactivation);
+
+            // When we mark it to fast-forward, activate and immediately deactivate it,
+            behavior.MarkToFastForward();
+            behavior.Activate();
+            
+            yield return new WaitUntil(() => behavior.ActivationState == ActivationState.Active);
+            
+            behavior.Deactivate();
+
+            // Then it autocompletes immediately.
+            Assert.AreEqual(ActivationState.Deactivated, behavior.ActivationState);
+        }
+
+        [UnityTest]
+        public IEnumerator FastForwardActivatingBehavior()
+        {
+            // Given an active ConfettiBehavior with activation mode "Activation",
+            GameObject target = new GameObject(positionProviderName);
+            TrainingObject positionProvider = target.AddComponent<TrainingObject>();
+            positionProvider.ChangeUniqueName(positionProviderName);
+
+            ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorActivationMode.Activation);
+
+            behavior.Activate();
+
+            // When we mark it to fast-forward,
+            behavior.MarkToFastForward();
+
+            // Then it autocompletes immediately.
+            Assert.AreEqual(ActivationState.Active, behavior.ActivationState);
+
+            yield break;
+        }
+
+        [UnityTest]
+        public IEnumerator FastForwardDeactivatingBehavior()
+        {
+            // Given an active ConfettiBehavior with activation mode "Deactivation",
+            GameObject target = new GameObject(positionProviderName);
+            TrainingObject positionProvider = target.AddComponent<TrainingObject>();
+            positionProvider.ChangeUniqueName(positionProviderName);
+
+            ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorActivationMode.Deactivation);
+
+            behavior.Activate();
+            behavior.Deactivate();
+
+            // When we mark it to fast-forward,
+            behavior.MarkToFastForward();
+
+            // Then it autocompletes immediately.
+            Assert.AreEqual(ActivationState.Deactivated, behavior.ActivationState);
+
+            yield break;
         }
     }
 }

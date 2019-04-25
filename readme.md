@@ -266,6 +266,15 @@ namespace Innoactive.Hub.Training.Examples
 
         // Reference to attached VRTK_Pointer.
         private VRTK_Pointer pointer;
+        
+        // Fake the pointing at target. Used when you fast-forward PointedCondition.
+        public virtual void FastForwardPoint(ColliderWithTriggerProperty target)
+        {
+            if (target != null && PointerEnter != null)
+            {
+                PointerEnter(target);
+            }
+        }
 
         // Unity callback method 
         protected override void OnEnable()
@@ -305,7 +314,7 @@ This property does the following:
 
 * It ensures that a scene object has all required components attached.
 * It encapsulates the VRTK_Pointer event handling.
-* It exposes an event so a training condition could use it, and it ensures that the event is fired only when pointer points at a training object with a collider.
+* It exposes an event so a training condition could use it, and it ensures that the event is fired only when the pointer points at a training object with a collider or the condition was fast-forwarded.
 
 Now it can be attached to a game object on a scene. To save time on making your own pointer tool, you could copy `Your Hub SDK Directory\SDK\Tools\Presenter\Resources\Presenter` and attach the property to its `Pointer` child object.
 
@@ -319,22 +328,32 @@ Create new C# script named `PointedCondition` and change its contents to the fol
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 
-namespace Innoactive.Hub.Training.Examples
+namespace Innoactive.Hub.Training.Template
 {
+    [DataContract(IsReference = true)]
+    [DisplayName("Point at Object")]
     // Condition which is completed when Pointer points at Target.
     public class PointedCondition : Condition
     {
+        [DataMember]
         // Reference to a pointer property.
         public TrainingPropertyReference<PointingProperty> Pointer { get; private set; }
 
+        [DisplayName("Target with a collider")]
+        [DataMember]
         // Reference to a target property.
         public TrainingPropertyReference<ColliderWithTriggerProperty> Target { get; private set; }
 
+        [JsonConstructor]
         // Make sure that references are initialized.
-        public PointedCondition()
+        public PointedCondition() : this(new TrainingPropertyReference<PointingProperty>(), new TrainingPropertyReference<ColliderWithTriggerProperty>())
         {
-            Pointer = new TrainingPropertyReference<PointingProperty>();
-            Target = new TrainingPropertyReference<ColliderWithTriggerProperty>();
+        }
+
+        public PointedCondition(TrainingPropertyReference<PointingProperty> pointer, TrainingPropertyReference<ColliderWithTriggerProperty> target)
+        {
+            Pointer = pointer;
+            Target = target;
         }
 
         // This method is called when the step with that condition has completed activation of its behaviors.
@@ -347,6 +366,17 @@ namespace Innoactive.Hub.Training.Examples
         public override void OnDeactivate()
         {
             Pointer.Value.PointerEnter -= OnPointerEnter;
+        }
+
+        // This method is called when the condition should complete itself immediately.
+        // We will fake that the target was actually pointed there.
+        protected override void FastForward()
+        {
+            // Only fast-forward the condition, if it is active.
+            if (ActivationState == ActivationState.Active)
+            {
+                Pointer.Value.FastForwardPoint(Target);
+            }
         }
 
         // When PointerProperty points at something,
@@ -371,6 +401,8 @@ namespace Innoactive.Hub.Training.Examples
 This condition subscribes to a `PointerEnter` event of a referenced `PointingProperty`. When the Pointer points at the Target, the condition detects it and marks itself as complete.
 
 A condition determines if it is completed by itself. The single limitation is that you should check for a completion of the condition only when it is activating or active. The best place to handle that is `OnActivation()` method which is called when condition begins its activation, and `OnDeactivation()`, which is called when the condition is not active anymore.
+
+Conditions must be fast-forwardable. That means, if we want to skip a condition, it has to be completed immediately. In this case, we override the `FastForward()` method to fake that the target was actually pointed at. Therefore, we call the `FastForwardPoint()` method introduced in the `PointingProperty` script to raise the `PointerEnter` event and fulfill this condtion.
 
 ## Serialization
 
@@ -444,10 +476,11 @@ using Innoactive.Hub.Threading;
 using Newtonsoft.Json;
 using UnityEngine;
 
-namespace Innoactive.Hub.Training.Examples
+namespace Innoactive.Hub.Training.Template
 {
     // This behaviors linearly changes scale of a Target object over Duration seconds, until it matches TargetScale.
     [DataContract(IsReference = true)]
+    [DisplayName("Scale Object")]
     public class ScalingBehavior : Behavior
     {
         // Training object to scale.
@@ -464,15 +497,22 @@ namespace Innoactive.Hub.Training.Examples
         [DisplayName("Animation Duration")]
         public float Duration { get; private set; }
 
+        // A coroutine responsible for scaling the target.
+        private IEnumerator coroutine;
+        
         // Handle data initialization in the constructor.
         [JsonConstructor]
-        protected ScalingBehavior()
+        public ScalingBehavior() : this(new TrainingObjectReference(), Vector3.one, 0f)
         {
-            Target = new TrainingObjectReference();
-            TargetScale = Vector3.one;
-            Duration = 0f;
         }
 
+        public ScalingBehavior(TrainingObjectReference target, Vector3 targetScale, float duration)
+        {
+            Target = target;
+            TargetScale = targetScale;
+            Duration = duration;
+        }
+        
         // Called on activation of the training entity. Define activation logic here.
         // You have to call `SignalActivationStarted()` at the start
         // and `SignalActivationFinished()` after you've done everything you wanted to do during the activation.
@@ -481,7 +521,8 @@ namespace Innoactive.Hub.Training.Examples
             SignalActivationStarted();
 
             // Start coroutine which will scale our object.
-            CoroutineDispatcher.Instance.StartCoroutine(ScaleTarget());
+            coroutine = ScaleTarget();
+            CoroutineDispatcher.Instance.StartCoroutine(coroutine);
         }
 
         // Called on deactivation of the training entity. Define deactivation logic here.
@@ -493,6 +534,23 @@ namespace Innoactive.Hub.Training.Examples
             SignalDeactivationFinished();
         }
 
+        // This method is called when the activation has to be interrupted and completed immediately.
+        protected override void FastForward()
+        {
+            // If the scaling behavior is currently activating (running),
+            if (ActivationState == ActivationState.Activating)
+            {
+                // Stop the scaling coroutine,
+                CoroutineDispatcher.Instance.StopCoroutine(coroutine);
+
+                // Scale the target manually,
+                Target.Value.GameObject.transform.localScale = TargetScale;
+
+                // And signal that activation is finished.
+                SignalActivationFinished();
+            }
+        }
+        
         // Coroutine which scales the target transform over time and then finished the activation.
         private IEnumerator ScaleTarget()
         {
@@ -518,13 +576,15 @@ namespace Innoactive.Hub.Training.Examples
 }
 ```
 
-Behaviors should inherit from the `Behavior` class. They should implement two methods: `PerformActivation()`, which is called when behavior's activation begins, and `PerformDeactivation()`, which is called when behavior's deactivation begins.
+Behaviors should inherit from the `Behavior` class. They should implement three methods: `PerformActivation()`, which is called when behavior's activation begins, `PerformDeactivation()`, which is called when behavior's deactivation begins, and `FastForward()`, which is called when the behavior has to be completed immediately.
 
-It should call `SignalActivationStarted()` at the beginning of the activation, and `SignalActivationFinished()` at the end of the activation. The same applies for `SignalDeactivationStarted()` and `SignalDeactivationFinished()`.
+It should call `SignalActivationStarted()` at the beginning of the activation, and `SignalActivationFinished()` at the end of the activation. The same applies for `SignalDeactivationStarted()` and `SignalDeactivationFinished()` during deactivation.
+
+In the `FastForward()` method, you need to check if the behavior is currently in the activating or in the deactivating state and has not finished yet. If that is the case, complete the behavior immediately and signal that the state has finished.
 
 If you need to execute some logic every frame, make a coroutine for that and invoke it with `CoroutineDispatcher.Instance.StartCoroutine(coroutine)`.
 
-If you want this behavior available to the user, you have to create a class that inherits from `InstantiationOption<IBehavior>`, similarly to the example given in section 7.4.
+If you want this behavior available to the user, you have to create a class that inherits from `InstantiationOption<IBehavior>`, similarly to the example given in section [Editor configuration](#editor-configuration).
 
 ## Training object reference
 

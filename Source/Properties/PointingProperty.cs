@@ -16,6 +16,15 @@ namespace Innoactive.Hub.Training.Template
         // Reference to attached VRTK_Pointer.
         private VRTK_Pointer pointer;
 
+        // Fake the pointing at target. Used when you fast-forward PointedCondition.
+        public virtual void FastForwardPoint(ColliderWithTriggerProperty target)
+        {
+            if (target != null && PointerEnter != null)
+            {
+                PointerEnter(target);
+            }
+        }
+
         // Unity callback method
         protected override void OnEnable()
         {

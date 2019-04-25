@@ -6,10 +6,9 @@ using UnityEngine;
 
 namespace Innoactive.Hub.Training.Template
 {
-    // Uncomment this attribute to use this behavior in the Step Inspector.
-    // [ShowInTrainingMenu("Scale Object")]
     // This behaviors linearly changes scale of a Target object over Duration seconds, until it matches TargetScale.
     [DataContract(IsReference = true)]
+    [DisplayName("Scale Object")]
     public class ScalingBehavior : Behavior
     {
         // Training object to scale.
@@ -26,15 +25,22 @@ namespace Innoactive.Hub.Training.Template
         [DisplayName("Animation Duration")]
         public float Duration { get; private set; }
 
+        // A coroutine responsible for scaling the target.
+        private IEnumerator coroutine;
+        
         // Handle data initialization in the constructor.
         [JsonConstructor]
-        protected ScalingBehavior()
+        public ScalingBehavior() : this(new TrainingObjectReference(), Vector3.one, 0f)
         {
-            Target = new TrainingObjectReference();
-            TargetScale = Vector3.one;
-            Duration = 0f;
         }
 
+        public ScalingBehavior(TrainingObjectReference target, Vector3 targetScale, float duration)
+        {
+            Target = target;
+            TargetScale = targetScale;
+            Duration = duration;
+        }
+        
         // Called on activation of the training entity. Define activation logic here.
         // You have to call `SignalActivationStarted()` at the start
         // and `SignalActivationFinished()` after you've done everything you wanted to do during the activation.
@@ -43,7 +49,8 @@ namespace Innoactive.Hub.Training.Template
             SignalActivationStarted();
 
             // Start coroutine which will scale our object.
-            CoroutineDispatcher.Instance.StartCoroutine(ScaleTarget());
+            coroutine = ScaleTarget();
+            CoroutineDispatcher.Instance.StartCoroutine(coroutine);
         }
 
         // Called on deactivation of the training entity. Define deactivation logic here.
@@ -55,6 +62,23 @@ namespace Innoactive.Hub.Training.Template
             SignalDeactivationFinished();
         }
 
+        // This method is called when the activation has to be interrupted and completed immediately.
+        protected override void FastForward()
+        {
+            // If the scaling behavior is currently activating (running),
+            if (ActivationState == ActivationState.Activating)
+            {
+                // Stop the scaling coroutine,
+                CoroutineDispatcher.Instance.StopCoroutine(coroutine);
+
+                // Scale the target manually,
+                Target.Value.GameObject.transform.localScale = TargetScale;
+
+                // And signal that activation is finished.
+                SignalActivationFinished();
+            }
+        }
+        
         // Coroutine which scales the target transform over time and then finished the activation.
         private IEnumerator ScaleTarget()
         {
