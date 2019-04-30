@@ -47,6 +47,10 @@ namespace Innoactive.Hub.Training.Template
         [Tooltip("Button that starts execution of the training.")]
         [SerializeField]
         private Button startTrainingButton;
+        
+        [Tooltip("Button that skips one step of the training.")]
+        [SerializeField]
+        private Button skipStepButton;
 
         [Tooltip("Button that resets the scene to its initial state.")]
         [SerializeField]
@@ -87,6 +91,7 @@ namespace Innoactive.Hub.Training.Template
         private string selectedLanguage;
 
         private ITraining training;
+        private IStep activeStep;
 
         // Called once when object is created.
         private void Awake()
@@ -117,6 +122,7 @@ namespace Innoactive.Hub.Training.Template
             // Setup UI controls.
             SetupStepInfoToggle();
             SetupStartTrainingButton();
+            SetupSkipStepButton();
             SetupResetSceneButton();
             SetupSoundToggle();
             SetupLanguagePicker();
@@ -243,6 +249,16 @@ namespace Innoactive.Hub.Training.Template
             // When user clicks on Start Training button,
             startTrainingButton.onClick.AddListener(() =>
             {
+                // Subscribe to the "Active step changed" event of the current training in order to update our activeStep variable accordingly.
+                training.ActiveStepChanged += (sender, args) => { activeStep = args.CurrentStep; };
+                // Subscribe to the "Deactivated" event of the current training in order to change the skip step button to the start button after finishing the training.
+                training.Deactivated += (sender, args) =>
+                {
+                    skipStepButton.gameObject.SetActive(false);
+                    startTrainingButton.gameObject.SetActive(true);
+                };
+                
+                logger.Info("Starting training");
                 // Start the training
                 training.Activate();
 
@@ -252,9 +268,27 @@ namespace Innoactive.Hub.Training.Template
                 languagePicker.interactable = false;
                 // Disable the mode picker as it is not allowed to change the mode during the training's execution.
                 modePicker.interactable = false;
+
+                // Show the skip step button instead of the start button.
+                skipStepButton.gameObject.SetActive(true);
+                startTrainingButton.gameObject.SetActive(false);
             });
         }
 
+        private void SetupSkipStepButton()
+        {
+            // When the user clicks on Skip Step button,
+            skipStepButton.onClick.AddListener(() =>
+            {
+                // If there's an active step and it's not the last step,
+                if (activeStep != null && activeStep.ActivationState != ActivationState.Deactivated)
+                {
+                    // Mark to fast-forward it.
+                    activeStep.MarkToFastForward();
+                }
+            });
+        }
+        
         private void SetupResetSceneButton()
         {
             // When user clicks on Reset Scene button,
@@ -273,13 +307,16 @@ namespace Innoactive.Hub.Training.Template
         private void SetupSoundToggle()
         {
             // When sound toggle is clicked,
-            soundToggle.onValueChanged.AddListener(newValue =>
+            soundToggle.onValueChanged.AddListener(isSoundOn =>
             {
+                // Set active image for sound.
+                soundToggle.image = isSoundOn ? soundOnImage : soundOffImage;
                 // Show one icon and hide another.
-                soundOnImage.enabled = newValue;
-                soundOffImage.enabled = newValue == false;
-
-                TrainingConfiguration.Definition.InstructionPlayer.mute = newValue == false;
+                soundOnImage.enabled = isSoundOn;
+                soundOffImage.enabled = isSoundOn == false;
+                
+                // Mute the instuction audio.
+                TrainingConfiguration.Definition.InstructionPlayer.mute = isSoundOn == false;
             });
         }
 
