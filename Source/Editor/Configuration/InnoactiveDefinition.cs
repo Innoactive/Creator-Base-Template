@@ -11,10 +11,7 @@ namespace Innoactive.Hub.Training.Template.Editors.Configuration
         {
             public override GUIContent DisplayedName
             {
-                get
-                {
-                    return new GUIContent("Innoactive/Spawn Confetti");
-                }
+                get { return new GUIContent("Innoactive/Spawn Confetti"); }
             }
 
             public override IBehavior GetNewItem()
@@ -27,10 +24,7 @@ namespace Innoactive.Hub.Training.Template.Editors.Configuration
         {
             public override GUIContent DisplayedName
             {
-                get
-                {
-                    return new GUIContent("Innoactive/Audio Hint");
-                }
+                get { return new GUIContent("Innoactive/Audio Hint"); }
             }
 
             public override IBehavior GetNewItem()
@@ -39,13 +33,27 @@ namespace Innoactive.Hub.Training.Template.Editors.Configuration
                     new BehaviorSequence(true,
                         new List<IBehavior>
                         {
-                            new ActivationBlockingBehavior(new DelayBehavior(5f) {Name = "Wait for"}, false),
-                            new ActivationBlockingBehavior(new PlayAudioBehavior(new TextToSpeechAudio(new LocalizedString()), BehaviorActivationMode.Activation) {Name = "Play Audio"}, false)
-                        }) {Name = "Audio Hint"}, false);
+                            new DelayBehavior(5f) { Name = "Wait for" },
+                            new PlayAudioBehavior(new TextToSpeechAudio(new LocalizedString()), BehaviorActivationMode.Activation) { Name = "Play Audio" }
+                        }) { Name = "Audio Hint" }, false);
+            }
+        }
+
+        private class Point : Menu.Item<ICondition>
+        {
+            public override GUIContent DisplayedName
+            {
+                get { return new GUIContent("Innoactive/Point Object"); }
+            }
+
+            public override ICondition GetNewItem()
+            {
+                return new PointedCondition();
             }
         }
 
         private readonly IList<Menu.Option<IBehavior>> defaultBehaviors;
+        private readonly IList<Menu.Option<ICondition>> defaultConditions;
 
         public InnoactiveDefinition()
         {
@@ -64,16 +72,35 @@ namespace Innoactive.Hub.Training.Template.Editors.Configuration
                 new Menu.DefaultBehaviors.Tts(),
                 new Menu.DefaultBehaviors.ResourceAudio(),
                 new Confetti(),
-                new AudioHint(),
+                new AudioHint()
+            };
+
+            defaultConditions = new List<Menu.Option<ICondition>>
+            {
+                new Menu.DefaultConditions.Touch(),
+                new Menu.Separator<ICondition>(),
+                new Menu.DefaultConditions.Grab(),
+                new Menu.DefaultConditions.Release(),
+                new Menu.Separator<ICondition>(),
+                new Menu.DefaultConditions.Use(),
+                new Menu.DefaultConditions.Snap(),
+                new Menu.Separator<ICondition>(),
+                new Menu.DefaultConditions.MoveIntoCollider(),
+                new Menu.DefaultConditions.ObjectNearby(),
+                new Menu.Separator<ICondition>(),
+                new Menu.DefaultConditions.Timeout(),
+                new Point()
             };
         }
 
         public override ReadOnlyCollection<Menu.Option<IBehavior>> BehaviorsMenuContent
         {
-            get
-            {
-                return new ReadOnlyCollection<Menu.Option<IBehavior>>(defaultBehaviors);
-            }
+            get { return new ReadOnlyCollection<Menu.Option<IBehavior>>(defaultBehaviors); }
+        }
+
+        public override ReadOnlyCollection<Menu.Option<ICondition>> ConditionsMenuContent
+        {
+            get { return new ReadOnlyCollection<Menu.Option<ICondition>>(defaultConditions); }
         }
     }
 }
