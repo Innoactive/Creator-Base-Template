@@ -8,6 +8,7 @@ using Innoactive.Hub.Training.Utils.Serialization;
 using Innoactive.Hub.TextToSpeech;
 using Innoactive.Hub.Training.Configuration;
 using Innoactive.Hub.Training.TextToSpeech;
+using Innoactive.Hub.Training.Unity.Utils;
 using Innoactive.Hub.Training.Utils;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -24,6 +25,10 @@ namespace Innoactive.Hub.Training.Template
         private static readonly ILog logger = LogManager.GetLogger<AdvancedTrainingController>();
 
         #region UI elements
+        [Tooltip("Chapter picker dropdown.")]
+        [SerializeField]
+        private Dropdown chapterPicker;
+
         [Tooltip("The image next to a step name which is visible when a training is running.")]
         [SerializeField]
         private Image trainingStateIndicator;
@@ -47,7 +52,7 @@ namespace Innoactive.Hub.Training.Template
         [Tooltip("Button that starts execution of the training.")]
         [SerializeField]
         private Button startTrainingButton;
-        
+
         [Tooltip("Button that skips one step of the training.")]
         [SerializeField]
         private Button skipStepButton;
@@ -120,6 +125,7 @@ namespace Innoactive.Hub.Training.Template
             localizationFileNames = FetchAvailableLocalizationsForTraining();
 
             // Setup UI controls.
+            SetupChapterPicker();
             SetupStepInfoToggle();
             SetupStartTrainingButton();
             SetupSkipStepButton();
@@ -195,7 +201,7 @@ namespace Innoactive.Hub.Training.Template
             return availableLocalizations;
         }
 
-        private bool LoadLocalizationForTraining()
+        private void LoadLocalizationForTraining()
         {
             // Find the correct file name of the current selected language.
             string language = localizationFileNames.Find(f => string.Equals(f, selectedLanguage, StringComparison.CurrentCultureIgnoreCase));
@@ -208,12 +214,11 @@ namespace Innoactive.Hub.Training.Template
             if (File.Exists(pathToLocalization))
             {
                 Localization.LoadLocalization(pathToLocalization);
-                return true;
+                return;
             }
 
             // Log a warning if no language file was found.
             logger.WarnFormat("No language file for language '{0}' found for training {1} at '{2}'.", selectedLanguage, trainingName, pathToLocalization);
-            return false;
         }
 
         private ITraining LoadTraining()
@@ -232,7 +237,31 @@ namespace Innoactive.Hub.Training.Template
             throw new ArgumentException("The file or the path to the file does not exist. Thus, no serialized training can be loaded.", pathToTraining);
         }
 
+        private void FastForwardChapters(int numberOfChapters)
+        {
+            for (int i = 0; i < numberOfChapters; i++)
+            {
+                training.CurrentChapter.MarkToFastForward();
+            }
+        }
+
         #region Setup UI
+        private void SetupChapterPicker()
+        {
+            // When selected chapter has changed,
+            chapterPicker.onValueChanged.AddListener(index =>
+            {
+                // If the training hasn't started it, ignore it. We will use this value when the training starts.
+                if (training.ActivationState == ActivationState.PendingActivation)
+                {
+                    return;
+                }
+                
+                // Otherwise, fast forward the chapters until the selected is active.
+                FastForwardChapters(index);
+            });
+        }
+
         private void SetupStepInfoToggle()
         {
             // When info toggle is pressed,
@@ -250,7 +279,10 @@ namespace Innoactive.Hub.Training.Template
             startTrainingButton.onClick.AddListener(() =>
             {
                 // Subscribe to the "Active step changed" event of the current training in order to update our activeStep variable accordingly.
-                training.ActiveStepChanged += (sender, args) => { activeStep = args.CurrentStep; };
+                training.ActiveStepChanged += (sender, args) =>
+                {
+                    activeStep = args.CurrentStep;
+                };
                 // Subscribe to the "Deactivated" event of the current training in order to change the skip step button to the start button after finishing the training.
                 training.Deactivated += (sender, args) =>
                 {
@@ -258,9 +290,11 @@ namespace Innoactive.Hub.Training.Template
                     startTrainingButton.gameObject.SetActive(true);
                 };
                 
-                logger.Info("Starting training");
                 // Start the training
                 training.Activate();
+                
+                //Skip the training's chapters until the selected chapter is active.
+                FastForwardChapters(chapterPicker.value);
 
                 // Disable button as you have to reset scene before starting the training again.
                 startTrainingButton.interactable = false;
@@ -288,7 +322,7 @@ namespace Innoactive.Hub.Training.Template
                 }
             });
         }
-        
+
         private void SetupResetSceneButton()
         {
             // When user clicks on Reset Scene button,
@@ -314,7 +348,7 @@ namespace Innoactive.Hub.Training.Template
                 // Show one icon and hide another.
                 soundOnImage.enabled = isSoundOn;
                 soundOffImage.enabled = isSoundOn == false;
-                
+
                 // Mute the instuction audio.
                 TrainingConfiguration.Definition.InstructionPlayer.mute = isSoundOn == false;
             });
@@ -354,7 +388,7 @@ namespace Innoactive.Hub.Training.Template
                 {
                     selectedLanguage = fallbackLanguage;
                     // Add the fallback language as option of the dropdown menu. Otherwise, the picker would be empty.
-                    languagePicker.AddOptions(new List<string>(){ fallbackLanguage.ToUpper() });
+                    languagePicker.AddOptions(new List<string>() { fallbackLanguage.ToUpper() });
                 }
             }
 
@@ -403,9 +437,56 @@ namespace Innoactive.Hub.Training.Template
         #region Setup training-dependant UI
         private void SetupTrainingDependantUi()
         {
+            SetupChapterPickerOptions();
             SetupTrainingIndicator();
             SetupStepName();
             SetupStepInfo();
+        }
+
+        private void SetupChapterPickerOptions()
+        {
+            // Show all chapters of the training.
+            PopulateChapterPickerOptions(0);
+
+            // When the current chapter is changed, 
+            training.ActiveChapterChanged += (sender, args) =>
+            {
+                // Get a collection of available chapters.
+                IList<IChapter> chapters = training.Chapters;
+
+                // Skip all finished chapters.
+                int startingIndex = chapters.IndexOf(training.CurrentChapter);
+
+                // Show the rest.
+                PopulateChapterPickerOptions(startingIndex);
+            };
+        }
+
+        private void PopulateChapterPickerOptions(int startingIndex)
+        {
+            // Get a collection of available chapters.
+            IList<IChapter> chapters = training.Chapters;
+
+            // Skip finished chapters and convert the rest to a list of chapter names. 
+            List<string> dropdownOptions = new List<string>();
+            for (int i = startingIndex; i < chapters.Count; i++)
+            {
+                dropdownOptions.Add(chapters[i].Name);
+            }
+
+            // Reset the chapter picker.
+            chapterPicker.ClearOptions();
+
+            // Populate it with new options.
+            chapterPicker.AddOptions(dropdownOptions);
+
+            // Reset the selected value
+            chapterPicker.value = 0;
+            
+            // Refresh chapter picker immediately.
+            // Note that this method is not a part of the `UnityEngine.UI.Dropdown` interface.
+            // It is an extension method defined in `Innoactive.Hub.Training.Unity.Utils.UnityUiUtils` class.
+            chapterPicker.Refresh();
         }
 
         private void SetupTrainingIndicator()
