@@ -30,15 +30,19 @@ namespace Innoactive.Hub.Training.Template
         }
 
         // This method is called when the step with that condition has completed activation of its behaviors.
-        public override void OnActivate()
+        public override void PerformActivation()
         {
+            SignalActivationStarted();
             Pointer.Value.PointerEnter += OnPointerEnter;
+            SignalActivationFinished();
         }
 
         // This method is called at deactivation of the step, after every behavior has completed its deactivation.
-        public override void OnDeactivate()
+        public override void PerformDeactivation()
         {
+            SignalDeactivationStarted();
             Pointer.Value.PointerEnter -= OnPointerEnter;
+            SignalDeactivationFinished();
         }
 
         // This method is called when the condition should complete itself immediately.
