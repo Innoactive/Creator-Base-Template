@@ -300,8 +300,6 @@ namespace Innoactive.Hub.Training.Template
                 startTrainingButton.interactable = false;
                 // Disable the language picker as it is not allowed to change the language during the training's execution.
                 languagePicker.interactable = false;
-                // Disable the mode picker as it is not allowed to change the mode during the training's execution.
-                modePicker.interactable = false;
 
                 // Show the skip step button instead of the start button.
                 skipStepButton.gameObject.SetActive(true);
