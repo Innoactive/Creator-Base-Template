@@ -96,22 +96,27 @@ namespace Innoactive.Hub.Training.Template
             ActivationMode = activationMode;
         }
 
-        /// <inheritdoc />
-        protected override void FastForward()
+        protected override void FastForwardActivating()
         {
-            if (ActivationState == ActivationState.Activating || ActivationState == ActivationState.Deactivating)
-            {
-                CoroutineDispatcher.Instance.StopCoroutine(coroutine);
-                Object.Destroy(confettiMachine);
-                EmitConfettiFinished();
-            }
+            CoroutineDispatcher.Instance.StopCoroutine(coroutine);
+            Object.Destroy(confettiMachine);
+            EmitConfettiFinished();
         }
 
-        /// <inheritdoc />
-        public override void PerformActivation()
+        protected override void FastForwardActive()
         {
-            SignalActivationStarted();
+        }
 
+        protected override void FastForwardDeactivating()
+        {
+            CoroutineDispatcher.Instance.StopCoroutine(coroutine);
+            Object.Destroy(confettiMachine);
+            EmitConfettiFinished();
+        }
+        
+        /// <inheritdoc />
+        protected override void PerformActivation()
+        {
             if ((ActivationMode & BehaviorActivationMode.Activation) > 0)
             {
                 ConfettiFinished += OnConfettiFinishedOnActivation;
@@ -125,10 +130,8 @@ namespace Innoactive.Hub.Training.Template
         }
 
         /// <inheritdoc />
-        public override void PerformDeactivation()
+        protected override void PerformDeactivation()
         {
-            SignalDeactivationStarted();
-
             if ((ActivationMode & BehaviorActivationMode.Deactivation) > 0)
             {
                 ConfettiFinished += OnConfettiFinishedOnDeactivation;

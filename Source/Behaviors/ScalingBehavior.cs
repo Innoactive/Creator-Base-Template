@@ -44,10 +44,8 @@ namespace Innoactive.Hub.Training.Template
         // Called on activation of the training entity. Define activation logic here.
         // You have to call `SignalActivationStarted()` at the start
         // and `SignalActivationFinished()` after you've done everything you wanted to do during the activation.
-        public override void PerformActivation()
+        protected override void PerformActivation()
         {
-            SignalActivationStarted();
-
             // Start coroutine which will scale our object.
             coroutine = ScaleTarget();
             CoroutineDispatcher.Instance.StartCoroutine(coroutine);
@@ -56,14 +54,13 @@ namespace Innoactive.Hub.Training.Template
         // Called on deactivation of the training entity. Define deactivation logic here.
         // You have to call `SignalDeactivationStarted()` at the start
         // and `SignalDeactivationFinished()` after you've done everything you wanted to do during the deactivation.
-        public override void PerformDeactivation()
+        protected override void PerformDeactivation()
         {
-            SignalDeactivationStarted();
             SignalDeactivationFinished();
         }
 
         // This method is called when the activation has to be interrupted and completed immediately.
-        protected override void FastForward()
+        protected override void FastForwardActivating()
         {
             // If the scaling behavior is currently activating (running),
             if (ActivationState == ActivationState.Activating)
@@ -77,6 +74,14 @@ namespace Innoactive.Hub.Training.Template
                 // And signal that activation is finished.
                 SignalActivationFinished();
             }
+        }
+
+        protected override void FastForwardActive()
+        {
+        }
+
+        protected override void FastForwardDeactivating()
+        {
         }
         
         // Coroutine which scales the target transform over time and then finished the activation.

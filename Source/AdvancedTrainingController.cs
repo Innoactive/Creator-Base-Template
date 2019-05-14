@@ -252,7 +252,7 @@ namespace Innoactive.Hub.Training.Template
             chapterPicker.onValueChanged.AddListener(index =>
             {
                 // If the training hasn't started it, ignore it. We will use this value when the training starts.
-                if (training.ActivationState == ActivationState.PendingActivation)
+                if (training.ActivationState == ActivationState.Inactive)
                 {
                     return;
                 }

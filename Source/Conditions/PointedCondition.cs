@@ -30,30 +30,30 @@ namespace Innoactive.Hub.Training.Template
         }
 
         // This method is called when the step with that condition has completed activation of its behaviors.
-        public override void PerformActivation()
+        protected override void PerformActivation()
         {
-            SignalActivationStarted();
             Pointer.Value.PointerEnter += OnPointerEnter;
             SignalActivationFinished();
         }
 
         // This method is called at deactivation of the step, after every behavior has completed its deactivation.
-        public override void PerformDeactivation()
+        protected override void PerformDeactivation()
         {
-            SignalDeactivationStarted();
             Pointer.Value.PointerEnter -= OnPointerEnter;
             SignalDeactivationFinished();
         }
 
-        // This method is called when the condition should complete itself immediately.
-        // We will fake that the target was actually pointed there.
-        protected override void FastForward()
+        protected override void FastForwardActivating()
         {
-            // Only fast-forward the condition, if it is active.
-            if (ActivationState == ActivationState.Active)
-            {
-                Pointer.Value.FastForwardPoint(Target);
-            }
+        }
+
+        protected override void FastForwardActive()
+        {
+            Pointer.Value.FastForwardPoint(Target);
+        }
+
+        protected override void FastForwardDeactivating()
+        {
         }
 
         // When PointerProperty points at something,

@@ -307,7 +307,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             behavior.MarkToFastForward();
 
             // Then it doesn't autocomplete because it hasn't been activated yet.
-            Assert.AreEqual(ActivationState.PendingActivation, behavior.ActivationState);
+            Assert.AreEqual(ActivationState.Inactive, behavior.ActivationState);
 
             yield break;
         }

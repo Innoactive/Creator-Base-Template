@@ -18,6 +18,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Conditions
             // Given object with mocked pointing property,
             GameObject property = new GameObject("Property");
             GameObject target = new GameObject("Target");
+            target.AddComponent<BoxCollider>().isTrigger = true;
             PointingProperty mockedProperty = property.AddComponent<PointingProperty>();
             ColliderWithTriggerProperty trigger = target.AddComponent<ColliderWithTriggerProperty>();
 
@@ -41,6 +42,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Conditions
             // Given object with mocked pointing property,
             GameObject property = new GameObject("Property");
             GameObject target = new GameObject("Target");
+            target.AddComponent<BoxCollider>().isTrigger = true;
             PointingProperty mockedProperty = property.AddComponent<PointingProperty>();
             ColliderWithTriggerProperty trigger = target.AddComponent<ColliderWithTriggerProperty>();
 
@@ -65,6 +67,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Conditions
             // Given object with mocked pointing property,
             GameObject property = new GameObject("Property");
             GameObject target = new GameObject("Target");
+            target.AddComponent<BoxCollider>().isTrigger = true;
             PointingProperty mockedProperty = property.AddComponent<PointingProperty>();
             ColliderWithTriggerProperty trigger = target.AddComponent<ColliderWithTriggerProperty>();
 
@@ -77,7 +80,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Conditions
             condition.MarkToFastForward();
 
             // Then it doesn't activate by itself.
-            Assert.AreEqual(ActivationState.PendingActivation, condition.ActivationState);
+            Assert.AreEqual(ActivationState.Inactive, condition.ActivationState);
 
             yield break;
         }
@@ -88,6 +91,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Conditions
             // Given object with mocked pointing property,
             GameObject property = new GameObject("Property");
             GameObject target = new GameObject("Target");
+            target.AddComponent<BoxCollider>().isTrigger = true;
             PointingProperty mockedProperty = property.AddComponent<PointingProperty>();
             ColliderWithTriggerProperty trigger = target.AddComponent<ColliderWithTriggerProperty>();
 
@@ -113,6 +117,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Conditions
             // Given object with mocked pointing property,
             GameObject property = new GameObject("Property");
             GameObject target = new GameObject("Target");
+            target.AddComponent<BoxCollider>().isTrigger = true;
             PointingProperty mockedProperty = property.AddComponent<PointingProperty>();
             ColliderWithTriggerProperty trigger = target.AddComponent<ColliderWithTriggerProperty>();
 
