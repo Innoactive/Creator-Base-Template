@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using Innoactive.Hub.Training;
 using Innoactive.Hub.Training.Editors.Configuration;
 using UnityEngine;
 
