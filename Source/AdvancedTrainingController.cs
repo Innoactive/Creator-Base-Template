@@ -95,7 +95,7 @@ namespace Innoactive.Hub.Training.Template
 
         private string selectedLanguage;
 
-        private ITrainingCourse trainingCourse;
+        private ITraining training;
         private IStep activeStep;
 
         // Called once when object is created.
@@ -163,7 +163,7 @@ namespace Innoactive.Hub.Training.Template
             LoadLocalizationForTraining();
 
             // Load training from a file. That will synthesize an audio for the training instructions, too.
-            trainingCourse = LoadTraining();
+            training = LoadTraining();
         }
 
         private List<string> FetchAvailableLocalizationsForTraining()
@@ -221,7 +221,7 @@ namespace Innoactive.Hub.Training.Template
             logger.WarnFormat("No language file for language '{0}' found for training {1} at '{2}'.", selectedLanguage, trainingName, pathToLocalization);
         }
 
-        private ITrainingCourse LoadTraining()
+        private ITraining LoadTraining()
         {
             // Get the path to the file.
             // It should be in the '[YOUR_PROJECT_ROOT_FOLDER]/StreamingAssets/Training/[TRAINING_NAME]' folder.
@@ -249,7 +249,7 @@ namespace Innoactive.Hub.Training.Template
             int currentChapterIndex;
 
             // If the training hasn't started yet,
-            if (trainingCourse.ActivationState == ActivationState.Inactive)
+            if (training.ActivationState == ActivationState.Inactive)
             {
                 // Use 0 as current chapter index.
                 currentChapterIndex = 0;
@@ -257,14 +257,14 @@ namespace Innoactive.Hub.Training.Template
             else
             {
                 // Otherwise, use the actual chapter index.
-                currentChapterIndex = trainingCourse.Chapters.IndexOf(trainingCourse.Current);
+                currentChapterIndex = training.Chapters.IndexOf(training.Current);
             }
 
             // For every chapter to skip,
             for (int i = 0; i < numberOfChapters; i++)
             {
                 // Mark it to fast-forward.
-                trainingCourse.Chapters[i + currentChapterIndex].MarkToFastForward();
+                training.Chapters[i + currentChapterIndex].MarkToFastForward();
             }
         }
 
@@ -275,7 +275,7 @@ namespace Innoactive.Hub.Training.Template
             chapterPicker.onValueChanged.AddListener(index =>
             {
                 // If the training hasn't started it, ignore it. We will use this value when the training starts.
-                if (trainingCourse.ActivationState == ActivationState.Inactive)
+                if (training.ActivationState == ActivationState.Inactive)
                 {
                     return;
                 }
@@ -302,12 +302,12 @@ namespace Innoactive.Hub.Training.Template
             startTrainingButton.onClick.AddListener(() =>
             {
                 // Subscribe to the "Active step changed" event of the current training in order to update our activeStep variable accordingly.
-                trainingCourse.ActiveStepChanged += (sender, args) =>
+                training.ActiveStepChanged += (sender, args) =>
                 {
                     activeStep = args.CurrentStep;
                 };
                 // Subscribe to the "Deactivated" event of the current training in order to change the skip step button to the start button after finishing the training.
-                trainingCourse.Deactivated += (sender, args) =>
+                training.Deactivated += (sender, args) =>
                 {
                     skipStepButton.gameObject.SetActive(false);
                     startTrainingButton.gameObject.SetActive(true);
@@ -317,7 +317,7 @@ namespace Innoactive.Hub.Training.Template
                 FastForwardChapters(chapterPicker.value);
                 
                 // Start the training
-                trainingCourse.Activate();
+                training.Activate();
 
                 // Disable button as you have to reset scene before starting the training again.
                 startTrainingButton.interactable = false;
@@ -447,8 +447,6 @@ namespace Innoactive.Hub.Training.Template
             {
                 // Set the mode based on the user selection.
                 TrainingConfiguration.Definition.SetMode(itemIndex);
-                // Load the training.
-                SetupTraining();
                 // Update the UI.
                 SetupTrainingDependantUi();
             });
@@ -470,13 +468,13 @@ namespace Innoactive.Hub.Training.Template
             PopulateChapterPickerOptions(0);
 
             // When the current chapter is changed, 
-            trainingCourse.ChildChanged += (sender, args) =>
+            training.CurrentChanged += (sender, args) =>
             {
                 // Get a collection of available chapters.
-                IList<IChapter> chapters = trainingCourse.Chapters;
+                IList<IChapter> chapters = training.Chapters;
 
                 // Skip all finished chapters.
-                int startingIndex = chapters.IndexOf(trainingCourse.CurrentChapter);
+                int startingIndex = chapters.IndexOf(training.Current);
 
                 // Show the rest.
                 PopulateChapterPickerOptions(startingIndex);
@@ -486,7 +484,7 @@ namespace Innoactive.Hub.Training.Template
         private void PopulateChapterPickerOptions(int startingIndex)
         {
             // Get a collection of available chapters.
-            IList<IChapter> chapters = trainingCourse.Chapters;
+            IList<IChapter> chapters = training.Chapters;
 
             // Skip finished chapters and convert the rest to a list of chapter names. 
             List<string> dropdownOptions = new List<string>();
@@ -513,15 +511,15 @@ namespace Innoactive.Hub.Training.Template
         private void SetupTrainingIndicator()
         {
             // When training is started show the indicator.
-            trainingCourse.ActivationStarted += (sender, args) => trainingStateIndicator.enabled = true;
+            training.ActivationStarted += (sender, args) => trainingStateIndicator.enabled = true;
             // When training is completed, hide it again.
-            trainingCourse.Activated += (sender, args) => trainingStateIndicator.enabled = false;
+            training.Activated += (sender, args) => trainingStateIndicator.enabled = false;
         }
 
         private void SetupStepName()
         {
             // When current step has changed,
-            trainingCourse.ActiveStepChanged += (sender, args) =>
+            training.ActiveStepChanged += (sender, args) =>
             {
                 if (args.CurrentStep == null)
                 {
@@ -539,7 +537,7 @@ namespace Innoactive.Hub.Training.Template
         private void SetupStepInfo()
         {
             // When current step has changed,
-            trainingCourse.ActiveStepChanged += (sender, args) =>
+            training.ActiveStepChanged += (sender, args) =>
             {
                 if (args.CurrentStep == null)
                 {

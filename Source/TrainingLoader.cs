@@ -16,11 +16,11 @@ namespace Innoactive.Hub.Training.Template
             yield return null;
             yield return null;
 
-            // Load a training from the text asset
-            ITrainingCourse trainingCourse = JsonTrainingSerializer.Deserialize(serializedTrainingCourse.text);
+            // Load a training from the text asset.
+            ITraining training = JsonTrainingSerializer.Deserialize(serializedTrainingCourse.text);
 
-            // Start the training execution
-            trainingCourse.Activate();
+            // Start the training execution.
+            training.Activate();
         }
     }
 }
