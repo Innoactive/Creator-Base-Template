@@ -468,7 +468,7 @@ namespace Innoactive.Hub.Training.Template
             PopulateChapterPickerOptions(0);
 
             // When the current chapter is changed, 
-            training.CurrentChanged += (sender, args) =>
+            training.CurrentChildChanged += (sender, args) =>
             {
                 // Get a collection of available chapters.
                 IList<IChapter> chapters = training.Chapters;
