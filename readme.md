@@ -1,46 +1,53 @@
 # Introduction
 
-The Hub Training Module is an additional module of the Innoactive Hub that allows you to train your employees safely and cost-efficiently around the globe. Unlike other VR training building solutions, our product considers the complete lifecycle of virtual trainings, including the creation, the maintainability, and the delivery of the applications. It's designed for large enterprises who need to train complex human-machine-interaction processes
+The Hub Training module is a part of the Innoactive Hub SDK. It's designed for large enterprises who train complex human-machine interaction processes. With it, you can train employees remotely, safely, and cost-efficiently. Our solution covers the complete lifecycle of virtual training applications, including their creation, maintenance, and distribution to the final user.
 
-There are two user roles: a template developer and a training designer. Training designer is a person who has no deep technical knowledge. Training module is very powerful and flexible tool, but it requires adjustments to meet designer's needs. These adjustments are done by a template developer and are shipped in a form of a training template.
+There are two user roles: a template developer and a training designer. Training designers do not have to possess a deep technical knowledge. They use basic Unity tools to setup a testing environment, and the visual programming tools to create a training course.
+ 
+ The Training Module is a powerful and flexible tool that requires initial configuration. Before a training designer could use it, a template designer should adjust the Training Module to meet their company's needs.
 
-Templates hide the complexity from training designers. All they should work with are basic Unity concepts and Workflow Editor / Step Inspector, which are GUI tools for creating a training.
+This project is an exemplary template. The following chapters describe to how to create a similar one. Use this project as a reference to validate your progress through this tutorial. Feel free to modify or discard it to create your own: this template is not meant to be extended.
 
-This project is an Innoactive template. In the following chapters it will be described to how to create a similar one. You may use this project as a reference to validate your progress through this tutorial.
+This document is intended for training developers.
 
 # Initial setup
 
 ## Setup the Hub SDK
 
-Hub SDK is a collection of useful modules for the development of multi-user VR applications based on the Innoactive Hub. Please, check the [pre-requisites](http://docs.hub.innoactive.de/articles/sdk-setup.html#prerequisites) and follow the [instructions](http://docs.hub.innoactive.de/articles/sdk-setup.html#importing-the-hub-sdk) to install it.
+Hub SDK is used for the development of Innoactive Hub VR applications. Please, check the [pre-requisites](http://docs.hub.innoactive.de/articles/sdk-setup.html#prerequisites) and follow the [instructions](http://docs.hub.innoactive.de/articles/sdk-setup.html#importing-the-hub-sdk) to set it up.
 
 ## Install VR SDKs
 
-In addition, install the SDKs of the VR headsets you're working with. For example, [SteamVR](https://github.com/Innoactive/SteamVR).
+Install the SDKs of the VR headsets you're working with. For example, [SteamVR](https://github.com/Innoactive/SteamVR).
 
 ## Import the Training Module
 
-Latest stable version can be found at [Innoactive Hub Developer Portal](http://developers.innoactive.de/components/).
+Latest stable version can be found at [Innoactive Hub Developer Portal](http://developers.innoactive.de/components/#training-module).
 
 # What is a training
 
-The training is a linear sequence of steps that are executed one after another and cannot be skipped.
+The training is a linear sequence of chapters. You can start a training from any chapter. Each chapter starts where the previous ends. If a trainee has to drill a hole in a wall in a first chapter, the hole will be there when you load the second chapter.
 
-Every step consists of a collection of behaviors and conditions.
+Each chapter consists of steps. Steps are connected to each other via transitions.
 
-Behaviors are actions that are executed independently from the trainee. For example; a behavior can play an audio or move an object from one point to another.
+Every step consists of a collection of behaviors and transitions.
+
+Behaviors are actions that are executed independently from the trainee. For example, a behavior can play an audio or move an object from one point to another.
+
+Every transition defines the next step of a training and contains a collection of conditions.
 
 A condition checks that a trainee has performed a certain action. With conditions you define actions that a trainee must perform. Once a condition is completed, it can't become incomplete again.
 
-Behaviors and conditions communicate with objects on a scene through their training properties. A training property is an abstraction that hides a concrete implementation from the training: e. g. `GrabbedCondition` is only concerned if its target object is currently grabbed, but it doesn't care how exactly `GrabbableProperty` determines it.
+When all behaviors are completed When all conditions of a transition are completed, the next step of a chapter starts.
 
-Conditions and behaviors use `TrainingObjectReference` and `TrainingPropertyReference<TProperty>` classes to reference training objects and their properties. References locate training objects by their unique name, preventing tight coupling between trainings and scenes.
+Behaviors and conditions communicate with objects on a scene through their training properties. A training property defines what actions are available for its scene object: for example, `GrabbableProperty` will inform `GrabbedCondition` that a trainee has grabbed the object.
 
-A step is completed when all of its behaviors have finished their execution and all its conditions are met.
+Conditions and behaviors use `TrainingObjectReference` and `TrainingPropertyReference<TProperty>` classes to reference training objects and their properties. Never use Unity game objects directly.
 
 # Create a simplest training template
 
-A simplest template would consist of a single scene. This scene would contain Innoactive Hub SDK configuration, preconfigured VR headset, and an object with a single script that would load a training.
+A simplest template consists of a single scene. That scene contains Innoactive Hub SDK and Training Module configuration, preconfigured VR headset, and an object with a single script that would load a training.
+
 All that a training designer would have to do only two steps:
 
 1) Copy the scene and populate it with training objects he needs.
