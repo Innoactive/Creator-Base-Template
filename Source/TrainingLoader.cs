@@ -7,8 +7,8 @@ namespace Innoactive.Hub.Training.Template
     public class TrainingLoader : MonoBehaviour
     {
         [SerializeField]
-        [Tooltip("Text asset with saved training.")]
-        private TextAsset serializedTraining;
+        [Tooltip("Text asset with a saved training course.")]
+        private TextAsset serializedTrainingCourse;
 
         private IEnumerator Start()
         {
@@ -16,10 +16,10 @@ namespace Innoactive.Hub.Training.Template
             yield return null;
             yield return null;
 
-            // Load a training from the text asset
-            ITraining training = JsonTrainingSerializer.Deserialize(serializedTraining.text);
+            // Load a training from the text asset.
+            ITraining training = JsonTrainingSerializer.Deserialize(serializedTrainingCourse.text);
 
-            // Start the training execution
+            // Start the training execution.
             training.Activate();
         }
     }

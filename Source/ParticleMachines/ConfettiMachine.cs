@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using Innoactive.Hub.Threading;
 using UnityEngine;
 
 namespace Innoactive.Hub.Training

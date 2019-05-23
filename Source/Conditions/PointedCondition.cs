@@ -30,26 +30,38 @@ namespace Innoactive.Hub.Training.Template
         }
 
         // This method is called when the step with that condition has completed activation of its behaviors.
-        public override void OnActivate()
+        protected override void PerformActivation()
         {
             Pointer.Value.PointerEnter += OnPointerEnter;
+            SignalActivationFinished();
         }
 
         // This method is called at deactivation of the step, after every behavior has completed its deactivation.
-        public override void OnDeactivate()
+        protected override void PerformDeactivation()
         {
             Pointer.Value.PointerEnter -= OnPointerEnter;
+            SignalDeactivationFinished();
         }
 
-        // This method is called when the condition should complete itself immediately.
-        // We will fake that the target was actually pointed there.
-        protected override void FastForward()
+        // When a condition or behavior is fast-forwarded, the activation has to complete immediately.
+        // This method should handle it, but since the activation is instanteneous,
+        // It doesn't require any additional actions.
+        protected override void FastForwardActivating()
         {
-            // Only fast-forward the condition, if it is active.
-            if (ActivationState == ActivationState.Active)
-            {
-                Pointer.Value.FastForwardPoint(Target);
-            }
+        }
+
+        // When fast-forwarded, a conditions should complete immediately.
+        // For that, the pointer fakes that it pointed at the target.
+        protected override void FastForwardActive()
+        {
+            Pointer.Value.FastForwardPoint(Target);
+        }
+
+        // When a condition or behavior is fast-forwarded, the deactivation has to complete immediately.
+        // This method should handle it, but since the deactivation is instanteneous,
+        // It doesn't require any additional actions.
+        protected override void FastForwardDeactivating()
+        {
         }
 
         // When PointerProperty points at something,

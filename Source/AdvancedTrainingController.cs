@@ -239,9 +239,32 @@ namespace Innoactive.Hub.Training.Template
 
         private void FastForwardChapters(int numberOfChapters)
         {
+            // Skip if no chapters have to be fast-forwarded.
+            if (numberOfChapters == 0)
+            {
+                return;
+            }
+            
+            // Get index of the current chapter.
+            int currentChapterIndex;
+
+            // If the training hasn't started yet,
+            if (training.ActivationState == ActivationState.Inactive)
+            {
+                // Use 0 as current chapter index.
+                currentChapterIndex = 0;
+            }
+            else
+            {
+                // Otherwise, use the actual chapter index.
+                currentChapterIndex = training.Chapters.IndexOf(training.Current);
+            }
+
+            // For every chapter to skip,
             for (int i = 0; i < numberOfChapters; i++)
             {
-                training.CurrentChapter.MarkToFastForward();
+                // Mark it to fast-forward.
+                training.Chapters[i + currentChapterIndex].MarkToFastForward();
             }
         }
 
@@ -252,11 +275,11 @@ namespace Innoactive.Hub.Training.Template
             chapterPicker.onValueChanged.AddListener(index =>
             {
                 // If the training hasn't started it, ignore it. We will use this value when the training starts.
-                if (training.ActivationState == ActivationState.PendingActivation)
+                if (training.ActivationState == ActivationState.Inactive)
                 {
                     return;
                 }
-                
+
                 // Otherwise, fast forward the chapters until the selected is active.
                 FastForwardChapters(index);
             });
@@ -289,12 +312,12 @@ namespace Innoactive.Hub.Training.Template
                     skipStepButton.gameObject.SetActive(false);
                     startTrainingButton.gameObject.SetActive(true);
                 };
+
+                //Skip all chapters before selected.
+                FastForwardChapters(chapterPicker.value);
                 
                 // Start the training
                 training.Activate();
-                
-                //Skip the training's chapters until the selected chapter is active.
-                FastForwardChapters(chapterPicker.value);
 
                 // Disable button as you have to reset scene before starting the training again.
                 startTrainingButton.interactable = false;
@@ -424,8 +447,6 @@ namespace Innoactive.Hub.Training.Template
             {
                 // Set the mode based on the user selection.
                 TrainingConfiguration.Definition.SetMode(itemIndex);
-                // Load the training.
-                SetupTraining();
                 // Update the UI.
                 SetupTrainingDependantUi();
             });
@@ -447,13 +468,13 @@ namespace Innoactive.Hub.Training.Template
             PopulateChapterPickerOptions(0);
 
             // When the current chapter is changed, 
-            training.ActiveChapterChanged += (sender, args) =>
+            training.CurrentChildChanged += (sender, args) =>
             {
                 // Get a collection of available chapters.
                 IList<IChapter> chapters = training.Chapters;
 
                 // Skip all finished chapters.
-                int startingIndex = chapters.IndexOf(training.CurrentChapter);
+                int startingIndex = chapters.IndexOf(training.Current);
 
                 // Show the rest.
                 PopulateChapterPickerOptions(startingIndex);
@@ -480,7 +501,7 @@ namespace Innoactive.Hub.Training.Template
 
             // Reset the selected value
             chapterPicker.value = 0;
-            
+
             // Refresh chapter picker immediately.
             // Note that this method is not a part of the `UnityEngine.UI.Dropdown` interface.
             // It is an extension method defined in `Innoactive.Hub.Training.Unity.Utils.UnityUiUtils` class.

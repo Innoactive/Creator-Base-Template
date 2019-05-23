@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Innoactive.Hub.Training
+﻿namespace Innoactive.Hub.Training
 {
     public interface IParticleMachine
     {
