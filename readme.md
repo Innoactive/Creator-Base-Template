@@ -116,15 +116,13 @@ With editor configuration, you can limit or allow training designers to use cert
 1. `BehaviorsMenuContent` property defines a dropdown menu which is shown when a training designer clicks on `Add Behavior` button.
 2. `ConditionsMenuContent` property defines a dropdown menu which is shown when a training designer clicks on `Add Condition` button.
 
-Finally, you define what happens when someone clicks at `Innoactive > Training > Setup Scene` menu option in the `SetupTrainingScene()` method.
+Finally, you define what happens when someone clicks at `Innoactive > Training > Setup Scene` menu option in the `SetupTrainingScene()` method. By default, it set ups the Hub SDK and creates a training configuration object.
 
 ## Training configuration
 
 You can use the training configuration to adjust the way the training application executes in a runtime.
  
-There should be one and only one training configuration game object in a training scene. To create one, you can use `Innoactive > Training > Setup Scene` menu option.
-
-A training configuration instance is just a container for its definition, which provides the actual means for template customization. You can assign the definition either programmatically, or in the game object inspector.
+There should be one and only one training configuration scene object in a scene. This object is just a container for the configuration definition, which actually customizes the template. You can assign the definition either programmatically, or with a game object inspector. By default, the `Innoactive.Hub.Training.Configuration.DefaultDefinition` is used. Extend it to create your own, and then assign it to the scene object.
  
 The definition has the following properties and methods:
 
@@ -134,16 +132,10 @@ The definition has the following properties and methods:
 4. `TextToSpeechConfig` defines a TTS engine, voice, and language to use to generate audio.
 1. `SetMode(index)` sets current mode to the one at provided `index` in the collection of available modes.
 2. `GetCurrentMode()` returns the current mode.
-3. `GetCurentModeIndex()` returns the current mode's index, which is useful if you want to iterate over available modes.
+3. `GetCurentModeIndex()` returns the current mode's index.
 4. `AvailableModes` returns a collection of all modes available. Normally, this is a single modes-related class member you want to override.
 
-TTS config and training modes are described in detail in the following chapters.
-
-Unless you explicitly assign the `TrainingConfiguration.Definition` property, the `DefaultDefinition` is used.
-
-You can modify the training configuration definition in the same way as the editor configuration, using `Innoactive.Hub.Training.Configuration` namespace types instead.
-
-It is recommended to inherit from `DefaultDefinition` rather than implement `IDefinition` directly, as it already provides some basic functionality.
+The next chapters explain the TTS configuration and training modes in detail.
 
 # TTS configuration
 
