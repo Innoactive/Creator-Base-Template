@@ -1,79 +1,53 @@
 # Introduction
 
-The Hub Training module is a part of the Innoactive Hub SDK. It's designed for large enterprises who train complex human-machine interaction processes. With it, you can train employees remotely, safely, and cost-efficiently. Our solution covers the complete lifecycle of virtual training applications, including their creation, maintenance, and distribution to the final user.
+The Hub Training Module is a part of the Innoactive Hub SDK. It's designed for large enterprises who train people to work with complex machinery. With it, you can train employees remotely, safely, and cost-efficiently. Our solution covers the complete lifecycle of virtual training applications, including their creation, maintenance, and distribution to the final user.
 
-There are two user roles: a template developer and a training designer. Training designers do not have to possess a deep technical knowledge. They use basic Unity tools to setup a testing environment, and the visual programming tools to create a training course.
+There are two user roles: a template developer and a training designer. Template developers have to be programmers, but training designers do not have to possess a deep technical knowledge. At first, a template developer performs initial configuration of the Training Module to meet the company's needs, creating a template. Then, training designers create training applications based on this template.
+
+This document is intended for template developers.
  
- The Training Module is a powerful and flexible tool that requires initial configuration. Before a training designer could use it, a template designer should adjust the Training Module to meet their company's needs.
+This project is an example of a template. The following chapters describe to how to create a similar one. Use this project as a reference to validate your progress through this tutorial. Feel free to modify or discard it to create your own: this template is not meant to be extended.
 
-This project is an exemplary template. The following chapters describe to how to create a similar one. Use this project as a reference to validate your progress through this tutorial. Feel free to modify or discard it to create your own: this template is not meant to be extended.
+# What is a training
 
-This document is intended for training developers.
+The training is a linear sequence of chapters. Each chapter starts where the previous ends: if a trainee has to drill a hole in a wall in a first chapter, the hole will be there when you load the second chapter. You can start a training from any chapter.
+
+Each chapter consists of steps that are connected to each other via transitions. Every step consists of a collection of behaviors and transitions. Behaviors are actions that execute independently from the trainee. For example, a behavior can play an audio or move an object from one point to another.
+
+A transition may contain multiple conditions. With conditions, designers decide what trainees have to do to progress through the training. When all conditions are completed, the next step (defined in the transition) starts.
+
+Behaviors and conditions communicate with objects on a scene through their training properties. A training property defines what actions are available for its scene object: for example, `GrabbableProperty` will inform `GrabbedCondition` that a trainee has grabbed the object. Conditions and behaviors use `TrainingObjectReference` and `TrainingPropertyReference<TProperty>` classes to reference training objects and their properties. Never use Unity game objects directly.
 
 # Initial setup
 
 ## Setup the Hub SDK
 
-Hub SDK is used for the development of Innoactive Hub VR applications. Please, check the [pre-requisites](http://docs.hub.innoactive.de/articles/sdk-setup.html#prerequisites) and follow the [instructions](http://docs.hub.innoactive.de/articles/sdk-setup.html#importing-the-hub-sdk) to set it up.
+Hub SDK is used for the development of Innoactive Hub VR applications. Check the [pre-requisites](http://docs.hub.innoactive.de/articles/sdk-setup.html#prerequisites) and follow the [instructions](http://docs.hub.innoactive.de/articles/sdk-setup.html#importing-the-hub-sdk) to set it up.
 
 ## Install VR SDKs
 
-Install the SDKs of the VR headsets you're working with. For example, [SteamVR](https://github.com/Innoactive/SteamVR).
+Install the SDKs of the VR headsets you're working with. For example, [SteamVR SDK](https://github.com/Innoactive/SteamVR).
 
 ## Import the Training Module
 
-Latest stable version can be found at [Innoactive Hub Developer Portal](http://developers.innoactive.de/components/#training-module).
+You can find the latest stable version at [Innoactive Hub Developer Portal](http://developers.innoactive.de/components/#training-module).
 
-# What is a training
+# The simplest training template
 
-The training is a linear sequence of chapters. You can start a training from any chapter. Each chapter starts where the previous ends. If a trainee has to drill a hole in a wall in a first chapter, the hole will be there when you load the second chapter.
-
-Each chapter consists of steps. Steps are connected to each other via transitions.
-
-Every step consists of a collection of behaviors and transitions.
-
-Behaviors are actions that are executed independently from the trainee. For example, a behavior can play an audio or move an object from one point to another.
-
-Every transition defines the next step of a training and contains a collection of conditions.
-
-A condition checks that a trainee has performed a certain action. With conditions you define actions that a trainee must perform. Once a condition is completed, it can't become incomplete again.
-
-When all behaviors are completed When all conditions of a transition are completed, the next step of a chapter starts.
-
-Behaviors and conditions communicate with objects on a scene through their training properties. A training property defines what actions are available for its scene object: for example, `GrabbableProperty` will inform `GrabbedCondition` that a trainee has grabbed the object.
-
-Conditions and behaviors use `TrainingObjectReference` and `TrainingPropertyReference<TProperty>` classes to reference training objects and their properties. Never use Unity game objects directly.
-
-# Create a simplest training template
-
-A simplest template consists of a single scene. That scene contains Innoactive Hub SDK and Training Module configuration, preconfigured VR headset, and an object with a single script that would load a training.
+The simplest template possible consists of a single scene that contains a Innoactive Hub SDK and Training Module configuration, preconfigured VRTK headset, and an object with a single script that would load a training.
 
 All that a training designer would have to do only two steps:
 
 1) Copy the scene and populate it with training objects he needs.
 2) Create a training, save it anywhere in `Assets` folder, and reference the saved file from the scene.
 
-## Setup a scene
-
-### Create a scene
+## Create a scene
 
 Create a new Unity scene in which you want a VR training to be executed.
 
-### Setup the scene as a Hub Scene
+## Setup the scene as a Training Scene
 
-Follow the [instructions](http://docs.hub.innoactive.de/articles/sdk-setup.html#setting-up-a-scene) to setup the scene.
-
-### Disable unused HUB SDK components
-
-The following components are not required for the Training SDK and may be disabled within the scene:
-
-1. `[HUB-MULTIUSER]`
-2. `[HUB-PERSISTENCE]`
-3. `[HUB-LOGIN-CHECK]`
-5. `[HUB-VR-LAUNCHER-CLIENT]`
-4. `[HUB-MENU-SETUP]`
-
-If you are working with the Hub-SDK for the first time it is recommended to disable them for the sake of simplicity. You can always turn them back on again later.
+Select the following option in the Unity editor's toolbar: `Innoactive > Training > Setup Scene as a Training Scene`.
 
 ## Create a script
 
@@ -115,42 +89,42 @@ Create a new C# script named TrainingLoader and replace its contents with the fo
 
 ## The complete example
 
-You can verify the achieved result with the scene is located under the following path: `[Path to Innoactive training template]/Scenes/Simple`.
+To verify the achieved result, you can compare it to the scene under the following path: `[Path to Innoactive training template]/Scenes/Simple`.
 
 # Advanced topics
 
 Cheers! You've covered the basics.
 
-The following chapters are explaining how to create more sophisticated templates, providing detailed overview of the Training Module features.
+The following chapters describe available Training Module features and explain how to use them to create more complex templates. You can tune both training designer tools and a running application logic with Training module configurations, or you can extend it with your own behaviors and conditions.
 
-It is recommended to explore this project at the same time you read this tutorial.
+ We recommend you to explore this project while you are reading this tutorial.
 
 # Template configuration
 
-If you want to tweak Training Module a bit, you might want to look at `EditorConfiguration` and `TrainingConfiguration` classes first.
+You can either modify training designer tools with editor configuration, or you can define how a built training application would look and behave like. 
 
 ## Editor configuration
 
-Editor configuration affects designer's tools in Unity Editor. 
+To change the editor configuration, implement `Innoactive.Hub.Training.Editors.Configuration.IDefinition` interface. The Training Module will automatically locate it if you do so, and will use the `DefaultDefinition` otherwise. If there are more than one custom editor configuration definitions, an undefined behavior occurs.
+
+ > This is the main reason why we recommend to build a template from scratch instead of extending this project.
+
+The `DefaultDefinition` configures the Training Module in a basic way. Inherit from it to not implement everything from scratch. Take a look at `InnoactiveDefinition` to see how to implement complex things like `Audio Hint` menu option.
+
+With editor configuration, you can limit or allow training designers to use certain behaviors and conditions. For example, you might add a custom behavior that highlights its target object in a special way, and hide the default `Highlight` behavior.
 
 1. `BehaviorsMenuContent` property defines a dropdown menu which is shown when a training designer clicks on `Add Behavior` button.
 2. `ConditionsMenuContent` property defines a dropdown menu which is shown when a training designer clicks on `Add Condition` button.
 
-By changing these properties you may control which conditions and behaviors are available for a designer.
-
-To change the configuration, either implement `IDefinition` or inherit from DefaultDefinition in `Innoactive.Hub.Training.Editors.Configuration` namespace.
-
-The configuration will automatically detect new definition class via reflection, so you can name it as you like and keep it where you want to.
-
-Take a look at `DefaultDefinition` to see how basic options could be implemented. Take a look at `InnoactiveDefinition` to see how to implement complex things like `Audio Hint` menu option.
+Finally, you define what happens when someone clicks at `Innoactive > Training > Setup Scene` menu option in the `SetupTrainingScene()` method.
 
 ## Training configuration
 
-Training configuration is used to adjust the way the training application executes in a runtime.
+You can use the training configuration to adjust the way the training application executes in a runtime.
  
 There should be one and only one training configuration game object in a training scene. To create one, you can use `Innoactive > Training > Setup Scene` menu option.
 
-A training configuration instance is just a container for its definition, which provides the actual means for template customization.
+A training configuration instance is just a container for its definition, which provides the actual means for template customization. You can assign the definition either programmatically, or in the game object inspector.
  
 The definition has the following properties and methods:
 
