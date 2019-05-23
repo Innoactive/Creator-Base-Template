@@ -43,15 +43,23 @@ namespace Innoactive.Hub.Training.Template
             SignalDeactivationFinished();
         }
 
+        // When a condition or behavior is fast-forwarded, the activation has to complete immediately.
+        // This method should handle it, but since the activation is instanteneous,
+        // It doesn't require any additional actions.
         protected override void FastForwardActivating()
         {
         }
 
+        // When fast-forwarded, a conditions should complete immediately.
+        // For that, the pointer fakes that it pointed at the target.
         protected override void FastForwardActive()
         {
             Pointer.Value.FastForwardPoint(Target);
         }
 
+        // When a condition or behavior is fast-forwarded, the deactivation has to complete immediately.
+        // This method should handle it, but since the deactivation is instanteneous,
+        // It doesn't require any additional actions.
         protected override void FastForwardDeactivating()
         {
         }

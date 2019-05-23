@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Innoactive.Hub.Training.Template
 {
-    // This behaviors linearly changes scale of a Target object over Duration seconds, until it matches TargetScale.
+    // This behavior linearly changes scale of a Target object over Duration seconds, until it matches TargetScale.
     [DataContract(IsReference = true)]
     [DisplayName("Scale Object")]
     public class ScalingBehavior : Behavior
@@ -75,11 +75,14 @@ namespace Innoactive.Hub.Training.Template
                 SignalActivationFinished();
             }
         }
-
+        
+        // It requires no additional action.
         protected override void FastForwardActive()
         {
         }
 
+        // Deactivation is instanteneous.
+        // It requires no additional action.
         protected override void FastForwardDeactivating()
         {
         }
