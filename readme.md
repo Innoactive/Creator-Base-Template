@@ -1,18 +1,18 @@
 # Introduction
 
-The Hub Training Module is a part of the Innoactive Hub SDK. It's designed for large enterprises who train people to work with complex machinery. With it, you can train employees remotely, safely, and cost-efficiently. Our solution covers the complete lifecycle of virtual training applications, including their creation, maintenance, and distribution to the final user.
+The Hub Training Module is a part of the Innoactive Hub SDK. It's designed for large enterprises who train people to do manufacturing tasks. With it, you can train employees remotely, safely, and cost-efficiently. Our solution covers the complete lifecycle of virtual training applications, including their creation, maintenance, and distribution to the final user.
 
 There are two user roles: a template developer and a training designer. Template developers have to be programmers, but training designers do not have to possess a deep technical knowledge. At first, a template developer performs initial configuration of the Training Module to meet the company's needs, creating a template. Then, training designers create training applications based on this template.
 
 This document is intended for template developers.
  
-This project is an example of a template. The following chapters describe to how to create a similar one. Use this project as a reference to validate your progress through this tutorial. Feel free to modify or discard it to create your own: this template is not meant to be extended.
+This project is an example of a template. The following chapters describe to how to create a similar one. Use this project as a reference to validate your progress through this tutorial. Feel free to modify or discard it to create your own: *this template is not meant to be extended.*
 
 # What is a training
 
 The training is a linear sequence of chapters. Each chapter starts where the previous ends: if a trainee has to drill a hole in a wall in a first chapter, the hole will be there when you load the second chapter. You can start a training from any chapter.
 
-Each chapter consists of steps that are connected to each other via transitions. Every step consists of a collection of behaviors and transitions. Behaviors are actions that execute independently from the trainee. For example, a behavior can play an audio or move an object from one point to another.
+Each chapter consists of steps that are connected to each other via transitions. Every step has a transition and any number of behaviors. Behaviors are actions that execute independently from the trainee. For example, a behavior can play an audio or move an object from one point to another.
 
 A transition may contain multiple conditions. With conditions, designers decide what trainees have to do to progress through the training. When all conditions are completed, the next step (defined in the transition) starts.
 
@@ -22,7 +22,7 @@ Behaviors and conditions communicate with objects on a scene through their train
 
 ## Setup the Hub SDK
 
-Hub SDK is used for the development of Innoactive Hub VR applications. Check the [pre-requisites](http://docs.hub.innoactive.de/articles/sdk-setup.html#prerequisites) and follow the [instructions](http://docs.hub.innoactive.de/articles/sdk-setup.html#importing-the-hub-sdk) to set it up.
+Hub SDK is used for the development of Innoactive Hub VR applications. Check the [pre-requisites](http://docs.hub.innoactive.de/v4.0.0/articles/sdk-setup.html#prerequisites) and follow the [instructions](http://docs.hub.innoactive.de/v4.0.0/articles/sdk-setup.html#importing-the-hub-sdk) to set it up.
 
 ## Install VR SDKs
 
@@ -34,7 +34,7 @@ You can find the latest stable version at [Innoactive Hub Developer Portal](http
 
 # The simplest training template
 
-The simplest template possible consists of a single scene that contains a Innoactive Hub SDK and Training Module configuration, preconfigured VRTK headset, and an object with a single script that would load a training.
+The simplest template possible consists of a single scene that contains a Innoactive Hub SDK and Training Module configuration, preconfigured VR headset, and an object with a single script that would load a training.
 
 All that a training designer would have to do only two steps:
 
@@ -272,7 +272,7 @@ This property does the following:
 * It encapsulates the VRTK_Pointer event handling.
 * It exposes an event so a training condition could use it, and it ensures that the event is fired only when the pointer points at a training object with a collider or the condition was fast-forwarded.
 
-Now it can be attached to a game object on a scene. To save time on making your own pointer tool, you copy `Your Hub SDK Directory\SDK\Tools\Presenter\Resources\Presenter` and attach the property to its `Pointer` child object.
+Now it can be attached to a game object on a scene. To save time on making your own pointer tool, copy `Your Hub SDK Directory\SDK\Tools\Presenter\Resources\Presenter` and attach the property to its `Pointer` child game object.
 
 > Note that we expect the `ColliderWithTriggerProperty` to be attached to the training object we point at. VRTK_Pointer expects an object to have a collider with a trigger, and the `ColliderWithTriggerProperty` ensures that its owner object has one.
 
@@ -366,7 +366,7 @@ namespace Innoactive.Hub.Training.Template
 }
 ```
 
-All conditions should inherit from the  `Condition` abstract class. To initialize a condition, implement the `PerformActivation()` method. This condition subscribes to a `PointerEnter` event of a referenced `PointingProperty`. When the Pointer points at the target, the condition will mark itself as complete. To deinitialize, implement the `PerformDeactivation()` method. In both methods, you have to call `SignalActivationFinished()` and `SignalDeactivationFinished()`, respectively.
+All conditions should inherit from the `Condition` abstract class. To initialize a condition, implement the `PerformActivation()` method. This condition subscribes to a `PointerEnter` event of a referenced `PointingProperty`. When the Pointer points at the target, the condition will mark itself as complete. To deinitialize, implement the `PerformDeactivation()` method. In both methods, you have to call `SignalActivationFinished()` and `SignalDeactivationFinished()`, respectively.
 
 Every condition should be able to complete immediately if `FastForwardActive()` method is called. In this case, we fake that the target was actually pointed at. To do so, we call the `FastForwardPoint()` method that we implemented in the previous chapter. Fast-forwarding allows us to load chapters, skip steps, and change modes.
 
