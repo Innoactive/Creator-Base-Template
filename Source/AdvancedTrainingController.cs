@@ -442,13 +442,11 @@ namespace Innoactive.Hub.Training.Template
             // Set the picker value to the current selected mode.
             modePicker.value = TrainingConfiguration.Definition.GetCurrentModeIndex();
 
-            // When the selected mode is changed, setup a training from scratch.
+            // When the selected mode is changed,
             modePicker.onValueChanged.AddListener(itemIndex =>
             {
                 // Set the mode based on the user selection.
                 TrainingConfiguration.Definition.SetMode(itemIndex);
-                // Update the UI.
-                SetupTrainingDependantUi();
             });
         }
         #endregion
