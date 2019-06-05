@@ -374,7 +374,7 @@ Every condition should be able to complete immediately if `FastForwardActive()` 
 
 Create new C# script named `ScalingBehavior` and change its contents to the following:
 
-```
+```c#
 using System.Collections;
 using System.Runtime.Serialization;
 using Innoactive.Hub.Threading;
@@ -419,8 +419,7 @@ namespace Innoactive.Hub.Training.Template
         }
         
         // Called on activation of the training entity. Define activation logic here.
-        // You have to call `SignalActivationStarted()` at the start
-        // and `SignalActivationFinished()` after you've done everything you wanted to do during the activation.
+        // You have to call `SignalActivationFinished()` after you've done everything you wanted to do during the activation.
         protected override void PerformActivation()
         {
             // Start coroutine which will scale our object.
@@ -429,8 +428,7 @@ namespace Innoactive.Hub.Training.Template
         }
 
         // Called on deactivation of the training entity. Define deactivation logic here.
-        // You have to call `SignalDeactivationStarted()` at the start
-        // and `SignalDeactivationFinished()` after you've done everything you wanted to do during the deactivation.
+        // You have to call `SignalDeactivationFinished()` after you've done everything you wanted to do during the deactivation.
         protected override void PerformDeactivation()
         {
             SignalDeactivationFinished();
@@ -439,18 +437,14 @@ namespace Innoactive.Hub.Training.Template
         // This method is called when the activation has to be interrupted and completed immediately.
         protected override void FastForwardActivating()
         {
-            // If the scaling behavior is currently activating (running),
-            if (ActivationState == ActivationState.Activating)
-            {
-                // Stop the scaling coroutine,
-                CoroutineDispatcher.Instance.StopCoroutine(coroutine);
+            // Stop the scaling coroutine,
+            CoroutineDispatcher.Instance.StopCoroutine(coroutine);
 
-                // Scale the target manually,
-                Target.Value.GameObject.transform.localScale = TargetScale;
+            // Scale the target manually,
+            Target.Value.GameObject.transform.localScale = TargetScale;
 
-                // And signal that activation is finished.
-                SignalActivationFinished();
-            }
+            // And signal that activation is finished.
+            SignalActivationFinished();
         }
         
         // It requires no additional action.
