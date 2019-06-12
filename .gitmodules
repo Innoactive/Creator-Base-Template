@@ -7,3 +7,6 @@
 [submodule "Extensions/Hub-Training-Module"]
 	path = Extensions/Hub-Training-Module
 	url = git@github.com:Innoactive/Hub-Training-Module.git
+[submodule "Extensions/PostProcessing"]
+	path = Extensions/PostProcessing
+	url = git@github.com:Unity-Technologies/PostProcessing.git

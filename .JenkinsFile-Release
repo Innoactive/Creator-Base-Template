@@ -103,7 +103,6 @@ pipeline
                         
                 Move-Item -Path .\\readme.md -Destination ${TEMPLATE_DIRECTORY_IN_ASSETS}
                 Move-Item -Path Extensions -Destination ${TEMPLATE_DIRECTORY_IN_ASSETS}
-                Move-Item -Path PostProcessing -Destination ${TEMPLATE_DIRECTORY_IN_ASSETS}
                 Move-Item -Path Resources -Destination ${TEMPLATE_DIRECTORY_IN_ASSETS}
                 Move-Item -Path Scenes -Destination ${TEMPLATE_DIRECTORY_IN_ASSETS}
                 Move-Item -Path Source -Destination ${TEMPLATE_DIRECTORY_IN_ASSETS}
