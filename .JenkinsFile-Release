@@ -1,0 +1,206 @@
+// Load all global variables from the jenkins-shared-library for Unity
+// see https://github.com/burnedikt/jenkins-shared-library-unity for source
+@Library('jenkins-shared-library-unity@v1.0') _
+
+pipeline
+{
+    agent
+    {
+        label 'unity-ng'
+    }
+
+    options
+    {
+        disableConcurrentBuilds()
+        skipDefaultCheckout true
+    }
+
+    environment
+    {
+        TEMPLATE_DIRECTORY_IN_ASSETS = "${EXTENSION_PATH}\\IA-Training-Template"
+        // Path to the module within the Unity project.
+        HUB_SDK_INITIAL_DIRECTORY = "z:\\Extensions\\Hub-SDK"
+        //Path where shared jenkins file was located initially.
+        SHARED_INITIAL = "${WORKSPACE}\\Extensions\\Hub-Training-Module\\.JenkinsFile-Shared"
+        // Path to the file with shared methods.
+        SHARED = "${WORKSPACE}\\.JenkinsFile-Shared"
+        // Path to U3D rules
+        // U3D commands need to use a dedicated set of rules for logging to get more verbose output from e.g. Common.Logging,
+        // see more at https://github.com/DragonBox/u3d/blob/master/LOG_RULES.md
+        U3D_RULES_PATH = "z:\\u3d_log_rules.json"
+        // Unity version used
+        UNITY_VERSION = '2017.4.27f1'
+        // Unity project base path
+        PROJECT_PATH = "y:\\Project"
+        // Path where the SDK should be checked out to
+        EXTENSION_PATH = "${PROJECT_PATH}\\Assets\\Extensions"
+        // Path to export config file.
+        EXPORT_CONFIG = "z:\\.export-config"
+    }
+
+    stages
+    {
+        stage('Checkout')
+        {
+            steps
+            {
+                powershell "git config --system core.longpaths true"
+                checkout scm
+                
+                powershell """
+                Copy-Item ${SHARED_INITIAL} -Destination ${WORKSPACE}
+                """
+            }
+        }
+
+        stage('Initial Setup')
+        {
+            steps
+            {
+                script
+                {
+                    load(SHARED).InitialSetup()
+                    powershell """
+                    New-Item z:\\${BUILD_TAG} -ItemType Directory
+                    subst y: /D
+                    subst y: z:\\${BUILD_TAG}
+                    New-Item ${PROJECT_PATH} -ItemType Directory
+                    """
+                }
+            }
+        }
+        
+        stage('Initial Setup of Hub-SDK')
+        {
+            steps
+            {
+                script
+                {
+                    load(SHARED).InitialSetupHubSdk(HUB_SDK_INITIAL_DIRECTORY)
+                }
+            }
+        }
+
+        stage('Setup Unity')
+        {
+            steps
+            {
+                script
+                {
+                    load(SHARED).SetupUnity()
+                }
+            }
+        }
+
+        stage('Copy Training Template')
+        {
+            steps
+            {
+                powershell """
+                Remove-Item ${TEMPLATE_DIRECTORY_IN_ASSETS} -Force -Recurse -ErrorAction SilentlyContinue
+            
+                New-Item ${TEMPLATE_DIRECTORY_IN_ASSETS} -ItemType Directory
+                        
+                Move-Item -Path .\\readme.md -Destination ${TEMPLATE_DIRECTORY_IN_ASSETS}
+                Move-Item -Path Extensions -Destination ${TEMPLATE_DIRECTORY_IN_ASSETS}
+                Move-Item -Path PostProcessing -Destination ${TEMPLATE_DIRECTORY_IN_ASSETS}
+                Move-Item -Path Resources -Destination ${TEMPLATE_DIRECTORY_IN_ASSETS}
+                Move-Item -Path Scenes -Destination ${TEMPLATE_DIRECTORY_IN_ASSETS}
+                Move-Item -Path Source -Destination ${TEMPLATE_DIRECTORY_IN_ASSETS}
+                Move-Item -Path Tests -Destination ${TEMPLATE_DIRECTORY_IN_ASSETS}
+                """
+            }
+        }
+
+        stage('Build')
+        {
+            steps
+            {
+                script
+                {
+                    load(SHARED).Build()
+                }
+            }
+        }
+
+        stage('Test')
+        {
+            steps
+            {
+                script
+                {
+                    load(SHARED).Test()
+                }
+            }
+        }
+        
+        stage('Setup Export Config')
+        {
+            when
+            {
+                tag pattern: "v(\\d+\\.\\d+\\.\\d+)(-.*)?", comparator: "REGEXP"
+            }
+            steps
+            {
+                script
+                {
+                    writeFile file: "${EXPORT_CONFIG}", text: $/
+                    {
+                        "AssetDirectory" : "Assets/Extensions/IA-Training-Template",
+                        "Version" : "${TAG_NAME}",
+                        "OutputPath" : "./Builds/innoactive-training-template-${TAG_NAME}.unitypackage",
+                        "Excludes" : [
+                            "*/Tests/*",
+                            "Assets/Extensions/IA-Training-Template/Extensions/Hub-SDK/Extensions/VRTK/ProjectSettings/*",
+                            "Assets/Extensions/IA-Training-Template/Extensions/Hub-SDK/Extensions/VRTK/Assets/VRTK/Examples/*",
+                            "Assets/Extensions/IA-Training-Template/Extensions/Hub-SDK/SDK/Logging/Plugins/Innoactive.Hub.Logging.Unity_*.pdb"
+                        ]
+                    }
+                    /$
+                }
+            }
+        }
+
+        stage('Create Unity Package')
+        {
+            when
+            {
+                tag pattern: "v(\\d+\\.\\d+\\.\\d+)(-.*)?", comparator: "REGEXP"
+            }
+            steps
+            {
+                script
+                {
+                    load(SHARED).CreateUnityPackage(EXPORT_CONFIG)
+                }
+            }
+        }
+    }
+
+    post
+    {
+        always
+        {
+            archiveArtifacts allowEmptyArchive: true, artifacts: "${PROJECT_PATH}/*.log"
+        }
+
+        cleanup
+        {
+            dir("${PROJECT_PATH}")
+            {
+                // Publish the results of the test
+                nunit testResultsPattern: "TestResults*.xml"
+            }
+
+            powershell """
+
+            Remove-Item .\\IA-Training-Template -Force -Recurse -ErrorAction SilentlyContinue
+            Remove-Item .\\${BUILD_TAG} -Force -Recurse -ErrorAction SilentlyContinue
+
+            subst y: /D
+            subst z: /D
+            exit(0)
+            """
+        }
+    }
+}
