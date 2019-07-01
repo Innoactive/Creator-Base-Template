@@ -2,6 +2,9 @@
 using System.Collections;
 using System.Runtime.Serialization;
 using Innoactive.Hub.Threading;
+using Innoactive.Hub.Training.Attributes;
+using Innoactive.Hub.Training.Behaviors;
+using Innoactive.Hub.Training.SceneObjects;
 using Innoactive.Hub.Training.Utils;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -39,7 +42,7 @@ namespace Innoactive.Hub.Training.Template
         /// </summary>
         [DataMember]
         [DisplayName("Position Provider")]
-        public TrainingObjectReference PositionProvider { get; private set; }
+        public SceneObjectReference PositionProvider { get; private set; }
 
         /// <summary>
         /// Path to the desired confetti machine prefab.
@@ -81,15 +84,15 @@ namespace Innoactive.Hub.Training.Template
         {
         }
 
-        public ConfettiBehavior(bool isAboveTrainee, ITrainingObject positionProvider, string confettiMachinePrefabPath, float radius, float duration, BehaviorActivationMode activationMode)
+        public ConfettiBehavior(bool isAboveTrainee, ISceneObject positionProvider, string confettiMachinePrefabPath, float radius, float duration, BehaviorActivationMode activationMode)
             : this(isAboveTrainee, TrainingReferenceUtils.GetNameFrom(positionProvider), confettiMachinePrefabPath, radius, duration, activationMode)
         {
         }
 
-        public ConfettiBehavior(bool isAboveTrainee, string positionProviderTrainingObjectName, string confettiMachinePrefabPath, float radius, float duration, BehaviorActivationMode activationMode)
+        public ConfettiBehavior(bool isAboveTrainee, string positionProviderSceneObjectName, string confettiMachinePrefabPath, float radius, float duration, BehaviorActivationMode activationMode)
         {
             IsAboveTrainee = isAboveTrainee;
-            PositionProvider = new TrainingObjectReference(positionProviderTrainingObjectName);
+            PositionProvider = new SceneObjectReference(positionProviderSceneObjectName);
             ConfettiMachinePrefabPath = confettiMachinePrefabPath;
             AreaRadius = radius;
             Duration = duration;

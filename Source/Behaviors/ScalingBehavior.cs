@@ -1,6 +1,9 @@
 ﻿using System.Collections;
 using System.Runtime.Serialization;
 using Innoactive.Hub.Threading;
+using Innoactive.Hub.Training.Attributes;
+using Innoactive.Hub.Training.Behaviors;
+using Innoactive.Hub.Training.SceneObjects;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -13,7 +16,7 @@ namespace Innoactive.Hub.Training.Template
     {
         // Training object to scale.
         [DataMember]
-        public TrainingObjectReference Target { get; private set; }
+        public SceneObjectReference Target { get; private set; }
 
         // Target scale.
         [DataMember]
@@ -30,11 +33,11 @@ namespace Innoactive.Hub.Training.Template
         
         // Handle data initialization in the constructor.
         [JsonConstructor]
-        public ScalingBehavior() : this(new TrainingObjectReference(), Vector3.one, 0f)
+        public ScalingBehavior() : this(new SceneObjectReference(), Vector3.one, 0f)
         {
         }
 
-        public ScalingBehavior(TrainingObjectReference target, Vector3 targetScale, float duration)
+        public ScalingBehavior(SceneObjectReference target, Vector3 targetScale, float duration)
         {
             Target = target;
             TargetScale = targetScale;

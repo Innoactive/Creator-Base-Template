@@ -1,4 +1,5 @@
 ﻿using System;
+using Innoactive.Hub.Training.SceneObjects.Properties;
 using UnityEngine;
 using VRTK;
 
@@ -7,8 +8,8 @@ namespace Innoactive.Hub.Training.Template
     // PointingProperty requires VRTK_Pointer to work.
     [RequireComponent(typeof(VRTK_Pointer))]
     // Training object with that property can point at other training objects.
-    // Any property should inherit from TrainingObjectProperty class.
-    public class PointingProperty : TrainingObjectProperty
+    // Any property should inherit from SceneObjectProperty class.
+    public class PointingProperty : SceneObjectProperty
     {
         // Event that is invoked every time when the object points at something.
         public event Action<ColliderWithTriggerProperty> PointerEnter;

@@ -1,5 +1,8 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Innoactive.Hub.Training.Audio;
+using Innoactive.Hub.Training.Behaviors;
+using Innoactive.Hub.Training.Conditions;
 using Innoactive.Hub.Training.Editors.Configuration;
 using UnityEngine;
 

@@ -1,4 +1,8 @@
 ﻿using System.Runtime.Serialization;
+using Innoactive.Hub.Training.Attributes;
+using Innoactive.Hub.Training.Conditions;
+using Innoactive.Hub.Training.SceneObjects;
+using Innoactive.Hub.Training.SceneObjects.Properties;
 using Newtonsoft.Json;
 
 namespace Innoactive.Hub.Training.Template
@@ -10,20 +14,20 @@ namespace Innoactive.Hub.Training.Template
     {
         [DataMember]
         // Reference to a pointer property.
-        public TrainingPropertyReference<PointingProperty> Pointer { get; private set; }
+        public ScenePropertyReference<PointingProperty> Pointer { get; private set; }
 
         [DisplayName("Target with a collider")]
         [DataMember]
         // Reference to a target property.
-        public TrainingPropertyReference<ColliderWithTriggerProperty> Target { get; private set; }
+        public ScenePropertyReference<ColliderWithTriggerProperty> Target { get; private set; }
 
         [JsonConstructor]
         // Make sure that references are initialized.
-        public PointedCondition() : this(new TrainingPropertyReference<PointingProperty>(), new TrainingPropertyReference<ColliderWithTriggerProperty>())
+        public PointedCondition() : this(new ScenePropertyReference<PointingProperty>(), new ScenePropertyReference<ColliderWithTriggerProperty>())
         {
         }
 
-        public PointedCondition(TrainingPropertyReference<PointingProperty> pointer, TrainingPropertyReference<ColliderWithTriggerProperty> target)
+        public PointedCondition(ScenePropertyReference<PointingProperty> pointer, ScenePropertyReference<ColliderWithTriggerProperty> target)
         {
             Pointer = pointer;
             Target = target;

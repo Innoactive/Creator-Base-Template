@@ -2,6 +2,8 @@
 
 using System.Collections;
 using Innoactive.Hub.Training;
+using Innoactive.Hub.Training.SceneObjects;
+using Innoactive.Hub.Training.SceneObjects.Properties;
 using Innoactive.Hub.Training.Template;
 using Innoactive.Hub.Training.Utils;
 using NUnit.Framework;
@@ -23,8 +25,8 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Conditions
             ColliderWithTriggerProperty trigger = target.AddComponent<ColliderWithTriggerProperty>();
 
             PointedCondition condition = new PointedCondition(
-                new TrainingPropertyReference<PointingProperty>(TrainingReferenceUtils.GetNameFrom(mockedProperty)),
-                new TrainingPropertyReference<ColliderWithTriggerProperty>(TrainingReferenceUtils.GetNameFrom(trigger))
+                new ScenePropertyReference<PointingProperty>(TrainingReferenceUtils.GetNameFrom(mockedProperty)),
+                new ScenePropertyReference<ColliderWithTriggerProperty>(TrainingReferenceUtils.GetNameFrom(trigger))
             );
 
             // When we activate the condition,
@@ -47,8 +49,8 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Conditions
             ColliderWithTriggerProperty trigger = target.AddComponent<ColliderWithTriggerProperty>();
 
             PointedCondition condition = new PointedCondition(
-                new TrainingPropertyReference<PointingProperty>(TrainingReferenceUtils.GetNameFrom(mockedProperty)),
-                new TrainingPropertyReference<ColliderWithTriggerProperty>(TrainingReferenceUtils.GetNameFrom(trigger))
+                new ScenePropertyReference<PointingProperty>(TrainingReferenceUtils.GetNameFrom(mockedProperty)),
+                new ScenePropertyReference<ColliderWithTriggerProperty>(TrainingReferenceUtils.GetNameFrom(trigger))
             );
 
             // When we activate the condition and raise the event,
@@ -72,8 +74,8 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Conditions
             ColliderWithTriggerProperty trigger = target.AddComponent<ColliderWithTriggerProperty>();
 
             PointedCondition condition = new PointedCondition(
-                new TrainingPropertyReference<PointingProperty>(TrainingReferenceUtils.GetNameFrom(mockedProperty)),
-                new TrainingPropertyReference<ColliderWithTriggerProperty>(TrainingReferenceUtils.GetNameFrom(trigger))
+                new ScenePropertyReference<PointingProperty>(TrainingReferenceUtils.GetNameFrom(mockedProperty)),
+                new ScenePropertyReference<ColliderWithTriggerProperty>(TrainingReferenceUtils.GetNameFrom(trigger))
             );
 
             // When we fast-forward it,
@@ -96,8 +98,8 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Conditions
             ColliderWithTriggerProperty trigger = target.AddComponent<ColliderWithTriggerProperty>();
 
             PointedCondition condition = new PointedCondition(
-                new TrainingPropertyReference<PointingProperty>(TrainingReferenceUtils.GetNameFrom(mockedProperty)),
-                new TrainingPropertyReference<ColliderWithTriggerProperty>(TrainingReferenceUtils.GetNameFrom(trigger))
+                new ScenePropertyReference<PointingProperty>(TrainingReferenceUtils.GetNameFrom(mockedProperty)),
+                new ScenePropertyReference<ColliderWithTriggerProperty>(TrainingReferenceUtils.GetNameFrom(trigger))
             );
 
             // When we fast-forward and activate it,
@@ -122,8 +124,8 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Conditions
             ColliderWithTriggerProperty trigger = target.AddComponent<ColliderWithTriggerProperty>();
 
             PointedCondition condition = new PointedCondition(
-                new TrainingPropertyReference<PointingProperty>(TrainingReferenceUtils.GetNameFrom(mockedProperty)),
-                new TrainingPropertyReference<ColliderWithTriggerProperty>(TrainingReferenceUtils.GetNameFrom(trigger))
+                new ScenePropertyReference<PointingProperty>(TrainingReferenceUtils.GetNameFrom(mockedProperty)),
+                new ScenePropertyReference<ColliderWithTriggerProperty>(TrainingReferenceUtils.GetNameFrom(trigger))
             );
 
             // When we activate and then fast-forward it,

@@ -3,6 +3,8 @@
 using System;
 using System.Collections;
 using Innoactive.Hub.Training;
+using Innoactive.Hub.Training.Behaviors;
+using Innoactive.Hub.Training.SceneObjects;
 using Innoactive.Hub.Training.Template;
 using NUnit.Framework;
 using UnityEngine;
@@ -24,7 +26,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
         {
             // Given the path to the confetti machine prefab, the position provider name, the duration, the bool isAboveTrainee, the area radius, and the activation mode,
             GameObject target = new GameObject(positionProviderName);
-            TrainingObject positionProvider = target.AddComponent<TrainingObject>();
+            SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(positionProviderName);
 
             BehaviorActivationMode mode = BehaviorActivationMode.ActivationAndDeactivation;
@@ -48,7 +50,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
         {
             // Given the path to the confetti machine prefab, the position provider name, the duration, the bool isAboveTrainee, the area radius, and the activation mode,
             GameObject target = new GameObject(positionProviderName);
-            TrainingObject positionProvider = target.AddComponent<TrainingObject>();
+            SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(positionProviderName);
 
             BehaviorActivationMode mode = BehaviorActivationMode.ActivationAndDeactivation;
@@ -72,7 +74,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
         {
             // Given a positive duration, a position provider, some valid default settings, and the activation mode = Activation,
             GameObject target = new GameObject(positionProviderName);
-            TrainingObject positionProvider = target.AddComponent<TrainingObject>();
+            SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(positionProviderName);
 
             ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorActivationMode.Activation);
@@ -94,7 +96,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
         {
             // Given a positive duration, a position provider, some valid default settings, and the activation mode = Activation,
             GameObject target = new GameObject(positionProviderName);
-            TrainingObject positionProvider = target.AddComponent<TrainingObject>();
+            SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(positionProviderName);
 
             ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorActivationMode.Activation);
@@ -119,7 +121,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             float newDuration = -0.25f;
 
             GameObject target = new GameObject(positionProviderName);
-            TrainingObject positionProvider = target.AddComponent<TrainingObject>();
+            SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(positionProviderName);
 
             ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, newDuration, BehaviorActivationMode.Activation);
@@ -143,7 +145,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             float newDuration = 0f;
 
             GameObject target = new GameObject(positionProviderName);
-            TrainingObject positionProvider = target.AddComponent<TrainingObject>();
+            SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(positionProviderName);
 
             ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, newDuration, BehaviorActivationMode.Activation);
@@ -169,7 +171,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             // Given the position provider training object, some valid default settings, and the activation mode = Activation,
             GameObject target = new GameObject(positionProviderName);
             target.transform.position = new Vector3(5, 10, 20);
-            TrainingObject positionProvider = target.AddComponent<TrainingObject>();
+            SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(positionProviderName);
 
             ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorActivationMode.Activation);
@@ -200,7 +202,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
         {
             // Given the position provider training object, some valid default settings, and the activation mode = Activation,
             GameObject target = new GameObject(positionProviderName);
-            TrainingObject positionProvider = target.AddComponent<TrainingObject>();
+            SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(positionProviderName);
 
             ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorActivationMode.Activation);
@@ -218,7 +220,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
         {
             // Given the position provider training object, some valid default settings, and the activation mode = Activation,
             GameObject target = new GameObject(positionProviderName);
-            TrainingObject positionProvider = target.AddComponent<TrainingObject>();
+            SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(positionProviderName);
 
             ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorActivationMode.Activation);
@@ -236,7 +238,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
         {
             // Given the position provider training object, some valid default settings, and the activation mode = Deactivation,
             GameObject target = new GameObject(positionProviderName);
-            TrainingObject positionProvider = target.AddComponent<TrainingObject>();
+            SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(positionProviderName);
 
             ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorActivationMode.Deactivation);
@@ -255,7 +257,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
         {
             // Given the position provider training object, some valid default settings, and the activation mode = Deactivation,
             GameObject target = new GameObject(positionProviderName);
-            TrainingObject positionProvider = target.AddComponent<TrainingObject>();
+            SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(positionProviderName);
 
             ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorActivationMode.Deactivation);
@@ -275,7 +277,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
         {
             // Given the position provider training object, an invalid path to a not existing prefab, some valid default settings, and the activation mode = Activation,
             GameObject target = new GameObject(positionProviderName);
-            TrainingObject positionProvider = target.AddComponent<TrainingObject>();
+            SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(positionProviderName);
 
             ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToMockPrefab, areaRadius, duration, BehaviorActivationMode.Activation);
@@ -298,7 +300,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
         {
             // Given a ConfettiBehavior with activation mode "Activation",
             GameObject target = new GameObject(positionProviderName);
-            TrainingObject positionProvider = target.AddComponent<TrainingObject>();
+            SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(positionProviderName);
 
             ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorActivationMode.Activation);
@@ -317,7 +319,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
         {
             // Given a ConfettiBehavior with activation mode "Activation",
             GameObject target = new GameObject(positionProviderName);
-            TrainingObject positionProvider = target.AddComponent<TrainingObject>();
+            SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(positionProviderName);
 
             ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorActivationMode.Activation);
@@ -337,7 +339,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
         {
             // Given a ConfettiBehavior with activation mode "Deactivation",
             GameObject target = new GameObject(positionProviderName);
-            TrainingObject positionProvider = target.AddComponent<TrainingObject>();
+            SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(positionProviderName);
 
             ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorActivationMode.Deactivation);
@@ -359,7 +361,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
         {
             // Given an active ConfettiBehavior with activation mode "Activation",
             GameObject target = new GameObject(positionProviderName);
-            TrainingObject positionProvider = target.AddComponent<TrainingObject>();
+            SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(positionProviderName);
 
             ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorActivationMode.Activation);
@@ -380,7 +382,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
         {
             // Given an active ConfettiBehavior with activation mode "Deactivation",
             GameObject target = new GameObject(positionProviderName);
-            TrainingObject positionProvider = target.AddComponent<TrainingObject>();
+            SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(positionProviderName);
 
             ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorActivationMode.Deactivation);

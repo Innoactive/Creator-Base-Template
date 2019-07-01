@@ -2,6 +2,8 @@
 
 using Innoactive.Hub.Training;
 using System.Collections;
+using Innoactive.Hub.Training.Behaviors;
+using Innoactive.Hub.Training.SceneObjects;
 using Innoactive.Hub.Training.Template;
 using NUnit.Framework;
 using UnityEngine;
@@ -21,12 +23,12 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             const float duration = 0.05f;
             
             GameObject target = new GameObject(targetName);
-            TrainingObject positionProvider = target.AddComponent<TrainingObject>();
+            SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(targetName);
 
             Vector3 endScale = target.transform.localScale + newScale;
 
-            Behavior behavior = new ScalingBehavior(new TrainingObjectReference(targetName), endScale, duration);
+            Behavior behavior = new ScalingBehavior(new SceneObjectReference(targetName), endScale, duration);
 
             // When we activate the behavior and wait for it's delay time,
             behavior.Activate();
@@ -45,12 +47,12 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             const float duration = 0f;
             
             GameObject target = new GameObject(targetName);
-            TrainingObject positionProvider = target.AddComponent<TrainingObject>();
+            SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(targetName);
 
             Vector3 endScale = target.transform.localScale + newScale;
 
-            Behavior behavior = new ScalingBehavior(new TrainingObjectReference(targetName), endScale, duration);
+            Behavior behavior = new ScalingBehavior(new SceneObjectReference(targetName), endScale, duration);
 
             // When we activate it,
             behavior.Activate();
@@ -69,12 +71,12 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             const float duration = -0.05f;
             
             GameObject target = new GameObject(targetName);
-            TrainingObject positionProvider = target.AddComponent<TrainingObject>();
+            SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(targetName);
 
             Vector3 endScale = target.transform.localScale + newScale;
 
-            Behavior behavior = new ScalingBehavior(new TrainingObjectReference(targetName), endScale, duration);
+            Behavior behavior = new ScalingBehavior(new SceneObjectReference(targetName), endScale, duration);
 
             // When we activate it,
             behavior.Activate();
@@ -93,12 +95,12 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             const float duration = 0f;
             
             GameObject target = new GameObject(targetName);
-            TrainingObject positionProvider = target.AddComponent<TrainingObject>();
+            SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(targetName);
 
             Vector3 endScale = Vector3.zero;
 
-            Behavior behavior = new ScalingBehavior(new TrainingObjectReference(targetName), endScale, duration);
+            Behavior behavior = new ScalingBehavior(new SceneObjectReference(targetName), endScale, duration);
 
             // When we activate it,
             behavior.Activate();
@@ -117,12 +119,12 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             const float duration = 0f;
             
             GameObject target = new GameObject(targetName);
-            TrainingObject positionProvider = target.AddComponent<TrainingObject>();
+            SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(targetName);
 
             Vector3 endScale = new Vector3(-1, -1, -1);
 
-            Behavior behavior = new ScalingBehavior(new TrainingObjectReference(targetName), endScale, duration);
+            Behavior behavior = new ScalingBehavior(new SceneObjectReference(targetName), endScale, duration);
 
             // When we activate it,
             behavior.Activate();
@@ -141,12 +143,12 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             const float duration = 0.05f;
             
             GameObject target = new GameObject(targetName);
-            TrainingObject positionProvider = target.AddComponent<TrainingObject>();
+            SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(targetName);
 
             Vector3 endScale = target.transform.localScale + newScale;
 
-            Behavior behavior = new ScalingBehavior(new TrainingObjectReference(targetName), endScale, duration);
+            Behavior behavior = new ScalingBehavior(new SceneObjectReference(targetName), endScale, duration);
 
             // When we mark it to fast-forward,
             behavior.MarkToFastForward();
@@ -165,12 +167,12 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             const float duration = 0.05f;
             
             GameObject target = new GameObject(targetName);
-            TrainingObject positionProvider = target.AddComponent<TrainingObject>();
+            SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(targetName);
 
             Vector3 endScale = target.transform.localScale + newScale;
 
-            Behavior behavior = new ScalingBehavior(new TrainingObjectReference(targetName), endScale, duration);
+            Behavior behavior = new ScalingBehavior(new SceneObjectReference(targetName), endScale, duration);
 
             // When we mark it to fast-forward and activate it,
             behavior.MarkToFastForward();
@@ -190,12 +192,12 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             const float duration = 0.05f;
             
             GameObject target = new GameObject(targetName);
-            TrainingObject positionProvider = target.AddComponent<TrainingObject>();
+            SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(targetName);
 
             Vector3 endScale = target.transform.localScale + newScale;
 
-            Behavior behavior = new ScalingBehavior(new TrainingObjectReference(targetName), endScale, duration);
+            Behavior behavior = new ScalingBehavior(new SceneObjectReference(targetName), endScale, duration);
 
             behavior.Activate();
 
