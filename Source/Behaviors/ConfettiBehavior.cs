@@ -241,7 +241,7 @@ namespace Innoactive.Hub.Training.Template
             }
 
             EmitConfettiFinished();
-            UnityEngine.Object.Destroy(confettiMachine);
+            Object.Destroy(confettiMachine);
         }
     }
 }

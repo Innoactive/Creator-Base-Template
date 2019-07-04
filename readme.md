@@ -1,22 +1,20 @@
-# Introduction
+# What is a training application
 
 The Hub Training Module is a part of the Innoactive Hub SDK. It's designed for large enterprises who train people to do manufacturing tasks. With it, you can train employees remotely, safely, and cost-efficiently. Our solution covers the complete lifecycle of virtual training applications, including their creation, maintenance, and distribution to the final user.
 
-There are two user roles: a template developer and a training designer. Template developers have to be programmers, but training designers do not have to possess a deep technical knowledge. At first, a template developer performs initial configuration of the Training Module to meet the company's needs, creating a template. Then, training designers create training applications based on this template.
+A training application has a scene and a training course. A scene is an environment for a trainee to interact with, and a training course is a program that puts objects in motion and guides the trainee. Normally, you need to be a software engineer to define a training course. With the Training Module SDK, you do it with an intuitive graphical editor.
 
-This document is intended for template developers.
+A training course is made out of chapters. Each chapter starts where the previous ends: if a trainee has to drill a hole in a wall in a first chapter, the hole will be there when you load the second chapter. Chapters consist of individual steps that in turn have any number of behaviors and an exactly one  transition. Each transition can have multiple conditions.
+
+When a training application starts a new step, it executes all its behaviors. Afterwards, it waits until the trainee completes all conditions of the transition. When it happens, the application proceeds to the step at the other end of the transition. If there are no conditions, the step completes at the same time as its behaviors. 
  
-This project is an example of a template. The following chapters describe to how to create a similar one. Use this project as a reference to validate your progress through this tutorial. Feel free to modify or discard it to create your own: *this template is not meant to be extended.*
+Behaviors and conditions communicate with objects in a scene through their training properties: for example, to make use of `Grabbed` condition, you need to attach a `GrabbableProperty` to the target object.
 
-# What is a training
+# What is a template
 
-The training is a linear sequence of chapters. Each chapter starts where the previous ends: if a trainee has to drill a hole in a wall in a first chapter, the hole will be there when you load the second chapter. You can start a training from any chapter.
+A training designer can setup a scene and a training course on his own, but what if he needs a behavior or condition that is not there by default? As a software developer, you configure and extend the Training Module SDK to fit your needs, creating a template (this why do we call you a template developer). This document describes how to create one: if you follow it, you will create a template that is very similar to this project.
 
-Each chapter consists of steps that are connected to each other via transitions. Every step has a transition and any number of behaviors. Behaviors are actions that execute independently from the trainee. For example, a behavior can play an audio or move an object from one point to another.
-
-A transition may contain multiple conditions. With conditions, designers decide what trainees have to do to progress through the training. When all conditions are completed, the next step (defined in the transition) starts.
-
-Behaviors and conditions communicate with objects on a scene through their training properties. A training property defines what actions are available for its scene object: for example, `GrabbableProperty` will inform `GrabbedCondition` that a trainee has grabbed the object. Conditions and behaviors use `TrainingObjectReference` and `TrainingPropertyReference<TProperty>` classes to reference training objects and their properties. Never use Unity game objects directly.
+Note that this project is just an example. We focus on explaining the Training Module SDK: everything else is simplified to not distract you. Sacrifices had to be made: you can't comfortably extend this project or use it in production.
 
 # Initial setup
 
@@ -51,41 +49,41 @@ Select the following option in the Unity editor's toolbar: `Innoactive > Trainin
 
 ## Create a script
 
-Create a new C# script named TrainingLoader and replace its contents with the following code snippet:
+Create a new C# script named TrainingCourseLoader and replace its contents with the following code snippet:
 
 ```c#
-   using System.Collections;
-   using Innoactive.Hub.Training.Utils.Serialization;
-   using UnityEngine;
-   
-   namespace Innoactive.Hub.Training.Template
-   {
-       public class TrainingLoader : MonoBehaviour
-       {
-           [SerializeField]
-           [Tooltip("Text asset with saved training.")]
-           private TextAsset serializedTraining;
-   
-           private IEnumerator Start()
-           {
-               // Skip the first two frames to give VRTK time to initialize.
-               yield return null;
-               yield return null;
-   		
-               // Load a training from the text asset
-               ITraining training = JsonTrainingSerializer.Deserialize(serializedTraining.text);
-   
-               // Start the training execution
-               training.Activate();
-           }
-       }
-   }
+using System.Collections;
+using Innoactive.Hub.Training.Utils.Serialization;
+using UnityEngine;
+
+namespace Innoactive.Hub.Training.Template
+{
+    public class TrainingCourseLoader : MonoBehaviour
+    {
+        [SerializeField]
+        [Tooltip("Text asset with a saved training course.")]
+        private TextAsset serializedTrainingCourse;
+
+        private IEnumerator Start()
+        {
+            // Skip the first two frames to give VRTK time to initialize.
+            yield return null;
+            yield return null;
+
+            // Load a training from the text asset.
+            ICourse training = JsonTrainingSerializer.Deserialize(serializedTrainingCourse.text);
+
+            // Start the training execution.
+            training.Activate();
+        }
+    }
+}
 ```
 
-## Add a training loader to the scene
+## Add a training course loader to the scene
 
 1) Add a new empty game object to the scene.
-2) Add the `Trainer Loader` component to it.
+2) Add the `Trainer Course Loader` component to it.
 
 ## The complete example
 
@@ -126,7 +124,7 @@ There should be one and only one training configuration scene object in a scene.
  
 The definition has the following properties and methods:
 
-1. `TrainingObjectRegistry` provides the access to all training objects and properties of the current scene.
+1. `SceneObjectRegistry` provides the access to all training objects and properties of the current scene.
 2. `Trainee` is a shortcut to a trainee's headset.
 3. `InstructionPlayer` is a default audio source for all `PlayAudioBehavior` behaviors.
 4. `TextToSpeechConfig` defines a TTS engine, voice, and language to use to generate audio.
@@ -180,7 +178,7 @@ The Training SDK uses the `Localization` class from the Hub SDK. It's a wrapper 
 
 > The `Localization` class is not concerned about current language or which localization file should be loaded. You have to manage it in the template.
 
-Whenever you want to localize a `string` value, replace it with a `LocalizedString`. When `Value` propertiy is invoked, it searches for a localization entry by the `Key` and returns the result. If `Key` isn't specified or the entry is missing, it uses the `DefaultText` instead. 
+Whenever you want to localize a `string` value, replace it with a `LocalizedString`. When `Value` property is invoked, it searches for a localization entry by the `Key` and returns the result. If `Key` isn't specified or the entry is missing, it uses the `DefaultText` instead. 
 
 ## Instruction player
 
@@ -206,6 +204,7 @@ Behaviors and conditions communicate with objects on the scene through their pro
 
 ```c#
 using System;
+using Innoactive.Hub.Training.SceneObjects.Properties;
 using UnityEngine;
 using VRTK;
 
@@ -214,8 +213,8 @@ namespace Innoactive.Hub.Training.Template
     // PointingProperty requires VRTK_Pointer to work.
     [RequireComponent(typeof(VRTK_Pointer))]
     // Training object with that property can point at other training objects.
-    // Any property should inherit from TrainingObjectProperty class.
-    public class PointingProperty : TrainingObjectProperty
+    // Any property should inherit from SceneObjectProperty class.
+    public class PointingProperty : SceneObjectProperty
     {
         // Event that is invoked every time when the object points at something.
         public event Action<ColliderWithTriggerProperty> PointerEnter;
@@ -282,6 +281,10 @@ Create new C# script named `PointedCondition` and change its contents to the fol
 
 ```c#
 using System.Runtime.Serialization;
+using Innoactive.Hub.Training.Attributes;
+using Innoactive.Hub.Training.Conditions;
+using Innoactive.Hub.Training.SceneObjects;
+using Innoactive.Hub.Training.SceneObjects.Properties;
 using Newtonsoft.Json;
 
 namespace Innoactive.Hub.Training.Template
@@ -293,20 +296,20 @@ namespace Innoactive.Hub.Training.Template
     {
         [DataMember]
         // Reference to a pointer property.
-        public TrainingPropertyReference<PointingProperty> Pointer { get; private set; }
+        public ScenePropertyReference<PointingProperty> Pointer { get; private set; }
 
         [DisplayName("Target with a collider")]
         [DataMember]
         // Reference to a target property.
-        public TrainingPropertyReference<ColliderWithTriggerProperty> Target { get; private set; }
+        public ScenePropertyReference<ColliderWithTriggerProperty> Target { get; private set; }
 
         [JsonConstructor]
         // Make sure that references are initialized.
-        public PointedCondition() : this(new TrainingPropertyReference<PointingProperty>(), new TrainingPropertyReference<ColliderWithTriggerProperty>())
+        public PointedCondition() : this(new ScenePropertyReference<PointingProperty>(), new ScenePropertyReference<ColliderWithTriggerProperty>())
         {
         }
 
-        public PointedCondition(TrainingPropertyReference<PointingProperty> pointer, TrainingPropertyReference<ColliderWithTriggerProperty> target)
+        public PointedCondition(ScenePropertyReference<PointingProperty> pointer, ScenePropertyReference<ColliderWithTriggerProperty> target)
         {
             Pointer = pointer;
             Target = target;
@@ -378,6 +381,9 @@ Create new C# script named `ScalingBehavior` and change its contents to the foll
 using System.Collections;
 using System.Runtime.Serialization;
 using Innoactive.Hub.Threading;
+using Innoactive.Hub.Training.Attributes;
+using Innoactive.Hub.Training.Behaviors;
+using Innoactive.Hub.Training.SceneObjects;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -390,7 +396,7 @@ namespace Innoactive.Hub.Training.Template
     {
         // Training object to scale.
         [DataMember]
-        public TrainingObjectReference Target { get; private set; }
+        public SceneObjectReference Target { get; private set; }
 
         // Target scale.
         [DataMember]
@@ -407,11 +413,11 @@ namespace Innoactive.Hub.Training.Template
         
         // Handle data initialization in the constructor.
         [JsonConstructor]
-        public ScalingBehavior() : this(new TrainingObjectReference(), Vector3.one, 0f)
+        public ScalingBehavior() : this(new SceneObjectReference(), Vector3.one, 0f)
         {
         }
 
-        public ScalingBehavior(TrainingObjectReference target, Vector3 targetScale, float duration)
+        public ScalingBehavior(SceneObjectReference target, Vector3 targetScale, float duration)
         {
             Target = target;
             TargetScale = targetScale;
@@ -497,7 +503,7 @@ The other difference is that behaviors are simply idling when they are active. T
 * The Training Module uses Newtonsoft.Json to serialize and preserve trainings. Note the `DataContract`, `DataMember`, and `JsonConstructor` attributes: they denote which properties of the condition are serialized and thus saved.
 * If you make a behavior or condition to implement an `IOptional` interface, you will be able to skip it with training modes.
 * If you want this condition to available to training designers, you have to adjust the [editor configuration](#editor-configuration) accordingly. The same is true for behaviors.
-* Conditions and behaviors never reference training objects or properties directly: they use instances of `TrainingObjectReference` and `TrainingPropertyReference<TProperty>` classes instead. It makes trainings independent from scenes. References locate training objects by their unique names.
+* Conditions and behaviors never reference training objects or properties directly: they use instances of `SceneObjectReference` and `ScenePropertyReference<TProperty>` classes instead. It makes trainings independent from scenes. References locate training objects by their unique names.
 
 ## Mode parameters
 

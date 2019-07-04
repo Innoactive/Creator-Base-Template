@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Innoactive.Hub.Training.Template
 {
-    public class TrainingLoader : MonoBehaviour
+    public class TrainingCourseLoader : MonoBehaviour
     {
         [SerializeField]
         [Tooltip("Text asset with a saved training course.")]
