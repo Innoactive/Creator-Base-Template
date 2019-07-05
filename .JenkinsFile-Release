@@ -46,7 +46,7 @@ pipeline
             {
                 powershell "git config --system core.longpaths true"
                 checkout scm
-                
+
                 powershell """
                 Copy-Item ${SHARED_INITIAL} -Destination ${WORKSPACE}
                 """
@@ -69,7 +69,7 @@ pipeline
                 }
             }
         }
-        
+
         stage('Initial Setup of Hub-SDK')
         {
             steps
@@ -98,9 +98,9 @@ pipeline
             {
                 powershell """
                 Remove-Item ${TEMPLATE_DIRECTORY_IN_ASSETS} -Force -Recurse -ErrorAction SilentlyContinue
-            
+
                 New-Item ${TEMPLATE_DIRECTORY_IN_ASSETS} -ItemType Directory
-                        
+
                 Move-Item -Path .\\readme.md -Destination ${TEMPLATE_DIRECTORY_IN_ASSETS}
                 Move-Item -Path Extensions -Destination ${TEMPLATE_DIRECTORY_IN_ASSETS}
                 Move-Item -Path Resources -Destination ${TEMPLATE_DIRECTORY_IN_ASSETS}
@@ -108,6 +108,17 @@ pipeline
                 Move-Item -Path Source -Destination ${TEMPLATE_DIRECTORY_IN_ASSETS}
                 Move-Item -Path Tests -Destination ${TEMPLATE_DIRECTORY_IN_ASSETS}
                 """
+            }
+        }
+
+        stage('Test')
+        {
+            steps
+            {
+                script
+                {
+                    load(SHARED).Test()
+                }
             }
         }
 
@@ -122,17 +133,6 @@ pipeline
             }
         }
 
-        stage('Test')
-        {
-            steps
-            {
-                script
-                {
-                    load(SHARED).Test()
-                }
-            }
-        }
-        
         stage('Setup Export Config')
         {
             when

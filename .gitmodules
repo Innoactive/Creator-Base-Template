@@ -9,4 +9,4 @@
 	url = git@github.com:Innoactive/Hub-Training-Module.git
 [submodule "Extensions/PostProcessing"]
 	path = Extensions/PostProcessing
-	url = git@github.com:Unity-Technologies/PostProcessing.git
+	url=git@github.com:Innoactive/PostProcessing.git
