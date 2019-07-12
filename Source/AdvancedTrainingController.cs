@@ -103,7 +103,7 @@ namespace Innoactive.Hub.Training.Template
         private void Awake()
         {
             // Create new audio source and make it the default audio player.
-            //TrainingConfiguration.Instance.InstructionPlayer = gameObject.AddComponent<AudioSource>();
+            //RuntimeConfigurator.Instance.InstructionPlayer = gameObject.AddComponent<AudioSource>();
 
             // Get the current system language as default language.
             selectedLanguage = LocalizationUtils.GetSystemLanguageAsTwoLetterIsoCode();
@@ -158,7 +158,7 @@ namespace Innoactive.Hub.Training.Template
             };
 
             // If TTS config overload is set, it is used instead the config that is located at `[YOUR_PROJECT_ROOT_FOLDER]/Config/text-to-speech-config.json`.
-            TrainingConfiguration.Definition.TextToSpeechConfig = ttsConfig;
+            RuntimeConfigurator.Configuration.TextToSpeechConfig = ttsConfig;
 
             // Load the localization file of the current selected language.
             LoadLocalizationForTraining();
@@ -372,7 +372,7 @@ namespace Innoactive.Hub.Training.Template
                 soundOffImage.enabled = isSoundOn == false;
 
                 // Mute the instuction audio.
-                TrainingConfiguration.Definition.InstructionPlayer.mute = isSoundOn == false;
+                RuntimeConfigurator.Configuration.InstructionPlayer.mute = isSoundOn == false;
             });
         }
 
@@ -432,7 +432,7 @@ namespace Innoactive.Hub.Training.Template
             List<string> availableModes = new List<string>();
 
             // Add each mode name to the list of available modes.
-            foreach (IMode mode in TrainingConfiguration.Definition.AvailableModes)
+            foreach (IMode mode in RuntimeConfigurator.Configuration.AvailableModes)
             {
                 availableModes.Add(mode.Name);
             }
@@ -441,13 +441,13 @@ namespace Innoactive.Hub.Training.Template
             modePicker.AddOptions(availableModes);
 
             // Set the picker value to the current selected mode.
-            modePicker.value = TrainingConfiguration.Definition.GetCurrentModeIndex();
+            modePicker.value = RuntimeConfigurator.Configuration.GetCurrentModeIndex();
 
             // When the selected mode is changed,
             modePicker.onValueChanged.AddListener(itemIndex =>
             {
                 // Set the mode based on the user selection.
-                TrainingConfiguration.Definition.SetMode(itemIndex);
+                RuntimeConfigurator.Configuration.SetMode(itemIndex);
             });
         }
         #endregion

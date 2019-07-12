@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Innoactive.Hub.Training.Template.Editors.Configuration
 {
-    public class InnoactiveDefinition : DefaultDefinition
+    public class InnoactiveEditorConfiguration : DefaultEditorConfiguration
     {
         private class Confetti : Menu.Item<IBehavior>
         {
@@ -58,7 +58,7 @@ namespace Innoactive.Hub.Training.Template.Editors.Configuration
         private readonly IList<Menu.Option<IBehavior>> defaultBehaviors;
         private readonly IList<Menu.Option<ICondition>> defaultConditions;
 
-        public InnoactiveDefinition()
+        public InnoactiveEditorConfiguration()
         {
             defaultBehaviors = new List<Menu.Option<IBehavior>>
             {

@@ -6,7 +6,7 @@ using Innoactive.Hub.Training.Configuration.Modes;
 
 namespace Innoactive.Hub.Training.Template.Configuration
 {
-    public class InnoactiveDefinition : DefaultDefinition
+    public class InnoactiveRuntimeConfiguration : DefaultRuntimeConfiguration
     {
         public override ReadOnlyCollection<IMode> AvailableModes
         {

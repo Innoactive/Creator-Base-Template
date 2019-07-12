@@ -2556,7 +2556,7 @@ MonoBehaviour:
   soundOffImage: {fileID: 114164439897878160}
   languagePicker: {fileID: 114586115552944370}
   modePicker: {fileID: 114779465939859988}
-  trainingName: DefaultTraining
+  trainingCourseName: DefaultTraining
   fallbackLanguage: EN
 --- !u!114 &114670005997318314
 MonoBehaviour:

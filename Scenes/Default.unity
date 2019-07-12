@@ -512,7 +512,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ef5789d95ab46e095b834b7c4789068, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  definitionName: Innoactive.Hub.Training.Template.Configuration.InnoactiveDefinition,
+  runtimeConfigurationName: Innoactive.Hub.Training.Template.Configuration.InnoactiveRuntimeConfiguration,
     Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
 --- !u!4 &139556878
 Transform:

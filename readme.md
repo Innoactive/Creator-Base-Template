@@ -103,11 +103,11 @@ You can either modify training designer tools with editor configuration, or you 
 
 ## Editor configuration
 
-To change the editor configuration, implement `Innoactive.Hub.Training.Editors.Configuration.IDefinition` interface. The Training Module will automatically locate it if you do so, and will use the `DefaultDefinition` otherwise. If there are more than one custom editor configuration definitions, an undefined behavior occurs.
+To change the editor configuration, implement `Innoactive.Hub.Training.Editors.Configuration.IEditorConfiguration` interface. The Training Module will automatically locate it if you do so, and will use the `DefaultEditorConfiguration` otherwise. If there are more than one custom editor configurations, an error will be logged and a random configuration is used.
 
  > This is the main reason why we recommend to build a template from scratch instead of extending this project.
 
-The `DefaultDefinition` configures the Training Module in a basic way. Inherit from it to not implement everything from scratch. Take a look at `InnoactiveDefinition` to see how to implement complex things like `Audio Hint` menu option.
+The `DefaultEditorConfiguration` configures the Training Module in a basic way. Inherit from it to not implement everything from scratch. Take a look at `InnoactiveEditorConfiguration` to see how to implement complex things like `Audio Hint` menu option.
 
 With editor configuration, you can limit or allow training designers to use certain behaviors and conditions. For example, you might add a custom behavior that highlights its target object in a special way, and hide the default `Highlight` behavior.
 
@@ -116,13 +116,13 @@ With editor configuration, you can limit or allow training designers to use cert
 
 Finally, you define what happens when someone clicks at `Innoactive > Training > Setup Scene` menu option in the `SetupTrainingScene()` method. By default, it set ups the Hub SDK and creates a training configuration object.
 
-## Training configuration
+## Runtime configuration
 
-You can use the training configuration to adjust the way the training application executes in a runtime.
+You can use the runtime configuration to adjust the way the training application executes in a runtime.
  
-There should be one and only one training configuration scene object in a scene. This object is just a container for the configuration definition, which actually customizes the template. You can assign the definition either programmatically, or with a game object inspector. By default, the `Innoactive.Hub.Training.Configuration.DefaultDefinition` is used. Extend it to create your own, and then assign it to the scene object.
+There should be one and only one training runtime configurator scene object in a scene. In the scenes of this example template, the game object is called `[TRAINING_CONFIGURATION]`. This object is just a container for the runtime configuration, which actually customizes the template. You can assign the runtime configuration either programmatically, or with the game object inspector. By default, the `Innoactive.Hub.Training.Configuration.DefaultRuntimeConfiguration` is used. Extend it to create your own, and then assign it to the scene's game object. Take a look at `InnoactiveRuntimeConfiguration` to see how to implement other training modes like the `No Audio Hints` mode.
  
-The definition has the following properties and methods:
+The runtime configuration has the following properties and methods:
 
 1. `SceneObjectRegistry` provides the access to all training objects and properties of the current scene.
 2. `Trainee` is a shortcut to a trainee's headset.
@@ -182,13 +182,13 @@ Whenever you want to localize a `string` value, replace it with a `LocalizedStri
 
 ## Instruction player
 
-A `PlayAudioBehavior` uses the value of the `TrainingConguration.InstructionPlayer` property as its audio source. By default, the property attaches an audio source to the trainee's headset.
+A `PlayAudioBehavior` uses the value of the `RuntimeConfigurator.Configuration.InstructionPlayer` property as its audio source. By default, the property attaches an audio source to the trainee's headset.
 
 ## Training modes
 
 Some conditions and behaviors reference the current training mode for custom parameters. For example, parameters can define in which color the object has to be highlighted. The training mode parameters is a string-to-object dictionary. Additionally, the current mode defines which behaviors and conditions should be entirely skipped.
 
-The default training definition has only one available mode. It allows any condition or behavior, and has no parameters. To define your own training modes, override the `AvailableModes` property in your training configuration definition. To switch between modes, call `SetMode(index)` method. Use the `Mode` class constructor to create a mode.
+The default runtime configuration has only one available mode. It allows any condition or behavior, and has no parameters. To define your own training modes, override the `AvailableModes` property in your own new training runtime configuration. To switch between modes, call `SetMode(index)` method. Use the `Mode` class constructor to create a mode.
 
 # Extend the Training Module
 
