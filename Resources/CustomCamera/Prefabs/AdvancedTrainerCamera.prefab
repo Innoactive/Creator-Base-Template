@@ -350,7 +350,7 @@ GameObject:
   - component: {fileID: 114295417852940640}
   - component: {fileID: 114128871190382102}
   m_Layer: 0
-  m_Name: SkipButton
+  m_Name: SkipButton <- INTERACTABLE IS OFF
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -583,7 +583,7 @@ GameObject:
   - component: {fileID: 114075442288507122}
   - component: {fileID: 114840522142385164}
   m_Layer: 0
-  m_Name: ChapterPicker
+  m_Name: ChapterPicker <- INTERACTABLE IS OFF
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1323,7 +1323,7 @@ MonoBehaviour:
     m_HighlightedTrigger: Highlighted
     m_PressedTrigger: Pressed
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 114295417852940640}
   m_OnClick:
     m_PersistentCalls:
@@ -2886,7 +2886,7 @@ MonoBehaviour:
     m_HighlightedTrigger: Highlighted
     m_PressedTrigger: Pressed
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 0}
   m_Template: {fileID: 224428610099219358}
   m_CaptionText: {fileID: 114976346711773872}
