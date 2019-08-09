@@ -54,9 +54,9 @@ namespace Innoactive.Hub.Training.Template
         [SerializeField]
         private Button startTrainingButton;
 
-        [Tooltip("Button that skips one step of the training.")]
+        [Tooltip("Step picker dropdown.")]
         [SerializeField]
-        private Button skipStepButton;
+        private Dropdown skipStepPicker;
 
         [Tooltip("Button that resets the scene to its initial state.")]
         [SerializeField]
@@ -129,7 +129,7 @@ namespace Innoactive.Hub.Training.Template
             SetupChapterPicker();
             SetupStepInfoToggle();
             SetupStartTrainingButton();
-            SetupSkipStepButton();
+            SetupSkipStepPicker();
             SetupResetSceneButton();
             SetupSoundToggle();
             SetupLanguagePicker();
@@ -245,7 +245,7 @@ namespace Innoactive.Hub.Training.Template
             {
                 return;
             }
-            
+
             // Get index of the current chapter.
             int currentChapterIndex;
 
@@ -267,6 +267,12 @@ namespace Innoactive.Hub.Training.Template
                 // Mark it to fast-forward.
                 trainingCourse.Chapters[i + currentChapterIndex].MarkToFastForward();
             }
+        }
+
+        private IEnumerable<ITransition> GetOneTransitionPerTargetStep(IStep step)
+        {
+            // Returns only one transition per attainable target step in a collection.
+            return step.Transitions.GroupBy(transition => transition.TargetStep).Select(transition => transition.First());
         }
 
         #region Setup UI
@@ -310,13 +316,13 @@ namespace Innoactive.Hub.Training.Template
                 // Subscribe to the "Deactivated" event of the current training in order to change the skip step button to the start button after finishing the training.
                 trainingCourse.Deactivated += (sender, args) =>
                 {
-                    skipStepButton.gameObject.SetActive(false);
+                    skipStepPicker.gameObject.SetActive(false);
                     startTrainingButton.gameObject.SetActive(true);
                 };
 
                 //Skip all chapters before selected.
                 FastForwardChapters(chapterPicker.value);
-                
+
                 // Start the training
                 trainingCourse.Activate();
 
@@ -326,21 +332,23 @@ namespace Innoactive.Hub.Training.Template
                 languagePicker.interactable = false;
 
                 // Show the skip step button instead of the start button.
-                skipStepButton.gameObject.SetActive(true);
+                skipStepPicker.gameObject.SetActive(true);
                 startTrainingButton.gameObject.SetActive(false);
             });
         }
 
-        private void SetupSkipStepButton()
+        private void SetupSkipStepPicker()
         {
-            // When the user clicks on Skip Step button,
-            skipStepButton.onClick.AddListener(() =>
+            // When a target step was chosen,
+            skipStepPicker.onValueChanged.AddListener(index =>
             {
                 // If there's an active step and it's not the last step,
                 if (activeStep != null && activeStep.ActivationState != ActivationState.Deactivated)
                 {
-                    // Mark to fast-forward it.
-                    activeStep.MarkToFastForward();
+                    // Mark to fast-forward the corresponding transition.
+                    // TODO: Transitions skipping isn't working properly at the moment. The step also should be skipped not only the transition => blocking behaviors
+                    GetOneTransitionPerTargetStep(activeStep).ToList()[index].MarkToFastForward();
+                    //activeStep.MarkToFastForward();
                 }
             });
         }
@@ -456,6 +464,7 @@ namespace Innoactive.Hub.Training.Template
         private void SetupTrainingDependantUi()
         {
             SetupChapterPickerOptions();
+            SetupSkipStepPickerOptions();
             SetupTrainingIndicator();
             SetupStepName();
             SetupStepInfo();
@@ -466,7 +475,7 @@ namespace Innoactive.Hub.Training.Template
             // Show all chapters of the training.
             PopulateChapterPickerOptions(0);
 
-            // When the current chapter is changed, 
+            // When the current chapter is changed,
             trainingCourse.CurrentChildChanged += (sender, args) =>
             {
                 // Get a collection of available chapters.
@@ -485,7 +494,7 @@ namespace Innoactive.Hub.Training.Template
             // Get a collection of available chapters.
             IList<IChapter> chapters = trainingCourse.Chapters;
 
-            // Skip finished chapters and convert the rest to a list of chapter names. 
+            // Skip finished chapters and convert the rest to a list of chapter names.
             List<string> dropdownOptions = new List<string>();
             for (int i = startingIndex; i < chapters.Count; i++)
             {
@@ -505,6 +514,45 @@ namespace Innoactive.Hub.Training.Template
             // Note that this method is not a part of the `UnityEngine.UI.Dropdown` interface.
             // It is an extension method defined in `Innoactive.Hub.Training.Unity.Utils.UnityUiUtils` class.
             chapterPicker.Refresh();
+        }
+
+        private void SetupSkipStepPickerOptions()
+        {
+            trainingCourse.ActiveStepChanged += (sender, args) =>
+            {
+                // Get a collection of available transitions (one per target step).
+                IList<ITransition> transitions = GetOneTransitionPerTargetStep(args.CurrentStep).ToList();
+
+                // Create a list with all dropdown option names.
+                List<string> dropdownOptions = new List<string>();
+                if (transitions.Count > 0)
+                {
+                    // Convert the transitions to a list of target step names and use them as dropdown options.
+                    // null as target step means "end of chapter".
+                    dropdownOptions = transitions.Select(transition => (transition.TargetStep != null) ? transition.TargetStep.Name : "End of the chapter").ToList();
+                }
+
+                // The default value of the dropdown menu would be one target step which then cannot be chosen anymore.
+                // Therefore we need a "dummy" default option.
+                dropdownOptions.Add("Default dummy option");
+
+                // Reset the skip step picker.
+                skipStepPicker.ClearOptions();
+
+                // Populate it with new options.
+                skipStepPicker.AddOptions(dropdownOptions);
+
+                // Reset the selected value to the dummy option.
+                skipStepPicker.value = skipStepPicker.options.Count - 1;
+
+                // Delete the dummy option. The selected value will still stay the same.
+                skipStepPicker.options.RemoveAt(skipStepPicker.value);
+
+                // Refresh skip step picker immediately.
+                // Note that this method is not a part of the `UnityEngine.UI.Dropdown` interface.
+                // It is an extension method defined in `Innoactive.Hub.Training.Unity.Utils.UnityUiUtils` class.
+                skipStepPicker.Refresh();
+            };
         }
 
         private void SetupTrainingIndicator()
