@@ -29,7 +29,7 @@ pipeline
         // see more at https://github.com/DragonBox/u3d/blob/master/LOG_RULES.md
         U3D_RULES_PATH = "z:\\u3d_log_rules.json"
         // Unity version used
-        UNITY_VERSION = '2017.4.27f1'
+        UNITY_VERSION = '2018.4.5f1'
         // Unity project base path
         PROJECT_PATH = "y:\\Project"
         // Path where the SDK should be checked out to
@@ -135,10 +135,6 @@ pipeline
 
         stage('Setup Export Config')
         {
-            when
-            {
-                tag pattern: "v(\\d+\\.\\d+\\.\\d+)(-.*)?", comparator: "REGEXP"
-            }
             steps
             {
                 script
@@ -146,8 +142,8 @@ pipeline
                     writeFile file: "${EXPORT_CONFIG}", text: $/
                     {
                         "AssetDirectory" : "Assets/Extensions/IA-Training-Template",
-                        "Version" : "${TAG_NAME}",
-                        "OutputPath" : "./Builds/innoactive-training-template-${TAG_NAME}.unitypackage",
+                        "Version" : "${GIT_COMMIT}",
+                        "OutputPath" : "./Builds/innoactive-training-template-${GIT_COMMIT}.unitypackage",
                         "Excludes" : [
                             "*/Tests/*",
                             "Assets/Extensions/IA-Training-Template/Extensions/Hub-SDK/Extensions/VRTK/ProjectSettings/*",
@@ -162,10 +158,6 @@ pipeline
 
         stage('Create Unity Package')
         {
-            when
-            {
-                tag pattern: "v(\\d+\\.\\d+\\.\\d+)(-.*)?", comparator: "REGEXP"
-            }
             steps
             {
                 script
