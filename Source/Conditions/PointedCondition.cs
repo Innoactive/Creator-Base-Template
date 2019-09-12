@@ -1,4 +1,6 @@
-﻿using System.Runtime.Serialization;
+﻿using System;
+using System.Collections;
+using System.Runtime.Serialization;
 using Innoactive.Hub.Training.Attributes;
 using Innoactive.Hub.Training.Conditions;
 using Innoactive.Hub.Training.SceneObjects;
@@ -10,16 +12,21 @@ namespace Innoactive.Hub.Training.Template
     [DataContract(IsReference = true)]
     [DisplayName("Point at Object")]
     // Condition which is completed when Pointer points at Target.
-    public class PointedCondition : Condition
+    public class PointedCondition : Condition<PointedCondition.EntityData>
     {
-        [DataMember]
-        // Reference to a pointer property.
-        public ScenePropertyReference<PointingProperty> Pointer { get; private set; }
+        public class EntityData : ICompletableData
+        {
+            [DataMember]
+            // Reference to a pointer property.
+            public ScenePropertyReference<PointingProperty> Pointer { get; set; }
 
-        [DisplayName("Target with a collider")]
-        [DataMember]
-        // Reference to a target property.
-        public ScenePropertyReference<ColliderWithTriggerProperty> Target { get; private set; }
+            [DisplayName("Target with a collider")]
+            [DataMember]
+            // Reference to a target property.
+            public ScenePropertyReference<ColliderWithTriggerProperty> Target { get; set; }
+
+            public bool IsCompleted { get; set; }
+        }
 
         [JsonConstructor]
         // Make sure that references are initialized.
@@ -29,58 +36,73 @@ namespace Innoactive.Hub.Training.Template
 
         public PointedCondition(ScenePropertyReference<PointingProperty> pointer, ScenePropertyReference<ColliderWithTriggerProperty> target)
         {
-            Pointer = pointer;
-            Target = target;
-        }
-
-        // This method is called when the step with that condition has completed activation of its behaviors.
-        protected override void PerformActivation()
-        {
-            Pointer.Value.PointerEnter += OnPointerEnter;
-            SignalActivationFinished();
-        }
-
-        // This method is called at deactivation of the step, after every behavior has completed its deactivation.
-        protected override void PerformDeactivation()
-        {
-            Pointer.Value.PointerEnter -= OnPointerEnter;
-            SignalDeactivationFinished();
-        }
-
-        // When a condition or behavior is fast-forwarded, the activation has to complete immediately.
-        // This method should handle it, but since the activation is instanteneous,
-        // It doesn't require any additional actions.
-        protected override void FastForwardActivating()
-        {
-        }
-
-        // When fast-forwarded, a conditions should complete immediately.
-        // For that, the pointer fakes that it pointed at the target.
-        protected override void FastForwardActive()
-        {
-            Pointer.Value.FastForwardPoint(Target);
-        }
-
-        // When a condition or behavior is fast-forwarded, the deactivation has to complete immediately.
-        // This method should handle it, but since the deactivation is instanteneous,
-        // It doesn't require any additional actions.
-        protected override void FastForwardDeactivating()
-        {
-        }
-
-        // When PointerProperty points at something,
-        private void OnPointerEnter(ColliderWithTriggerProperty pointed)
-        {
-            // Ignore it if this condition is already fulfilled.
-            if (IsCompleted)
+            Data = new EntityData()
             {
-                return;
+                Pointer = pointer,
+                Target = target
+            };
+        }
+
+        private class EntityAutocompleter : IAutocompleter<EntityData>
+        {
+            public void Complete(EntityData data)
+            {
+                data.Pointer.Value.FastForwardPoint(data.Target);
+            }
+        }
+
+        private class ActiveProcess : IStageProcess<EntityData>
+        {
+            private EntityData data;
+
+            public void Start(EntityData data)
+            {
+                this.data = data;
+
+                data.Pointer.Value.PointerEnter += OnPointerEnter;
             }
 
-            // Else, if Target references the pointed object, complete the condition.
-            if (Target.Value == pointed)
+            public IEnumerator Update(EntityData data)
             {
-                MarkAsCompleted();
+                yield break;
+            }
+
+            public void End(EntityData data)
+            {
+                data.Pointer.Value.PointerEnter -= OnPointerEnter;
+                this.data = null;
+            }
+
+            public void FastForward(EntityData data)
+            {
+            }
+
+            private void OnPointerEnter(ColliderWithTriggerProperty pointed)
+            {
+                if (data.Target.Value == pointed)
+                {
+                    data.IsCompleted = true;
+                }
+            }
+        }
+
+        private readonly IProcess<EntityData> process = new Process<EntityData>(new EmptyStageProcess<EntityData>(), new ActiveProcess(), new EmptyStageProcess<EntityData>());
+
+        protected override IProcess<EntityData> Process
+        {
+            get
+            {
+                return process;
+            }
+        }
+
+        private readonly IAutocompleter<EntityData> autocompleter = new EntityAutocompleter();
+
+        protected override IAutocompleter<EntityData> Autocompleter
+        {
+            get
+            {
+                return autocompleter;
             }
         }
     }

@@ -82,7 +82,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Conditions
             condition.MarkToFastForward();
 
             // Then it doesn't activate by itself.
-            Assert.AreEqual(ActivationState.Inactive, condition.ActivationState);
+            Assert.AreEqual(Stage.Inactive, condition.State);
 
             yield break;
         }
@@ -107,7 +107,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Conditions
             condition.Activate();
 
             // Then it is deactivated and completed.
-            Assert.AreEqual(ActivationState.Deactivated, condition.ActivationState);
+            Assert.AreEqual(Stage.Deactivated, condition.State);
             Assert.IsTrue(condition.IsCompleted);
 
             yield break;
@@ -133,7 +133,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Conditions
             condition.MarkToFastForward();
 
             // Then it is deactivated and completed.
-            Assert.AreEqual(ActivationState.Deactivated, condition.ActivationState);
+            Assert.AreEqual(Stage.Deactivated, condition.State);
             Assert.IsTrue(condition.IsCompleted);
 
             yield break;

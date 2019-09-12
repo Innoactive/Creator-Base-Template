@@ -250,7 +250,7 @@ namespace Innoactive.Hub.Training.Template
             int currentChapterIndex;
 
             // If the training hasn't started yet,
-            if (trainingCourse.ActivationState == ActivationState.Inactive)
+            if (trainingCourse.ActivationState == Stage.Inactive)
             {
                 // Use 0 as current chapter index.
                 currentChapterIndex = 0;
@@ -276,7 +276,7 @@ namespace Innoactive.Hub.Training.Template
             chapterPicker.onValueChanged.AddListener(index =>
             {
                 // If the training hasn't started it, ignore it. We will use this value when the training starts.
-                if (trainingCourse.ActivationState == ActivationState.Inactive)
+                if (trainingCourse.ActivationState == Stage.Inactive)
                 {
                     return;
                 }
@@ -337,7 +337,7 @@ namespace Innoactive.Hub.Training.Template
             skipStepButton.onClick.AddListener(() =>
             {
                 // If there's an active step and it's not the last step,
-                if (activeStep != null && activeStep.ActivationState != ActivationState.Deactivated)
+                if (activeStep != null && activeStep.ActivationState != Stage.Deactivated)
                 {
                     // Mark to fast-forward it.
                     activeStep.MarkToFastForward();

@@ -12,25 +12,26 @@ namespace Innoactive.Hub.Training.Template
     // This behavior linearly changes scale of a Target object over Duration seconds, until it matches TargetScale.
     [DataContract(IsReference = true)]
     [DisplayName("Scale Object")]
-    public class ScalingBehavior : Behavior
+    public class ScalingBehavior : Behavior<ScalingBehavior.EntityData>
     {
-        // Training object to scale.
-        [DataMember]
-        public SceneObjectReference Target { get; private set; }
+        [DataContract(IsReference = true)]
+        public class EntityData : IData
+        {
+            // Training object to scale.
+            [DataMember]
+            public SceneObjectReference Target { get; set; }
 
-        // Target scale.
-        [DataMember]
-        [DisplayName("Target Scale")]
-        public Vector3 TargetScale { get; private set; }
+            // Target scale.
+            [DataMember]
+            [DisplayName("Target Scale")]
+            public Vector3 TargetScale { get; set; }
 
-        // Duration of the animation in seconds.
-        [DataMember]
-        [DisplayName("Animation Duration")]
-        public float Duration { get; private set; }
+            // Duration of the animation in seconds.
+            [DataMember]
+            [DisplayName("Animation Duration")]
+            public float Duration { get; set; }
+        }
 
-        // A coroutine responsible for scaling the target.
-        private IEnumerator coroutine;
-        
         // Handle data initialization in the constructor.
         [JsonConstructor]
         public ScalingBehavior() : this(new SceneObjectReference(), Vector3.one, 0f)
@@ -39,71 +40,58 @@ namespace Innoactive.Hub.Training.Template
 
         public ScalingBehavior(SceneObjectReference target, Vector3 targetScale, float duration)
         {
-            Target = target;
-            TargetScale = targetScale;
-            Duration = duration;
-        }
-        
-        // Called on activation of the training entity. Define activation logic here.
-        // You have to call `SignalActivationFinished()` after you've done everything you wanted to do during the activation.
-        protected override void PerformActivation()
-        {
-            // Start coroutine which will scale our object.
-            coroutine = ScaleTarget();
-            CoroutineDispatcher.Instance.StartCoroutine(coroutine);
-        }
-
-        // Called on deactivation of the training entity. Define deactivation logic here.
-        // You have to call `SignalDeactivationFinished()` after you've done everything you wanted to do during the deactivation.
-        protected override void PerformDeactivation()
-        {
-            SignalDeactivationFinished();
-        }
-
-        // This method is called when the activation has to be interrupted and completed immediately.
-        protected override void FastForwardActivating()
-        {
-            // Stop the scaling coroutine,
-            CoroutineDispatcher.Instance.StopCoroutine(coroutine);
-
-            // Scale the target manually,
-            Target.Value.GameObject.transform.localScale = TargetScale;
-
-            // And signal that activation is finished.
-            SignalActivationFinished();
-        }
-        
-        // It requires no additional action.
-        protected override void FastForwardActive()
-        {
-        }
-
-        // Deactivation is instanteneous.
-        // It requires no additional action.
-        protected override void FastForwardDeactivating()
-        {
-        }
-        
-        // Coroutine which scales the target transform over time and then finished the activation.
-        private IEnumerator ScaleTarget()
-        {
-            float startedAt = Time.time;
-
-            Transform scaledTransform = Target.Value.GameObject.transform;
-
-            Vector3 initialScale = scaledTransform.localScale;
-
-            while (Time.time - startedAt < Duration)
+            Data = new EntityData()
             {
-                float progress = (Time.time - startedAt) / Duration;
+                Target = target,
+                TargetScale = targetScale,
+                Duration = duration,
+            };
+        }
 
-                scaledTransform.localScale = Vector3.Lerp(initialScale, TargetScale, progress);
-                yield return null;
+        public class ActivatingProcess : IStageProcess<EntityData>
+        {
+            public void Start(EntityData data)
+            {
+                throw new System.NotImplementedException();
             }
 
-            scaledTransform.localScale = TargetScale;
+            public IEnumerator Update(EntityData data)
+            {
+                float startedAt = Time.time;
 
-            SignalActivationFinished();
+                Transform scaledTransform = data.Target.Value.GameObject.transform;
+
+                Vector3 initialScale = scaledTransform.localScale;
+
+                while (Time.time - startedAt < data.Duration)
+                {
+                    float progress = (Time.time - startedAt) / data.Duration;
+
+                    scaledTransform.localScale = Vector3.Lerp(initialScale, data.TargetScale, progress);
+                    yield return null;
+                }
+            }
+
+            public void End(EntityData data)
+            {
+                Transform scaledTransform = data.Target.Value.GameObject.transform;
+                scaledTransform.localScale = data.TargetScale;
+            }
+
+            public void FastForward(EntityData data)
+            {
+                throw new System.NotImplementedException();
+            }
+        }
+
+        private readonly IProcess<EntityData> process = new Process<EntityData>(new ActivatingProcess(), new EmptyStageProcess<EntityData>(), new EmptyStageProcess<EntityData>());
+
+        protected override IProcess<EntityData> Process
+        {
+            get
+            {
+                return process;
+            }
         }
     }
 }

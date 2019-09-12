@@ -18,230 +18,181 @@ namespace Innoactive.Hub.Training.Template
     /// </summary>
     [DisplayName("Spawn Confetti")]
     [DataContract(IsReference = true)]
-    public class ConfettiBehavior : Behavior
+    public class ConfettiBehavior : Behavior<ConfettiBehavior.EntityData>
     {
-        private static readonly Common.Logging.ILog logger = Logging.LogManager.GetLogger<ConfettiBehavior>();
-
-        public class SpawnConfettiEventArg : EventArgs
+        [DataContract(IsReference = true)]
+        public class EntityData : IData
         {
+            /// <summary>
+            /// Bool to check whether the confetti machine should spawn above the trainee or at the position of the position provider.
+            /// </summary>
+            [DataMember]
+            [DisplayName("Spawn Above Trainee")]
+            public bool IsAboveTrainee { get; set; }
+
+            /// <summary>
+            /// Name of the training object where to spawn the confetti machine.
+            /// Only needed if "Spawn Above Trainee" is not checked.
+            /// </summary>
+            [DataMember]
+            [DisplayName("Position Provider")]
+            public SceneObjectReference PositionProvider { get; set; }
+
+            /// <summary>
+            /// Path to the desired confetti machine prefab.
+            /// </summary>
+            [DataMember]
+            [DisplayName("Confetti Machine Path")]
+            public string ConfettiMachinePrefabPath { get; set; }
+
+            /// <summary>
+            /// Radius of the spawning area.
+            /// </summary>
+            [DataMember]
+            [DisplayName("Area Radius")]
+            public float AreaRadius { get; set; }
+
+            /// <summary>
+            /// Duration of the animation in seconds.
+            /// </summary>
+            [DataMember]
+            [DisplayName("Duration")]
+            public float Duration { get; set; }
+
+            /// <summary>
+            /// Activation mode of this behavior.
+            /// </summary>
+            [DataMember]
+            public BehaviorExecutionStages ExecutionStages { get; set; }
+
+            public GameObject ConfettiMachine { get; set; }
         }
 
-        public event EventHandler<SpawnConfettiEventArg> ConfettiStarted;
-        public event EventHandler<SpawnConfettiEventArg> ConfettiFinished;
-
-        /// <summary>
-        /// Bool to check whether the confetti machine should spawn above the trainee or at the position of the position provider.
-        /// </summary>
-        [DataMember]
-        [DisplayName("Spawn Above Trainee")]
-        public bool IsAboveTrainee { get; private set; }
-
-        /// <summary>
-        /// Name of the training object where to spawn the confetti machine.
-        /// Only needed if "Spawn Above Trainee" is not checked.
-        /// </summary>
-        [DataMember]
-        [DisplayName("Position Provider")]
-        public SceneObjectReference PositionProvider { get; private set; }
-
-        /// <summary>
-        /// Path to the desired confetti machine prefab.
-        /// </summary>
-        [DataMember]
-        [DisplayName("Confetti Machine Path")]
-        public string ConfettiMachinePrefabPath { get; private set; }
-
-        /// <summary>
-        /// Radius of the spawning area.
-        /// </summary>
-        [DataMember]
-        [DisplayName("Area Radius")]
-        public float AreaRadius { get; private set; }
-
-        /// <summary>
-        /// Duration of the animation in seconds.
-        /// </summary>
-        [DataMember]
-        [DisplayName("Duration")]
-        public float Duration { get; private set; }
-
-        /// <summary>
-        /// Activation mode of this behavior.
-        /// </summary>
-        [DataMember]
-        public BehaviorActivationMode ActivationMode { get; private set; }
+        private static readonly Common.Logging.ILog logger = Logging.LogManager.GetLogger<ConfettiBehavior>();
 
         private const float defaultDuration = 15f;
         private const string defaultPathConfettiPrefab = "Confetti/Prefabs/InnoactiveConfettiMachine";
         private const float defaultRadius = 1f;
         private const float distanceAboveTrainee = 3f;
 
-        private IEnumerator coroutine;
-        private GameObject confettiMachine;
-        
         [JsonConstructor]
-        public ConfettiBehavior() : this(true, "", defaultPathConfettiPrefab, defaultRadius, defaultDuration, BehaviorActivationMode.Activation)
+        public ConfettiBehavior() : this(true, "", defaultPathConfettiPrefab, defaultRadius, defaultDuration, BehaviorExecutionStages.Activation)
         {
         }
 
-        public ConfettiBehavior(bool isAboveTrainee, ISceneObject positionProvider, string confettiMachinePrefabPath, float radius, float duration, BehaviorActivationMode activationMode)
-            : this(isAboveTrainee, TrainingReferenceUtils.GetNameFrom(positionProvider), confettiMachinePrefabPath, radius, duration, activationMode)
+        public ConfettiBehavior(bool isAboveTrainee, ISceneObject positionProvider, string confettiMachinePrefabPath, float radius, float duration, BehaviorExecutionStages executionStages)
+            : this(isAboveTrainee, TrainingReferenceUtils.GetNameFrom(positionProvider), confettiMachinePrefabPath, radius, duration, executionStages)
         {
         }
 
-        public ConfettiBehavior(bool isAboveTrainee, string positionProviderSceneObjectName, string confettiMachinePrefabPath, float radius, float duration, BehaviorActivationMode activationMode)
+        public ConfettiBehavior(bool isAboveTrainee, string positionProviderSceneObjectName, string confettiMachinePrefabPath, float radius, float duration, BehaviorExecutionStages executionStages)
         {
-            IsAboveTrainee = isAboveTrainee;
-            PositionProvider = new SceneObjectReference(positionProviderSceneObjectName);
-            ConfettiMachinePrefabPath = confettiMachinePrefabPath;
-            AreaRadius = radius;
-            Duration = duration;
-            ActivationMode = activationMode;
+            Data = new EntityData
+            {
+                IsAboveTrainee = isAboveTrainee,
+                PositionProvider = new SceneObjectReference(positionProviderSceneObjectName),
+                ConfettiMachinePrefabPath = confettiMachinePrefabPath,
+                AreaRadius = radius,
+                Duration = duration,
+                ExecutionStages = executionStages
+            };
         }
 
-        protected override void FastForwardActivating()
+        private class ActivatingProcess : IStageProcess<EntityData>
         {
-            CoroutineDispatcher.Instance.StopCoroutine(coroutine);
-            Object.Destroy(confettiMachine);
-            EmitConfettiFinished();
+            private readonly BehaviorExecutionStages stages;
+
+            public void Start(EntityData data)
+            {
+            }
+
+            public IEnumerator Update(EntityData data)
+            {
+                if ((data.ExecutionStages & stages) > 0)
+                {
+                    // Load the given prefab and stop the coroutine if not possible.
+                    GameObject confettiPrefab = Resources.Load<GameObject>(data.ConfettiMachinePrefabPath);
+
+                    if (confettiPrefab == null)
+                    {
+                        logger.Warn("No valid prefab path provided.");
+                        yield break;
+                    }
+
+                    // If the confetti rain should spawn above the player, get the position of the player's headset and raise the y coordinate a bit.
+                    // Otherwise, use the position of the position provider.
+                    Vector3 spawnPosition;
+
+                    if (data.IsAboveTrainee)
+                    {
+                        // VRTK_DeviceFinder.HeadsetTransform throws an exception if you launch the training with an ExampleSimplestTrainingLoader.
+                        // Looks like it needs two frames to setup (during the first frame, the headset is enabled. During the second, it is actually registered).
+                        // yield return null twice for now, we'll refactor that later.
+                        yield return null;
+                        yield return null;
+                        spawnPosition = VRTK_DeviceFinder.HeadsetTransform().position;
+                        spawnPosition.y += distanceAboveTrainee;
+                    }
+                    else
+                    {
+                        spawnPosition = data.PositionProvider.Value.GameObject.transform.position;
+                    }
+
+                    // Spawn the machine and check if it has the interface IParticleMachine
+                    data.ConfettiMachine = Object.Instantiate(confettiPrefab, spawnPosition, Quaternion.Euler(90, 0, 0));
+
+                    if (data.ConfettiMachine == null)
+                    {
+                        logger.Warn("The provided prefab is missing.");
+                        yield break;
+                    }
+
+                    data.ConfettiMachine.name = "Behavior" + confettiPrefab.name;
+
+                    if (data.ConfettiMachine.GetComponent(typeof(IParticleMachine)) == null)
+                    {
+                        logger.Warn("The provided prefab does not have any component of type \"IParticleMachine\".");
+                        yield break;
+                    }
+
+                    // Change the settings and activate the machine
+                    IParticleMachine particleMachine = data.ConfettiMachine.GetComponent<IParticleMachine>();
+                    particleMachine.Activate(data.AreaRadius, data.Duration);
+
+                    if (data.Duration > 0f)
+                    {
+                        yield return new WaitForSeconds(data.Duration);
+                    }
+                }
+            }
+
+            public void End(EntityData data)
+            {
+                if ((data.ExecutionStages & stages) > 0 && data.ConfettiMachine != null && data.ConfettiMachine.Equals(null) == false)
+                {
+                    Object.Destroy(data.ConfettiMachine);
+                    data.ConfettiMachine = null;
+                }
+            }
+
+            public void FastForward(EntityData data)
+            {
+            }
+
+            public ActivatingProcess(BehaviorExecutionStages stages)
+            {
+                this.stages = stages;
+            }
         }
 
-        protected override void FastForwardActive()
+        private readonly IProcess<EntityData> process = new Process<EntityData>(new ActivatingProcess(BehaviorExecutionStages.Activation), new EmptyStageProcess<EntityData>(), new ActivatingProcess(BehaviorExecutionStages.Deactivation));
+
+        protected override IProcess<EntityData> Process
         {
-        }
-
-        protected override void FastForwardDeactivating()
-        {
-            CoroutineDispatcher.Instance.StopCoroutine(coroutine);
-            Object.Destroy(confettiMachine);
-            EmitConfettiFinished();
-        }
-        
-        /// <inheritdoc />
-        protected override void PerformActivation()
-        {
-            if ((ActivationMode & BehaviorActivationMode.Activation) > 0)
+            get
             {
-                ConfettiFinished += OnConfettiFinishedOnActivation;
-                coroutine = RainConfetti();
-                CoroutineDispatcher.Instance.StartCoroutine(coroutine);
+                return process;
             }
-            else
-            {
-                SignalActivationFinished();
-            }
-        }
-
-        /// <inheritdoc />
-        protected override void PerformDeactivation()
-        {
-            if ((ActivationMode & BehaviorActivationMode.Deactivation) > 0)
-            {
-                ConfettiFinished += OnConfettiFinishedOnDeactivation;
-                coroutine = RainConfetti();
-                CoroutineDispatcher.Instance.StartCoroutine(coroutine);
-            }
-            else
-            {
-                SignalDeactivationFinished();
-            }
-        }
-
-        private void OnConfettiFinishedOnActivation(object sender, SpawnConfettiEventArg args)
-        {
-            ConfettiFinished -= OnConfettiFinishedOnActivation;
-            SignalActivationFinished();
-        }
-
-        private void OnConfettiFinishedOnDeactivation(object sender, SpawnConfettiEventArg args)
-        {
-            ConfettiFinished -= OnConfettiFinishedOnDeactivation;
-            SignalDeactivationFinished();
-        }
-
-        private void EmitConfettiStarted()
-        {
-            if (ConfettiStarted != null)
-            {
-                ConfettiStarted.Invoke(this, new SpawnConfettiEventArg());
-            }
-        }
-
-        private void EmitConfettiFinished()
-        {
-            if (ConfettiFinished != null)
-            {
-                ConfettiFinished.Invoke(this, new SpawnConfettiEventArg());
-            }
-        }
-
-        /// <summary>
-        /// Coroutine which lets the confetti rain over time and then finishes the activation.
-        /// </summary>
-        private IEnumerator RainConfetti()
-        {
-            // Load the given prefab and stop the coroutine if not possible.
-            GameObject confettiPrefab = Resources.Load<GameObject>(ConfettiMachinePrefabPath);
-
-            if (confettiPrefab == null)
-            {
-                logger.Warn("No valid prefab path provided.");
-                EmitConfettiFinished();
-                yield break;
-            }
-
-            // If the confetti rain should spawn above the player, get the position of the player's headset and raise the y coordinate a bit.
-            // Otherwise, use the position of the position provider.
-            Vector3 spawnPosition;
-
-            if (IsAboveTrainee)
-            {
-                // VRTK_DeviceFinder.HeadsetTransform throws an exception if you launch the training with an ExampleSimplestTrainingLoader.
-                // Looks like it needs two frames to setup (during the first frame, the headset is enabled. During the second, it is actually registered).
-                // yield return null twice for now, we'll refactor that later.
-                yield return null;
-                yield return null;
-                spawnPosition = VRTK_DeviceFinder.HeadsetTransform().position;
-                spawnPosition.y += distanceAboveTrainee;
-            }
-            else
-            {
-                spawnPosition = PositionProvider.Value.GameObject.transform.position;
-            }
-
-            // Spawn the machine and check if it has the interface IParticleMachine
-            confettiMachine = Object.Instantiate(confettiPrefab, spawnPosition, Quaternion.Euler(90, 0, 0));
-
-            if (confettiMachine == null)
-            {
-                logger.Warn("The provided prefab is missing.");
-                EmitConfettiFinished();
-                yield break;
-            }
-
-            confettiMachine.name = "Behavior" + confettiPrefab.name;
-
-            if (confettiMachine.GetComponent(typeof(IParticleMachine)) == null)
-            {
-                logger.Warn("The provided prefab does not have any component of type \"IParticleMachine\".");
-                Object.Destroy(confettiMachine);
-                EmitConfettiFinished();
-                yield break;
-            }
-
-            // Change the settings and activate the machine
-            IParticleMachine particleMachine = confettiMachine.GetComponent<IParticleMachine>();
-            particleMachine.Activate(AreaRadius, Duration);
-            
-            EmitConfettiStarted();
-
-            if (Duration > 0f)
-            {
-                yield return new WaitForSeconds(Duration);
-            }
-
-            EmitConfettiFinished();
-            Object.Destroy(confettiMachine);
         }
     }
 }

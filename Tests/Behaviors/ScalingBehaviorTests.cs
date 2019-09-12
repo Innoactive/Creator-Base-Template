@@ -36,7 +36,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             yield return null;
 
             // Then the behavior should be active and the object is scaled correctly.
-            Assert.AreEqual(ActivationState.Active, behavior.ActivationState);
+            Assert.AreEqual(Stage.Active, behavior.State);
             Assert.IsTrue(target.transform.localScale == endScale);
         }
 
@@ -58,7 +58,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             behavior.Activate();
 
             // Then the behavior is activated immediately and the object is scaled correctly.
-            Assert.AreEqual(ActivationState.Active, behavior.ActivationState);
+            Assert.AreEqual(Stage.Active, behavior.State);
             Assert.IsTrue(target.transform.localScale == endScale);
 
             yield break;
@@ -82,7 +82,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             behavior.Activate();
 
             // Then the behavior is activated immediately and the object is scaled correctly.
-            Assert.AreEqual(ActivationState.Active, behavior.ActivationState);
+            Assert.AreEqual(Stage.Active, behavior.State);
             Assert.IsTrue(target.transform.localScale == endScale);
 
             yield break;
@@ -106,7 +106,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             behavior.Activate();
 
             // Then the behavior is activated immediately and the object is scaled correctly.
-            Assert.AreEqual(ActivationState.Active, behavior.ActivationState);
+            Assert.AreEqual(Stage.Active, behavior.State);
             Assert.IsTrue(target.transform.localScale == endScale);
 
             yield break;
@@ -130,7 +130,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             behavior.Activate();
 
             // Then the behavior is activated immediately and the object is scaled correctly.
-            Assert.AreEqual(ActivationState.Active, behavior.ActivationState);
+            Assert.AreEqual(Stage.Active, behavior.State);
             Assert.IsTrue(target.transform.localScale == endScale);
 
             yield break;
@@ -154,7 +154,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             behavior.MarkToFastForward();
 
             // Then it doesn't autocomplete because it hasn't been activated yet.
-            Assert.AreEqual(ActivationState.Inactive, behavior.ActivationState);
+            Assert.AreEqual(Stage.Inactive, behavior.State);
             Assert.IsFalse(target.transform.localScale == endScale);
 
             yield break;
@@ -179,7 +179,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             behavior.Activate();
 
             // Then the behavior is activated immediately and the object is scaled correctly.
-            Assert.AreEqual(ActivationState.Active, behavior.ActivationState);
+            Assert.AreEqual(Stage.Active, behavior.State);
             Assert.IsTrue(target.transform.localScale == endScale);
 
             yield break;
@@ -205,7 +205,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             behavior.MarkToFastForward();
 
             // Then the behavior is activated immediately and the object is scaled correctly.
-            Assert.AreEqual(ActivationState.Active, behavior.ActivationState);
+            Assert.AreEqual(Stage.Active, behavior.State);
             Assert.IsTrue(target.transform.localScale == endScale);
 
             yield break;

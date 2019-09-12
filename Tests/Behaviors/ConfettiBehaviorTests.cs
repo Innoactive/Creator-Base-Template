@@ -29,7 +29,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(positionProviderName);
 
-            BehaviorActivationMode mode = BehaviorActivationMode.ActivationAndDeactivation;
+            BehaviorExecutionStages mode = BehaviorExecutionStages.ActivationAndDeactivation;
 
             // When we create ConfettiBehavior and pass training objects by reference,
             ConfettiBehavior confettiBehavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, mode);
@@ -53,7 +53,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(positionProviderName);
 
-            BehaviorActivationMode mode = BehaviorActivationMode.ActivationAndDeactivation;
+            BehaviorExecutionStages mode = BehaviorExecutionStages.ActivationAndDeactivation;
 
             // When we create ConfettiBehavior and pass training objects by their unique name,
             ConfettiBehavior confettiBehavior = new ConfettiBehavior(false, positionProviderName, pathToMockPrefab, areaRadius, duration, mode);
@@ -77,7 +77,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(positionProviderName);
 
-            ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorActivationMode.Activation);
+            ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorExecutionStages.Activation);
 
             // When I activate that behavior and wait for one frame,
             behavior.Activate();
@@ -87,7 +87,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             GameObject machine = GameObject.Find(prefabName);
 
             // Then the activation state of the behavior is "activating" and the ConfettiMachine exists in the scene.
-            Assert.AreEqual(ActivationState.Activating, behavior.ActivationState);
+            Assert.AreEqual(Stage.Activating, behavior.State);
             Assert.IsTrue(machine != null);
         }
 
@@ -99,7 +99,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(positionProviderName);
 
-            ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorActivationMode.Activation);
+            ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorExecutionStages.Activation);
 
             // When I activate that behavior and wait for one frame,
             behavior.Activate();
@@ -109,7 +109,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             yield return new WaitForSeconds(duration + 0.1f);
 
             // Then behavior activation is completed, and the confetti machine should be deleted.
-            Assert.AreEqual(ActivationState.Active, behavior.ActivationState);
+            Assert.AreEqual(Stage.Active, behavior.State);
             string prefabName = "Behavior" + pathToPrefab.Substring(pathToPrefab.LastIndexOf("/", StringComparison.Ordinal) + 1);
             Assert.IsTrue(GameObject.Find(prefabName) == null);
         }
@@ -124,7 +124,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(positionProviderName);
 
-            ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, newDuration, BehaviorActivationMode.Activation);
+            ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, newDuration, BehaviorExecutionStages.Activation);
 
             // When I activate that behavior,
             behavior.Activate();
@@ -134,7 +134,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             string prefabName = "Behavior" + pathToPrefab.Substring(pathToPrefab.LastIndexOf("/", StringComparison.Ordinal) + 1);
             GameObject machine = GameObject.Find(prefabName);
 
-            Assert.AreEqual(ActivationState.Active, behavior.ActivationState);
+            Assert.AreEqual(Stage.Active, behavior.State);
             Assert.IsTrue(machine == null);
         }
 
@@ -148,7 +148,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(positionProviderName);
 
-            ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, newDuration, BehaviorActivationMode.Activation);
+            ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, newDuration, BehaviorExecutionStages.Activation);
 
             // When I activate that behavior,
             behavior.Activate();
@@ -158,7 +158,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             string prefabName = "Behavior" + pathToPrefab.Substring(pathToPrefab.LastIndexOf("/", StringComparison.Ordinal) + 1);
             GameObject machine = GameObject.Find(prefabName);
 
-            Assert.AreEqual(ActivationState.Active, behavior.ActivationState);
+            Assert.AreEqual(Stage.Active, behavior.State);
             Assert.IsTrue(machine == null);
 
             // Cleanup created game objects.
@@ -174,7 +174,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(positionProviderName);
 
-            ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorActivationMode.Activation);
+            ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorExecutionStages.Activation);
 
             // When we activate the behavior,
             behavior.Activate();
@@ -205,14 +205,14 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(positionProviderName);
 
-            ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorActivationMode.Activation);
+            ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorExecutionStages.Activation);
 
             // When I activate that behavior and wait for one frame,
             behavior.Activate();
             yield return null;
 
             // Then the activation state of the behavior is "deactivating".
-            Assert.AreEqual(ActivationState.Activating, behavior.ActivationState);
+            Assert.AreEqual(Stage.Activating, behavior.State);
         }
 
         [UnityTest]
@@ -223,14 +223,14 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(positionProviderName);
 
-            ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorActivationMode.Activation);
+            ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorExecutionStages.Activation);
 
             // When I activate that behavior and wait,
             behavior.Activate();
             yield return new WaitForSeconds(duration + 0.1f);
 
             // Then the activation state of the behavior is "active".
-            Assert.AreEqual(ActivationState.Active, behavior.ActivationState);
+            Assert.AreEqual(Stage.Active, behavior.State);
         }
 
         [UnityTest]
@@ -241,7 +241,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(positionProviderName);
 
-            ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorActivationMode.Deactivation);
+            ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorExecutionStages.Deactivation);
 
             // When I activate, then immediately deactivate that behavior, and wait for one frame,
             behavior.Activate();
@@ -249,7 +249,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             yield return null;
 
             // Then the activation state of the behavior is "deactivating".
-            Assert.AreEqual(ActivationState.Deactivating, behavior.ActivationState);
+            Assert.AreEqual(Stage.Deactivating, behavior.State);
         }
 
         [UnityTest]
@@ -260,7 +260,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(positionProviderName);
 
-            ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorActivationMode.Deactivation);
+            ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorExecutionStages.Deactivation);
 
             // When I activate, then immediately deactivate that behavior, and wait for duration seconds,
             behavior.Activate();
@@ -269,7 +269,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             yield return new WaitForSeconds(duration + 0.1f);
 
             // Then the activation state of the behavior is "deactivated".
-            Assert.AreEqual(ActivationState.Deactivated, behavior.ActivationState);
+            Assert.AreEqual(Stage.Deactivated, behavior.State);
         }
 
         [UnityTest]
@@ -280,7 +280,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(positionProviderName);
 
-            ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToMockPrefab, areaRadius, duration, BehaviorActivationMode.Activation);
+            ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToMockPrefab, areaRadius, duration, BehaviorExecutionStages.Activation);
 
             // When I activate it,
             behavior.Activate();
@@ -289,7 +289,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             GameObject machine = GameObject.Find(prefabName);
 
             // Then the activation state of the behavior is "active" and there is no confetti machine in the scene.
-            Assert.AreEqual(ActivationState.Active, behavior.ActivationState);
+            Assert.AreEqual(Stage.Active, behavior.State);
             Assert.AreEqual(null, machine);
 
             yield return new WaitForSeconds(duration + 0.1f);
@@ -303,13 +303,13 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(positionProviderName);
 
-            ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorActivationMode.Activation);
+            ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorExecutionStages.Activation);
 
             // When we mark it to fast-forward,
             behavior.MarkToFastForward();
 
             // Then it doesn't autocomplete because it hasn't been activated yet.
-            Assert.AreEqual(ActivationState.Inactive, behavior.ActivationState);
+            Assert.AreEqual(Stage.Inactive, behavior.State);
 
             yield break;
         }
@@ -322,14 +322,14 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(positionProviderName);
 
-            ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorActivationMode.Activation);
+            ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorExecutionStages.Activation);
 
             // When we mark it to fast-forward and activate it,
             behavior.MarkToFastForward();
             behavior.Activate();
 
             // Then it autocompletes immediately.
-            Assert.AreEqual(ActivationState.Active, behavior.ActivationState);
+            Assert.AreEqual(Stage.Active, behavior.State);
 
             yield break;
         }
@@ -342,18 +342,18 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(positionProviderName);
 
-            ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorActivationMode.Deactivation);
+            ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorExecutionStages.Deactivation);
 
             // When we mark it to fast-forward, activate and immediately deactivate it,
             behavior.MarkToFastForward();
             behavior.Activate();
             
-            yield return new WaitUntil(() => behavior.ActivationState == ActivationState.Active);
+            yield return new WaitUntil(() => behavior.State == Stage.Active);
             
             behavior.Deactivate();
 
             // Then it autocompletes immediately.
-            Assert.AreEqual(ActivationState.Deactivated, behavior.ActivationState);
+            Assert.AreEqual(Stage.Deactivated, behavior.State);
         }
 
         [UnityTest]
@@ -364,7 +364,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(positionProviderName);
 
-            ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorActivationMode.Activation);
+            ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorExecutionStages.Activation);
 
             behavior.Activate();
 
@@ -372,7 +372,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             behavior.MarkToFastForward();
 
             // Then it autocompletes immediately.
-            Assert.AreEqual(ActivationState.Active, behavior.ActivationState);
+            Assert.AreEqual(Stage.Active, behavior.State);
 
             yield break;
         }
@@ -385,7 +385,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             SceneObject positionProvider = target.AddComponent<SceneObject>();
             positionProvider.ChangeUniqueName(positionProviderName);
 
-            ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorActivationMode.Deactivation);
+            ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorExecutionStages.Deactivation);
 
             behavior.Activate();
             behavior.Deactivate();
@@ -394,7 +394,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             behavior.MarkToFastForward();
 
             // Then it autocompletes immediately.
-            Assert.AreEqual(ActivationState.Deactivated, behavior.ActivationState);
+            Assert.AreEqual(Stage.Deactivated, behavior.State);
 
             yield break;
         }

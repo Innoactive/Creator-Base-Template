@@ -37,7 +37,7 @@ namespace Innoactive.Hub.Training.Template.Editors.Configuration
                         new List<IBehavior>
                         {
                             new DelayBehavior(5f) { Name = "Wait for" },
-                            new PlayAudioBehavior(new TextToSpeechAudio(new LocalizedString()), BehaviorActivationMode.Activation) { Name = "Play Audio" }
+                            new PlayAudioBehavior(new TextToSpeechAudio(new LocalizedString()), BehaviorExecutionStages.Activation) { Name = "Play Audio" }
                         }) { Name = "Audio Hint" }, false);
             }
         }
