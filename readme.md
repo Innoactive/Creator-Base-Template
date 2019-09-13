@@ -37,7 +37,7 @@ The simplest template possible consists of a single scene that contains a Innoac
 All that a training designer would have to do only two steps:
 
 1) Copy the scene and populate it with training objects he needs.
-2) Create a training, save it anywhere in `Assets` folder, and reference the saved file from the scene.
+2) Create a training course, save it in the default training course folder, and select it in the `Runtime Configurator` component on the game object called `[TRAINING_CONFIGURATION]` in the scene.
 
 ## Create a scene
 
@@ -122,14 +122,15 @@ There should be one and only one training runtime configurator scene object in a
 The runtime configuration has the following properties and methods:
 
 1. `SelectedCoursePath` returns the absolute path to the training course file.
-1. `SceneObjectRegistry` provides the access to all training objects and properties of the current scene.
-2. `Trainee` is a shortcut to a trainee's headset.
-3. `InstructionPlayer` is a default audio source for all `PlayAudioBehavior` behaviors.
-4. `TextToSpeechConfig` defines a TTS engine, voice, and language to use to generate audio.
-1. `SetMode(index)` sets current mode to the one at provided `index` in the collection of available modes.
-2. `GetCurrentMode()` returns the current mode.
-3. `GetCurentModeIndex()` returns the current mode's index.
-4. `AvailableModes` returns a collection of all modes available. Normally, this is a single modes-related class member you want to override.
+2. `LoadCourse()` returns the deserialized training course (`ICourse`) located at `SelectedCoursePath`.
+3. `SceneObjectRegistry` provides the access to all training objects and properties of the current scene.
+4. `Trainee` is a shortcut to a trainee's headset.
+5. `InstructionPlayer` is a default audio source for all `PlayAudioBehavior` behaviors.
+6. `TextToSpeechConfig` defines a TTS engine, voice, and language to use to generate audio.
+7. `SetMode(index)` sets current mode to the one at provided `index` in the collection of available modes.
+8. `GetCurrentMode()` returns the current mode.
+9. `GetCurentModeIndex()` returns the current mode's index.
+10. `AvailableModes` returns a collection of all modes available. Normally, this is a single modes-related class member you want to override.
 
 The next chapters explain the TTS configuration and training modes in detail.
 
@@ -607,6 +608,6 @@ To make your own controls define your own `Spectator Cam Prefab Overload` in [`[
 
 For reference, find the the prefab `AdvancedTrainerCamera` located in `IA-Training-Template/Resources/CustomCamera/Prefabs`. It replaces the default spectator camera in the `Advanced` scene. The child of this prefab is a custom overlay with `AdvancedTrainingController` script attached. Using this overlay, a trainer is able to see the current training status, start, reset, and mute the training, pick a chapter and skip a step, choose a language and the training mode to use.
 
-This training controller loads a training at the following path: `[YOUR_PROJECT_ROOT_FOLDER]/Assets/StreamingAssets/Training/DefaultTraining/DefaultTraining.json`. 
+This training controller loads the training course selected in the `Runtime Configurator` component on the game object called `[TRAINING_CONFIGURATION]` in the scene.
 
-The localization files must be named by the two-letter ISO code of the respective language (for example, `en.json` or `de.json`). They have to be located at `[YOUR_PROJECT_ROOT_FOLDER]/Assets/StreamingAssets/Training/DefaultTraining/Localization`. The script automatically loads all available localizations and displays them in the language dropdown menu. If there is no [respective language pack](#using-the-offline-windows-tts), the localization file is ignored. 
+The localization files must be named by the two-letter ISO code of the respective language (for example, `en.json` or `de.json`). They have to be located at `[YOUR_PROJECT_ROOT_FOLDER]/Assets/StreamingAssets/Training/[COURSE_NAME]/Localization`. The script automatically loads all available localizations and displays them in the language dropdown menu. If there is no [respective language pack](#using-the-offline-windows-tts), the localization file is ignored. 
