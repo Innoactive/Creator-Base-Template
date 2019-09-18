@@ -13,7 +13,7 @@ namespace Innoactive.Hub.Training.Template
     // Condition which is completed when Pointer points at Target.
     public class PointedCondition : Condition<PointedCondition.EntityData>
     {
-        public class EntityData : ICompletableData
+        public class EntityData : IConditionData
         {
             [DataMember]
             // Reference to a pointer property.
@@ -25,6 +25,8 @@ namespace Innoactive.Hub.Training.Template
             public ScenePropertyReference<ColliderWithTriggerProperty> Target { get; set; }
 
             public bool IsCompleted { get; set; }
+
+            public string Name { get; set; }
         }
 
         [JsonConstructor]

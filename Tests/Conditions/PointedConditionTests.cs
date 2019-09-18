@@ -30,7 +30,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Conditions
             );
 
             // When we activate the condition,
-            condition.Activate();
+            condition.LifeCycle.Activate();
 
             yield return new WaitForFixedUpdate();
 
@@ -54,7 +54,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Conditions
             );
 
             // When we activate the condition and raise the event,
-            condition.Activate();
+            condition.LifeCycle.Activate();
             mockedProperty.FastForwardPoint(trigger);
 
             // Then the condition is now completed.
@@ -79,10 +79,10 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Conditions
             );
 
             // When we fast-forward it,
-            condition.MarkToFastForward();
+            condition.LifeCycle.MarkToFastForward();
 
             // Then it doesn't activate by itself.
-            Assert.AreEqual(Stage.Inactive, condition.State);
+            Assert.AreEqual(Stage.Inactive, condition.LifeCycle.Stage);
 
             yield break;
         }
@@ -103,11 +103,11 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Conditions
             );
 
             // When we fast-forward and activate it,
-            condition.MarkToFastForward();
-            condition.Activate();
+            condition.LifeCycle.MarkToFastForward();
+            condition.LifeCycle.Activate();
 
             // Then it is deactivated and completed.
-            Assert.AreEqual(Stage.Deactivated, condition.State);
+            Assert.AreEqual(Stage.Inactive, condition.LifeCycle.Stage);
             Assert.IsTrue(condition.IsCompleted);
 
             yield break;
@@ -129,11 +129,11 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Conditions
             );
 
             // When we activate and then fast-forward it,
-            condition.Activate();
-            condition.MarkToFastForward();
+            condition.LifeCycle.Activate();
+            condition.LifeCycle.MarkToFastForward();
 
             // Then it is deactivated and completed.
-            Assert.AreEqual(Stage.Deactivated, condition.State);
+            Assert.AreEqual(Stage.Inactive, condition.LifeCycle.Stage);
             Assert.IsTrue(condition.IsCompleted);
 
             yield break;

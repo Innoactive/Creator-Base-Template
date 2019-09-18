@@ -20,7 +20,7 @@ namespace Innoactive.Hub.Training.Template
             ICourse trainingCourse = JsonTrainingSerializer.Deserialize(serializedTrainingCourse.text);
 
             // Start the training execution.
-            trainingCourse.Activate();
+            trainingCourse.LifeCycle.Activate();
         }
     }
 }
