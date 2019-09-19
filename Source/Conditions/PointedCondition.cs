@@ -9,10 +9,10 @@ using Newtonsoft.Json;
 namespace Innoactive.Hub.Training.Template
 {
     [DataContract(IsReference = true)]
-    [DisplayName("Point at Object")]
     // Condition which is completed when Pointer points at Target.
     public class PointedCondition : Condition<PointedCondition.EntityData>
     {
+        [DisplayName("Point at Object")]
         public class EntityData : IConditionData
         {
             [DataMember]
@@ -26,6 +26,8 @@ namespace Innoactive.Hub.Training.Template
 
             public bool IsCompleted { get; set; }
 
+            [DataMember]
+            [HideInTrainingInspector]
             public string Name { get; set; }
 
             public Metadata Metadata { get; set; }
