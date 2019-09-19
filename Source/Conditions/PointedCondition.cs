@@ -27,6 +27,8 @@ namespace Innoactive.Hub.Training.Template
             public bool IsCompleted { get; set; }
 
             public string Name { get; set; }
+
+            public Metadata Metadata { get; set; }
         }
 
         [JsonConstructor]

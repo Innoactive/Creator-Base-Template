@@ -66,6 +66,8 @@ namespace Innoactive.Hub.Training.Template
             public BehaviorExecutionStages ExecutionStages { get; set; }
 
             public GameObject ConfettiMachine { get; set; }
+
+            public Metadata Metadata { get; set; }
         }
 
         private static readonly Common.Logging.ILog logger = Logging.LogManager.GetLogger<ConfettiBehavior>();

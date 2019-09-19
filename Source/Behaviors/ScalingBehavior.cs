@@ -30,6 +30,8 @@ namespace Innoactive.Hub.Training.Template
             [DataMember]
             [DisplayName("Animation Duration")]
             public float Duration { get; set; }
+
+            public Metadata Metadata { get; set; }
         }
 
         // Handle data initialization in the constructor.
