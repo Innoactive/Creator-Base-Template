@@ -32,13 +32,20 @@ namespace Innoactive.Hub.Training.Template.Editors.Configuration
 
             public override IBehavior GetNewItem()
             {
-                return new ActivationBlockingBehavior(
-                    new BehaviorSequence(true,
-                        new List<IBehavior>
-                        {
-                            new DelayBehavior(5f) { Name = "Wait for" },
-                            new PlayAudioBehavior(new TextToSpeechAudio(new LocalizedString()), BehaviorExecutionStages.Activation) { Name = "Play Audio" }
-                        }) { Name = "Audio Hint" }, false);
+                DelayBehavior delayBehavior = new DelayBehavior(5f);
+                delayBehavior.Data.Name = "Wait for";
+
+                PlayAudioBehavior audioBehavior = new PlayAudioBehavior(new TextToSpeechAudio(new LocalizedString()), BehaviorExecutionStages.Activation);
+                audioBehavior.Data.Name = "Play Audio";
+
+                BehaviorSequence behaviorSequence = new BehaviorSequence(true, new List<IBehavior>
+                {
+                    delayBehavior,
+                    audioBehavior
+                });
+                behaviorSequence.Data.Name = "Audio Hint";
+
+                return new ActivationBlockingBehavior(behaviorSequence, false);
             }
         }
 
