@@ -16,12 +16,12 @@ namespace Innoactive.Hub.Training.Template
     /// <summary>
     /// This behavior causes confetti to rain.
     /// </summary>
-    [DisplayName("Spawn Confetti")]
     [DataContract(IsReference = true)]
     public class ConfettiBehavior : Behavior<ConfettiBehavior.EntityData>
     {
+        [DisplayName("Spawn Confetti")]
         [DataContract(IsReference = true)]
-        public class EntityData : IData
+        public class EntityData : INamedData
         {
             /// <summary>
             /// Bool to check whether the confetti machine should spawn above the trainee or at the position of the position provider.
@@ -68,6 +68,7 @@ namespace Innoactive.Hub.Training.Template
             public GameObject ConfettiMachine { get; set; }
 
             public Metadata Metadata { get; set; }
+            public string Name { get; set; }
         }
 
         private static readonly Common.Logging.ILog logger = Logging.LogManager.GetLogger<ConfettiBehavior>();

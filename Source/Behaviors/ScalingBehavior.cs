@@ -11,11 +11,11 @@ namespace Innoactive.Hub.Training.Template
 {
     // This behavior linearly changes scale of a Target object over Duration seconds, until it matches TargetScale.
     [DataContract(IsReference = true)]
-    [DisplayName("Scale Object")]
     public class ScalingBehavior : Behavior<ScalingBehavior.EntityData>
     {
+        [DisplayName("Scale Object")]
         [DataContract(IsReference = true)]
-        public class EntityData : IData
+        public class EntityData : INamedData
         {
             // Training object to scale.
             [DataMember]
@@ -32,6 +32,7 @@ namespace Innoactive.Hub.Training.Template
             public float Duration { get; set; }
 
             public Metadata Metadata { get; set; }
+            public string Name { get; set; }
         }
 
         // Handle data initialization in the constructor.
