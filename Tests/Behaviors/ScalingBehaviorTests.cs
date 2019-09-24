@@ -23,7 +23,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             const float duration = 0.05f;
 
             GameObject target = new GameObject(targetName);
-            SceneObject positionProvider = target.AddComponent<SceneObject>();
+            TrainingSceneObject positionProvider = target.AddComponent<TrainingSceneObject>();
             positionProvider.ChangeUniqueName(targetName);
 
             Vector3 endScale = target.transform.localScale + newScale;
@@ -47,7 +47,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             const float duration = 0f;
 
             GameObject target = new GameObject(targetName);
-            SceneObject positionProvider = target.AddComponent<SceneObject>();
+            TrainingSceneObject positionProvider = target.AddComponent<TrainingSceneObject>();
             positionProvider.ChangeUniqueName(targetName);
 
             Vector3 endScale = target.transform.localScale + newScale;
@@ -71,7 +71,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             const float duration = -0.05f;
 
             GameObject target = new GameObject(targetName);
-            SceneObject positionProvider = target.AddComponent<SceneObject>();
+            TrainingSceneObject positionProvider = target.AddComponent<TrainingSceneObject>();
             positionProvider.ChangeUniqueName(targetName);
 
             Vector3 endScale = target.transform.localScale + newScale;
@@ -95,7 +95,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             const float duration = 0f;
 
             GameObject target = new GameObject(targetName);
-            SceneObject positionProvider = target.AddComponent<SceneObject>();
+            TrainingSceneObject positionProvider = target.AddComponent<TrainingSceneObject>();
             positionProvider.ChangeUniqueName(targetName);
 
             Vector3 endScale = Vector3.zero;
@@ -119,7 +119,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             const float duration = 0f;
 
             GameObject target = new GameObject(targetName);
-            SceneObject positionProvider = target.AddComponent<SceneObject>();
+            TrainingSceneObject positionProvider = target.AddComponent<TrainingSceneObject>();
             positionProvider.ChangeUniqueName(targetName);
 
             Vector3 endScale = new Vector3(-1, -1, -1);
@@ -143,7 +143,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             const float duration = 0.05f;
 
             GameObject target = new GameObject(targetName);
-            SceneObject positionProvider = target.AddComponent<SceneObject>();
+            TrainingSceneObject positionProvider = target.AddComponent<TrainingSceneObject>();
             positionProvider.ChangeUniqueName(targetName);
 
             Vector3 endScale = target.transform.localScale + newScale;
@@ -167,7 +167,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             const float duration = 0.05f;
 
             GameObject target = new GameObject(targetName);
-            SceneObject positionProvider = target.AddComponent<SceneObject>();
+            TrainingSceneObject positionProvider = target.AddComponent<TrainingSceneObject>();
             positionProvider.ChangeUniqueName(targetName);
 
             Vector3 endScale = target.transform.localScale + newScale;
@@ -192,7 +192,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             const float duration = 0.05f;
 
             GameObject target = new GameObject(targetName);
-            SceneObject positionProvider = target.AddComponent<SceneObject>();
+            TrainingSceneObject positionProvider = target.AddComponent<TrainingSceneObject>();
             positionProvider.ChangeUniqueName(targetName);
 
             Vector3 endScale = target.transform.localScale + newScale;
