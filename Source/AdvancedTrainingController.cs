@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using Common.Logging;
 using Innoactive.Hub.Threading;
-using Innoactive.Hub.Training.Utils.Serialization;
 using Innoactive.Hub.TextToSpeech;
 using Innoactive.Hub.Training.Configuration;
 using Innoactive.Hub.Training.Configuration.Modes;
@@ -96,8 +95,8 @@ namespace Innoactive.Hub.Training.Template
 
         private string selectedLanguage;
 
-        private IStep activeStep;
-        private IChapter activeChapter;
+        private IStep displayedStep;
+        private IChapter lastDisplayedChapter;
 
         // Called once when object is created.
         private void Awake()
@@ -143,49 +142,50 @@ namespace Innoactive.Hub.Training.Template
 
         private void Update()
         {
-            if (TrainingRunner.Current == null || TrainingRunner.Current.LifeCycle.Stage == Stage.Inactive)
-            {
-                activeStep = null;
-            }
-
-            IStep currentStep = TrainingRunner.Current == null ? null : TrainingRunner.Current.Data.Current == null ? null : TrainingRunner.Current.Data.Current.Data.Current;
-
-            // When the current step is changed,
-            if (activeStep != currentStep)
-            {
-                activeStep = currentStep;
-
-                if (activeStep == null)
-                {
-                    // If there is no next step, clear the info text.
-                    stepInfoText.text = "";
-                    stepName.text = "";
-                }
-                else
-                {
-                    // Else, assign the description of the new step.
-                    stepInfoText.text = activeStep.Data.Description;
-                    stepName.text = activeStep.Data.Name;
-                }
-
-                SetupSkipStepPickerOptions();
-            }
-
             IChapter currentChapter = TrainingRunner.Current == null ? null : TrainingRunner.Current.Data.Current;
+            IStep currentStep = currentChapter == null ? null : currentChapter.Data.Current;
 
-            // When the current chapter is changed,
-            if (activeChapter != currentChapter)
+            if (currentChapter != lastDisplayedChapter)
             {
-                activeChapter = currentChapter;
+                lastDisplayedChapter = currentChapter;
+                UpdateDisplayedChapter(currentChapter);
+            }
+
+            if (currentStep != displayedStep)
+            {
+                displayedStep = currentStep;
+                UpdateDisplayedStep(currentStep);
+            }
+        }
+
+        private void UpdateDisplayedStep(IStep step)
+        {
+            if (step == null)
+            {
+                // If there is no next step, clear the info text.
+                stepInfoText.text = "";
+                stepName.text = "";
+            }
+            else
+            {
+                // Else, assign the description of the new step.
+                stepInfoText.text = step.Data.Description;
+                stepName.text = step.Data.Name;
+            }
+
+            SetupSkipStepPickerOptions();
+        }
+
+        private void UpdateDisplayedChapter(IChapter chapter)
+        {
                 // Get a collection of available chapters.
-                IList<IChapter> chapters = TrainingRunner.Current == null? new List<IChapter>() : TrainingRunner.Current.Data.Chapters.ToList();
+                IList<IChapter> chapters = TrainingRunner.Current == null ? new List<IChapter>() : TrainingRunner.Current.Data.Chapters.ToList();
 
                 // Skip all finished chapters.
-                int startingIndex = chapters.IndexOf(currentChapter);
+                int startingIndex = chapter == null ? 0 : chapters.IndexOf(chapter);
 
                 // Show the rest.
                 PopulateChapterPickerOptions(startingIndex);
-            }
         }
 
         private void SetupTraining()
@@ -362,15 +362,15 @@ namespace Innoactive.Hub.Training.Template
 
         private void SetupSkipStepPicker()
         {
-            // // When a target step was chosen,
-            // skipStepPicker.onValueChanged.AddListener(index =>
-            // {
-            //     // If there's an active step and it's not the last step,
-            //     if (activeStep != null && activeStep.LifeCycle.Stage != Stage.Inactive)
-            //     {
-            //         TrainingRunner.SkipStep(activeStep.Data.Transitions.Data.Transitions[index]);
-            //     }
-            // });
+            // When a target step was chosen,
+            skipStepPicker.onValueChanged.AddListener(index =>
+            {
+                // If there's an active step and it's not the last step,
+                if (displayedStep != null && index < displayedStep.Data.Transitions.Data.Transitions.Count && displayedStep.LifeCycle.Stage != Stage.Inactive)
+                {
+                    TrainingRunner.SkipStep(displayedStep.Data.Transitions.Data.Transitions[index]);
+                }
+            });
         }
 
         private void SetupResetSceneButton()
@@ -420,7 +420,6 @@ namespace Innoactive.Hub.Training.Template
 
             // Set the picker value to the current selected language.
             int languageValue = supportedLanguages.IndexOf(selectedLanguage.ToUpper());
-
             if (languageValue > -1)
             {
                 languagePicker.value = languageValue;
@@ -522,33 +521,39 @@ namespace Innoactive.Hub.Training.Template
 
         private void SetupSkipStepPickerOptions()
         {
+            if (displayedStep == null)
+            {
+                skipStepPicker.ClearOptions();
+                return;
+            }
+
             // Get a collection of available transitions (one per target step).
-            IList<ITransition> transitions = activeStep.Data.Transitions.Data.Transitions.ToList();
+            IList<ITransition> transitions = displayedStep.Data.Transitions.Data.Transitions.ToList();
 
             // Create a list with all dropdown option names.
             List<string> dropdownOptions = new List<string>();
+
             if (transitions.Count > 0)
             {
                 // Convert the transitions to a list of target step names and use them as dropdown options.
                 // null as target step means "end of chapter".
                 dropdownOptions = transitions.Select(transition => (transition.Data.TargetStep != null) ? transition.Data.TargetStep.Data.Name : "End of the Chapter").ToList();
+                dropdownOptions.Add("Dummy");
             }
 
-            // The default value of the dropdown menu would be one target step which then cannot be chosen anymore.
-            // Therefore we need a "dummy" default option.
-            dropdownOptions.Add("Default dummy option");
+
 
             // Reset the skip step picker.
             skipStepPicker.ClearOptions();
 
             // Populate it with new options.
             skipStepPicker.AddOptions(dropdownOptions);
+            skipStepPicker.value = dropdownOptions.Count - 1;
 
-            // Reset the selected value to the dummy option.
-            skipStepPicker.value = skipStepPicker.options.Count - 1;
+            skipStepPicker.ClearOptions();
+            dropdownOptions.RemoveAt(dropdownOptions.Count - 1);
+            skipStepPicker.AddOptions(dropdownOptions);
 
-            // Delete the dummy option. The selected value will still stay the same.
-            skipStepPicker.options.RemoveAt(skipStepPicker.value);
 
             // Refresh skip step picker immediately.
             // Note that this method is not a part of the `UnityEngine.UI.Dropdown` interface.
