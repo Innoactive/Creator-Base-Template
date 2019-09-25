@@ -277,27 +277,7 @@ namespace Innoactive.Hub.Training.Template
                 return;
             }
 
-            // Get index of the current chapter.
-            int currentChapterIndex;
-
-            // If the training hasn't started yet,
-            if (TrainingRunner.Current.LifeCycle.Stage == Stage.Inactive)
-            {
-                // Use 0 as current chapter index.
-                currentChapterIndex = 0;
-            }
-            else
-            {
-                // Otherwise, use the actual chapter index.
-                currentChapterIndex = TrainingRunner.Current.Data.Chapters.IndexOf(TrainingRunner.Current.Data.Current);
-            }
-
-            // For every chapter to skip,
-            for (int i = 0; i < numberOfChapters; i++)
-            {
-                // Mark it to fast-forward.
-                TrainingRunner.Current.Data.Chapters[i + currentChapterIndex].LifeCycle.MarkToFastForward();
-            }
+            TrainingRunner.SkipChapters(numberOfChapters);
         }
 
         #region Setup UI
@@ -306,6 +286,11 @@ namespace Innoactive.Hub.Training.Template
             // When selected chapter has changed,
             chapterPicker.onValueChanged.AddListener(index =>
             {
+                if (TrainingRunner.IsRunning == false)
+                {
+                    return;
+                }
+
                 // If the training hasn't started it, ignore it. We will use this value when the training starts.
                 if (TrainingRunner.Current.LifeCycle.Stage == Stage.Inactive)
                 {
