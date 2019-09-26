@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Runtime.Serialization;
-using Innoactive.Hub.Threading;
 using Innoactive.Hub.Training.Attributes;
 using Innoactive.Hub.Training.Behaviors;
 using Innoactive.Hub.Training.SceneObjects;
@@ -55,7 +54,6 @@ namespace Innoactive.Hub.Training.Template
         {
             public void Start(EntityData data)
             {
-                throw new System.NotImplementedException();
             }
 
             public IEnumerator Update(EntityData data)
@@ -83,7 +81,6 @@ namespace Innoactive.Hub.Training.Template
 
             public void FastForward(EntityData data)
             {
-                throw new System.NotImplementedException();
             }
         }
 

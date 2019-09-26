@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Runtime.Serialization;
-using Innoactive.Hub.Threading;
 using Innoactive.Hub.Training.Attributes;
 using Innoactive.Hub.Training.Behaviors;
 using Innoactive.Hub.Training.SceneObjects;
@@ -164,7 +162,12 @@ namespace Innoactive.Hub.Training.Template
 
                     if (data.Duration > 0f)
                     {
-                        yield return new WaitForSeconds(data.Duration);
+                        float timeStarted = Time.time;
+
+                        while (Time.time - timeStarted < data.Duration)
+                        {
+                            yield return null;
+                        }
                     }
                 }
             }

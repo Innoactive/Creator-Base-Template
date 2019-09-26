@@ -48,34 +48,42 @@ namespace Innoactive.Hub.Training.Template
             };
         }
 
-        private class EntityAutocompleter : IAutocompleter<EntityData>
+        private class EntityAutocompleter : BaseAutocompleter<EntityData>
         {
             public void Complete(EntityData data)
             {
                 data.Pointer.Value.FastForwardPoint(data.Target);
+                base.Complete(data);
             }
         }
 
         private class ActiveProcess : IStageProcess<EntityData>
         {
-            private EntityData data;
+            private bool wasPointed;
+            private ColliderWithTriggerProperty target;
 
             public void Start(EntityData data)
             {
-                this.data = data;
+                wasPointed = false;
+                target = data.Target.Value;
+                data.IsCompleted = false;
 
                 data.Pointer.Value.PointerEnter += OnPointerEnter;
             }
 
             public IEnumerator Update(EntityData data)
             {
-                yield break;
+                while (wasPointed == false)
+                {
+                    yield return null;
+                }
+
+                data.IsCompleted = true;
             }
 
             public void End(EntityData data)
             {
                 data.Pointer.Value.PointerEnter -= OnPointerEnter;
-                this.data = null;
             }
 
             public void FastForward(EntityData data)
@@ -84,9 +92,9 @@ namespace Innoactive.Hub.Training.Template
 
             private void OnPointerEnter(ColliderWithTriggerProperty pointed)
             {
-                if (data.Target.Value == pointed)
+                if (target == pointed)
                 {
-                    data.IsCompleted = true;
+                    wasPointed = true;
                 }
             }
         }

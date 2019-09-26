@@ -3,6 +3,7 @@
 using Innoactive.Hub.Training;
 using System.Collections;
 using Innoactive.Hub.Training.Behaviors;
+using Innoactive.Hub.Training.Configuration.Modes;
 using Innoactive.Hub.Training.SceneObjects;
 using Innoactive.Hub.Training.Template;
 using NUnit.Framework;
@@ -15,6 +16,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
     {
         private const string targetName = "TestReference";
         private readonly Vector3 newScale = new Vector3(15, 10, 7.5f);
+        private readonly IMode defaultMode = new Mode("Default", new WhitelistTypeRule<IOptional>());
 
         [UnityTest]
         public IEnumerator DoneAfterTime()
@@ -29,11 +31,28 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             Vector3 endScale = target.transform.localScale + newScale;
 
             IBehavior behavior = new ScalingBehavior(new SceneObjectReference(targetName), endScale, duration);
+            behavior.Configure(defaultMode);
 
             // When we activate the behavior and wait for it's delay time,
             behavior.LifeCycle.Activate();
-            yield return new WaitForSeconds(duration);
+
+            while (behavior.LifeCycle.Stage != Stage.Activating)
+            {
+                yield return null;
+                behavior.Update();
+            }
+
             yield return null;
+            behavior.Update();
+
+            float startTime = Time.time;
+            while (Time.time < startTime + duration)
+            {
+                Assert.AreEqual(Stage.Activating, behavior.LifeCycle.Stage);
+                Assert.IsFalse(target.transform.localScale == endScale);
+                yield return null;
+                behavior.Update();
+            }
 
             // Then the behavior should be active and the object is scaled correctly.
             Assert.AreEqual(Stage.Active, behavior.LifeCycle.Stage);
@@ -53,15 +72,23 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             Vector3 endScale = target.transform.localScale + newScale;
 
             IBehavior behavior = new ScalingBehavior(new SceneObjectReference(targetName), endScale, duration);
+            behavior.Configure(defaultMode);
 
-            // When we activate it,
+            // When we activate it and wait one update cycle,
             behavior.LifeCycle.Activate();
+
+            while (behavior.LifeCycle.Stage != Stage.Activating)
+            {
+                yield return null;
+                behavior.Update();
+            }
+
+            yield return null;
+            behavior.Update();
 
             // Then the behavior is activated immediately and the object is scaled correctly.
             Assert.AreEqual(Stage.Active, behavior.LifeCycle.Stage);
             Assert.IsTrue(target.transform.localScale == endScale);
-
-            yield break;
         }
 
         [UnityTest]
@@ -77,9 +104,19 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             Vector3 endScale = target.transform.localScale + newScale;
 
             IBehavior behavior = new ScalingBehavior(new SceneObjectReference(targetName), endScale, duration);
+            behavior.Configure(defaultMode);
 
-            // When we activate it,
+            // When we activate it and wait one update cycle,
             behavior.LifeCycle.Activate();
+
+            while (behavior.LifeCycle.Stage != Stage.Activating)
+            {
+                yield return null;
+                behavior.Update();
+            }
+
+            yield return null;
+            behavior.Update();
 
             // Then the behavior is activated immediately and the object is scaled correctly.
             Assert.AreEqual(Stage.Active, behavior.LifeCycle.Stage);
@@ -101,15 +138,23 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             Vector3 endScale = Vector3.zero;
 
             IBehavior behavior = new ScalingBehavior(new SceneObjectReference(targetName), endScale, duration);
+            behavior.Configure(defaultMode);
 
-            // When we activate it,
+            // When we activate it and wait one update cycle,
             behavior.LifeCycle.Activate();
+
+            while (behavior.LifeCycle.Stage != Stage.Activating)
+            {
+                yield return null;
+                behavior.Update();
+            }
+
+            yield return null;
+            behavior.Update();
 
             // Then the behavior is activated immediately and the object is scaled correctly.
             Assert.AreEqual(Stage.Active, behavior.LifeCycle.Stage);
             Assert.IsTrue(target.transform.localScale == endScale);
-
-            yield break;
         }
 
         [UnityTest]
@@ -125,15 +170,23 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             Vector3 endScale = new Vector3(-1, -1, -1);
 
             IBehavior behavior = new ScalingBehavior(new SceneObjectReference(targetName), endScale, duration);
+            behavior.Configure(defaultMode);
 
-            // When we activate it,
+            // When we activate it and wait one update cycle,
             behavior.LifeCycle.Activate();
+
+            while (behavior.LifeCycle.Stage != Stage.Activating)
+            {
+                yield return null;
+                behavior.Update();
+            }
+
+            yield return null;
+            behavior.Update();
 
             // Then the behavior is activated immediately and the object is scaled correctly.
             Assert.AreEqual(Stage.Active, behavior.LifeCycle.Stage);
             Assert.IsTrue(target.transform.localScale == endScale);
-
-            yield break;
         }
 
         [UnityTest]
@@ -149,6 +202,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             Vector3 endScale = target.transform.localScale + newScale;
 
             IBehavior behavior = new ScalingBehavior(new SceneObjectReference(targetName), endScale, duration);
+            behavior.Configure(defaultMode);
 
             // When we mark it to fast-forward,
             behavior.LifeCycle.MarkToFastForward();
@@ -173,6 +227,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             Vector3 endScale = target.transform.localScale + newScale;
 
             IBehavior behavior = new ScalingBehavior(new SceneObjectReference(targetName), endScale, duration);
+            behavior.Configure(defaultMode);
 
             // When we mark it to fast-forward and activate it,
             behavior.LifeCycle.MarkToFastForward();
@@ -198,6 +253,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             Vector3 endScale = target.transform.localScale + newScale;
 
             IBehavior behavior = new ScalingBehavior(new SceneObjectReference(targetName), endScale, duration);
+            behavior.Configure(defaultMode);
 
             behavior.LifeCycle.Activate();
 
