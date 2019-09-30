@@ -4,20 +4,23 @@ using UnityEngine;
 
 namespace Innoactive.Hub.Training.Template
 {
+    /// <summary>
+    /// Loads and starts the training course currently selected in the '[TRAINING_CONFIGURATION]' gameObject.
+    /// </summary>
     public class TrainingCourseLoader : MonoBehaviour
     {
-        private IEnumerator Start()
+       private IEnumerator Start()
         {
             // Skip the first two frames to give VRTK time to initialize.
             yield return null;
             yield return null;
 
-            // Load the training course selected from the Runtime Configurator
-            // in the '[TRAINING_CONFIGURATION]' game object in the scene.
+            // Load the currently selected training course.
             ICourse trainingCourse = RuntimeConfigurator.Configuration.LoadCourse();
 
             // Start the training execution.
-            trainingCourse.Activate();
+            TrainingRunner.Initialize(trainingCourse);
+            TrainingRunner.Run();
         }
     }
 }

@@ -3,6 +3,7 @@
 using Innoactive.Hub.Training;
 using System.Collections;
 using Innoactive.Hub.Training.Behaviors;
+using Innoactive.Hub.Training.Configuration.Modes;
 using Innoactive.Hub.Training.SceneObjects;
 using Innoactive.Hub.Training.Template;
 using NUnit.Framework;
@@ -15,28 +16,46 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
     {
         private const string targetName = "TestReference";
         private readonly Vector3 newScale = new Vector3(15, 10, 7.5f);
-        
+        private readonly IMode defaultMode = new Mode("Default", new WhitelistTypeRule<IOptional>());
+
         [UnityTest]
         public IEnumerator DoneAfterTime()
         {
             // Given a complete scaling behavior with a positive duration,
             const float duration = 0.05f;
-            
+
             GameObject target = new GameObject(targetName);
-            SceneObject positionProvider = target.AddComponent<SceneObject>();
+            TrainingSceneObject positionProvider = target.AddComponent<TrainingSceneObject>();
             positionProvider.ChangeUniqueName(targetName);
 
             Vector3 endScale = target.transform.localScale + newScale;
 
-            Behavior behavior = new ScalingBehavior(new SceneObjectReference(targetName), endScale, duration);
+            IBehavior behavior = new ScalingBehavior(new SceneObjectReference(targetName), endScale, duration);
+            behavior.Configure(defaultMode);
 
             // When we activate the behavior and wait for it's delay time,
-            behavior.Activate();
-            yield return new WaitForSeconds(duration);
+            behavior.LifeCycle.Activate();
+
+            while (behavior.LifeCycle.Stage != Stage.Activating)
+            {
+                yield return null;
+                behavior.Update();
+            }
+
             yield return null;
+            behavior.Update();
+
+            float startTime = Time.time;
+            while (Time.time < startTime + duration)
+            {
+                Assert.AreEqual(Stage.Activating, behavior.LifeCycle.Stage);
+                Assert.IsFalse(target.transform.localScale == endScale);
+                yield return null;
+                behavior.Update();
+            }
 
             // Then the behavior should be active and the object is scaled correctly.
-            Assert.AreEqual(ActivationState.Active, behavior.ActivationState);
+            Assert.AreEqual(Stage.Active, behavior.LifeCycle.Stage);
             Assert.IsTrue(target.transform.localScale == endScale);
         }
 
@@ -45,23 +64,31 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
         {
             // Given a complete scaling behavior with duration time == 0,
             const float duration = 0f;
-            
+
             GameObject target = new GameObject(targetName);
-            SceneObject positionProvider = target.AddComponent<SceneObject>();
+            TrainingSceneObject positionProvider = target.AddComponent<TrainingSceneObject>();
             positionProvider.ChangeUniqueName(targetName);
 
             Vector3 endScale = target.transform.localScale + newScale;
 
-            Behavior behavior = new ScalingBehavior(new SceneObjectReference(targetName), endScale, duration);
+            IBehavior behavior = new ScalingBehavior(new SceneObjectReference(targetName), endScale, duration);
+            behavior.Configure(defaultMode);
 
-            // When we activate it,
-            behavior.Activate();
+            // When we activate it and wait one update cycle,
+            behavior.LifeCycle.Activate();
+
+            while (behavior.LifeCycle.Stage != Stage.Activating)
+            {
+                yield return null;
+                behavior.Update();
+            }
+
+            yield return null;
+            behavior.Update();
 
             // Then the behavior is activated immediately and the object is scaled correctly.
-            Assert.AreEqual(ActivationState.Active, behavior.ActivationState);
+            Assert.AreEqual(Stage.Active, behavior.LifeCycle.Stage);
             Assert.IsTrue(target.transform.localScale == endScale);
-
-            yield break;
         }
 
         [UnityTest]
@@ -69,71 +96,97 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
         {
             // Given a complete scaling behavior with negative duration time,
             const float duration = -0.05f;
-            
+
             GameObject target = new GameObject(targetName);
-            SceneObject positionProvider = target.AddComponent<SceneObject>();
+            TrainingSceneObject positionProvider = target.AddComponent<TrainingSceneObject>();
             positionProvider.ChangeUniqueName(targetName);
 
             Vector3 endScale = target.transform.localScale + newScale;
 
-            Behavior behavior = new ScalingBehavior(new SceneObjectReference(targetName), endScale, duration);
+            IBehavior behavior = new ScalingBehavior(new SceneObjectReference(targetName), endScale, duration);
+            behavior.Configure(defaultMode);
 
-            // When we activate it,
-            behavior.Activate();
+            // When we activate it and wait one update cycle,
+            behavior.LifeCycle.Activate();
+
+            while (behavior.LifeCycle.Stage != Stage.Activating)
+            {
+                yield return null;
+                behavior.Update();
+            }
+
+            yield return null;
+            behavior.Update();
 
             // Then the behavior is activated immediately and the object is scaled correctly.
-            Assert.AreEqual(ActivationState.Active, behavior.ActivationState);
+            Assert.AreEqual(Stage.Active, behavior.LifeCycle.Stage);
             Assert.IsTrue(target.transform.localScale == endScale);
 
             yield break;
         }
-        
+
         [UnityTest]
         public IEnumerator ZeroScaleCompletes()
         {
             // Given a complete scaling behavior with duration time == 0 and scale == (0, 0, 0),
             const float duration = 0f;
-            
+
             GameObject target = new GameObject(targetName);
-            SceneObject positionProvider = target.AddComponent<SceneObject>();
+            TrainingSceneObject positionProvider = target.AddComponent<TrainingSceneObject>();
             positionProvider.ChangeUniqueName(targetName);
 
             Vector3 endScale = Vector3.zero;
 
-            Behavior behavior = new ScalingBehavior(new SceneObjectReference(targetName), endScale, duration);
+            IBehavior behavior = new ScalingBehavior(new SceneObjectReference(targetName), endScale, duration);
+            behavior.Configure(defaultMode);
 
-            // When we activate it,
-            behavior.Activate();
+            // When we activate it and wait one update cycle,
+            behavior.LifeCycle.Activate();
+
+            while (behavior.LifeCycle.Stage != Stage.Activating)
+            {
+                yield return null;
+                behavior.Update();
+            }
+
+            yield return null;
+            behavior.Update();
 
             // Then the behavior is activated immediately and the object is scaled correctly.
-            Assert.AreEqual(ActivationState.Active, behavior.ActivationState);
+            Assert.AreEqual(Stage.Active, behavior.LifeCycle.Stage);
             Assert.IsTrue(target.transform.localScale == endScale);
-
-            yield break;
         }
-        
+
         [UnityTest]
         public IEnumerator NegativeScaleCompletes()
         {
             // Given a complete scaling behavior with duration time == 0 and scale == (-1, -1, -1),
             const float duration = 0f;
-            
+
             GameObject target = new GameObject(targetName);
-            SceneObject positionProvider = target.AddComponent<SceneObject>();
+            TrainingSceneObject positionProvider = target.AddComponent<TrainingSceneObject>();
             positionProvider.ChangeUniqueName(targetName);
 
             Vector3 endScale = new Vector3(-1, -1, -1);
 
-            Behavior behavior = new ScalingBehavior(new SceneObjectReference(targetName), endScale, duration);
+            IBehavior behavior = new ScalingBehavior(new SceneObjectReference(targetName), endScale, duration);
+            behavior.Configure(defaultMode);
 
-            // When we activate it,
-            behavior.Activate();
+            // When we activate it and wait one update cycle,
+            behavior.LifeCycle.Activate();
+
+            while (behavior.LifeCycle.Stage != Stage.Activating)
+            {
+                yield return null;
+                behavior.Update();
+            }
+
+            yield return null;
+            behavior.Update();
 
             // Then the behavior is activated immediately and the object is scaled correctly.
-            Assert.AreEqual(ActivationState.Active, behavior.ActivationState);
+            Assert.AreEqual(Stage.Active, behavior.LifeCycle.Stage);
             Assert.IsTrue(target.transform.localScale == endScale);
-
-            yield break;
         }
 
         [UnityTest]
@@ -141,20 +194,21 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
         {
             // Given a complete scaling behavior with a positive duration,
             const float duration = 0.05f;
-            
+
             GameObject target = new GameObject(targetName);
-            SceneObject positionProvider = target.AddComponent<SceneObject>();
+            TrainingSceneObject positionProvider = target.AddComponent<TrainingSceneObject>();
             positionProvider.ChangeUniqueName(targetName);
 
             Vector3 endScale = target.transform.localScale + newScale;
 
-            Behavior behavior = new ScalingBehavior(new SceneObjectReference(targetName), endScale, duration);
+            IBehavior behavior = new ScalingBehavior(new SceneObjectReference(targetName), endScale, duration);
+            behavior.Configure(defaultMode);
 
             // When we mark it to fast-forward,
-            behavior.MarkToFastForward();
+            behavior.LifeCycle.MarkToFastForward();
 
             // Then it doesn't autocomplete because it hasn't been activated yet.
-            Assert.AreEqual(ActivationState.Inactive, behavior.ActivationState);
+            Assert.AreEqual(Stage.Inactive, behavior.LifeCycle.Stage);
             Assert.IsFalse(target.transform.localScale == endScale);
 
             yield break;
@@ -165,21 +219,22 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
         {
             // Given a complete scaling behavior with a positive duration,
             const float duration = 0.05f;
-            
+
             GameObject target = new GameObject(targetName);
-            SceneObject positionProvider = target.AddComponent<SceneObject>();
+            TrainingSceneObject positionProvider = target.AddComponent<TrainingSceneObject>();
             positionProvider.ChangeUniqueName(targetName);
 
             Vector3 endScale = target.transform.localScale + newScale;
 
-            Behavior behavior = new ScalingBehavior(new SceneObjectReference(targetName), endScale, duration);
+            IBehavior behavior = new ScalingBehavior(new SceneObjectReference(targetName), endScale, duration);
+            behavior.Configure(defaultMode);
 
             // When we mark it to fast-forward and activate it,
-            behavior.MarkToFastForward();
-            behavior.Activate();
+            behavior.LifeCycle.MarkToFastForward();
+            behavior.LifeCycle.Activate();
 
             // Then the behavior is activated immediately and the object is scaled correctly.
-            Assert.AreEqual(ActivationState.Active, behavior.ActivationState);
+            Assert.AreEqual(Stage.Active, behavior.LifeCycle.Stage);
             Assert.IsTrue(target.transform.localScale == endScale);
 
             yield break;
@@ -190,22 +245,23 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
         {
             // Given an active and complete scaling behavior with a positive duration,
             const float duration = 0.05f;
-            
+
             GameObject target = new GameObject(targetName);
-            SceneObject positionProvider = target.AddComponent<SceneObject>();
+            TrainingSceneObject positionProvider = target.AddComponent<TrainingSceneObject>();
             positionProvider.ChangeUniqueName(targetName);
 
             Vector3 endScale = target.transform.localScale + newScale;
 
-            Behavior behavior = new ScalingBehavior(new SceneObjectReference(targetName), endScale, duration);
+            IBehavior behavior = new ScalingBehavior(new SceneObjectReference(targetName), endScale, duration);
+            behavior.Configure(defaultMode);
 
-            behavior.Activate();
+            behavior.LifeCycle.Activate();
 
             // When we mark it to fast-forward,
-            behavior.MarkToFastForward();
+            behavior.LifeCycle.MarkToFastForward();
 
             // Then the behavior is activated immediately and the object is scaled correctly.
-            Assert.AreEqual(ActivationState.Active, behavior.ActivationState);
+            Assert.AreEqual(Stage.Active, behavior.LifeCycle.Stage);
             Assert.IsTrue(target.transform.localScale == endScale);
 
             yield break;

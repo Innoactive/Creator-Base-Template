@@ -50,7 +50,7 @@ namespace Innoactive.Hub.Training
         /// <inheritdoc />
         public void Activate()
         {
-            if (IsActive == true || confettiSystems.Length == 0)
+            if (IsActive || confettiSystems.Length == 0)
             {
                 return;
             }
@@ -72,7 +72,7 @@ namespace Innoactive.Hub.Training
         /// <inheritdoc />
         public void Activate(float newRadius, float newDuration)
         {
-            if (IsActive == true)
+            if (IsActive)
             {
                 return;
             }

@@ -2,6 +2,7 @@
 
 using System.Collections;
 using Innoactive.Hub.Training;
+using Innoactive.Hub.Training.Configuration.Modes;
 using Innoactive.Hub.Training.SceneObjects;
 using Innoactive.Hub.Training.SceneObjects.Properties;
 using Innoactive.Hub.Training.Template;
@@ -14,6 +15,8 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Conditions
 {
     public class PointedConditionTests : RuntimeTests
     {
+        private readonly IMode defaultMode = new Mode("Default", new WhitelistTypeRule<IOptional>());
+
         [UnityTest]
         public IEnumerator NotCompleteWithoutEvent()
         {
@@ -28,11 +31,19 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Conditions
                 new ScenePropertyReference<PointingProperty>(TrainingReferenceUtils.GetNameFrom(mockedProperty)),
                 new ScenePropertyReference<ColliderWithTriggerProperty>(TrainingReferenceUtils.GetNameFrom(trigger))
             );
+            condition.Configure(defaultMode);
 
-            // When we activate the condition,
-            condition.Activate();
+            // When we activate the condition and wait one update cycle,
+            condition.LifeCycle.Activate();
 
-            yield return new WaitForFixedUpdate();
+            while (condition.LifeCycle.Stage != Stage.Active)
+            {
+                yield return null;
+                condition.Update();
+            }
+
+            yield return null;
+            condition.Update();
 
             // Then the condition is not completed.
             Assert.IsFalse(condition.IsCompleted);
@@ -52,19 +63,28 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Conditions
                 new ScenePropertyReference<PointingProperty>(TrainingReferenceUtils.GetNameFrom(mockedProperty)),
                 new ScenePropertyReference<ColliderWithTriggerProperty>(TrainingReferenceUtils.GetNameFrom(trigger))
             );
+            condition.Configure(defaultMode);
 
             // When we activate the condition and raise the event,
-            condition.Activate();
+            condition.LifeCycle.Activate();
+
+            while (condition.LifeCycle.Stage != Stage.Active)
+            {
+                yield return null;
+                condition.Update();
+            }
+
             mockedProperty.FastForwardPoint(trigger);
+
+            yield return null;
+            condition.Update();
 
             // Then the condition is now completed.
             Assert.IsTrue(condition.IsCompleted);
-
-            yield break;
         }
 
         [UnityTest]
-        public IEnumerator FastForwardInactive()
+        public IEnumerator AutocompleteActive()
         {
             // Given object with mocked pointing property,
             GameObject property = new GameObject("Property");
@@ -77,40 +97,22 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Conditions
                 new ScenePropertyReference<PointingProperty>(TrainingReferenceUtils.GetNameFrom(mockedProperty)),
                 new ScenePropertyReference<ColliderWithTriggerProperty>(TrainingReferenceUtils.GetNameFrom(trigger))
             );
+            condition.Configure(defaultMode);
 
-            // When we fast-forward it,
-            condition.MarkToFastForward();
+            // When we activate and then autocomplete it,
+            condition.LifeCycle.Activate();
 
-            // Then it doesn't activate by itself.
-            Assert.AreEqual(ActivationState.Inactive, condition.ActivationState);
+            while (condition.LifeCycle.Stage != Stage.Active)
+            {
+                yield return null;
+                condition.Update();
+            }
 
-            yield break;
-        }
+            condition.Autocomplete();
 
-        [UnityTest]
-        public IEnumerator FastForwardInactiveAndActivate()
-        {
-            // Given object with mocked pointing property,
-            GameObject property = new GameObject("Property");
-            GameObject target = new GameObject("Target");
-            target.AddComponent<BoxCollider>().isTrigger = true;
-            PointingProperty mockedProperty = property.AddComponent<PointingProperty>();
-            ColliderWithTriggerProperty trigger = target.AddComponent<ColliderWithTriggerProperty>();
-
-            PointedCondition condition = new PointedCondition(
-                new ScenePropertyReference<PointingProperty>(TrainingReferenceUtils.GetNameFrom(mockedProperty)),
-                new ScenePropertyReference<ColliderWithTriggerProperty>(TrainingReferenceUtils.GetNameFrom(trigger))
-            );
-
-            // When we fast-forward and activate it,
-            condition.MarkToFastForward();
-            condition.Activate();
-
-            // Then it is deactivated and completed.
-            Assert.AreEqual(ActivationState.Deactivated, condition.ActivationState);
+            // Then it is completed.
+            Assert.AreEqual(Stage.Active, condition.LifeCycle.Stage);
             Assert.IsTrue(condition.IsCompleted);
-
-            yield break;
         }
 
         [UnityTest]
@@ -127,16 +129,22 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Conditions
                 new ScenePropertyReference<PointingProperty>(TrainingReferenceUtils.GetNameFrom(mockedProperty)),
                 new ScenePropertyReference<ColliderWithTriggerProperty>(TrainingReferenceUtils.GetNameFrom(trigger))
             );
+            condition.Configure(defaultMode);
 
             // When we activate and then fast-forward it,
-            condition.Activate();
-            condition.MarkToFastForward();
+            condition.LifeCycle.Activate();
 
-            // Then it is deactivated and completed.
-            Assert.AreEqual(ActivationState.Deactivated, condition.ActivationState);
-            Assert.IsTrue(condition.IsCompleted);
+            while (condition.LifeCycle.Stage != Stage.Active)
+            {
+                yield return null;
+                condition.Update();
+            }
 
-            yield break;
+            condition.LifeCycle.MarkToFastForward();
+
+            // Then it is not completed and the stage is still active.
+            Assert.IsFalse(condition.IsCompleted);
+            Assert.AreEqual(Stage.Active, condition.LifeCycle.Stage);
         }
     }
 }
