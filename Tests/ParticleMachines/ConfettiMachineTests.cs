@@ -203,12 +203,13 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.ParticleMachine
             // When I change the emission duration,
             confettiMachine.ChangeEmissionDuration(newDuration);
 
-            // Then it is accordingly changed to zero in the confetti machine component itself and in all of its particle systems.
-            Assert.IsTrue(Math.Abs(confettiMachine.EmissionDuration) < 0.001f);
+            // Then it is accordingly changed in the confetti machine component itself and in all of its particle systems.
+            Assert.IsTrue(Math.Abs(confettiMachine.EmissionDuration) < 0.1f);
 
             foreach (ParticleSystem particleSystem in particleSystems)
             {
-                Assert.IsTrue(Math.Abs(particleSystem.main.duration) < 0.001f);
+                // Note it is not possible to set a particle system's duration to zero, Unity will silently set it to 0.05f.
+                Assert.IsTrue(Math.Abs(particleSystem.main.duration) < 0.1f);
             }
 
             yield break;
@@ -230,12 +231,13 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.ParticleMachine
             // When I change the emission duration,
             confettiMachine.ChangeEmissionDuration(newDuration);
 
-            // Then it is accordingly changed to zero in the confetti machine component itself and in all of its particle systems.
-            Assert.IsTrue(Math.Abs(confettiMachine.EmissionDuration) < 0.001f);
+            // Then it is accordingly changed in the confetti machine component itself and in all of its particle systems.
+            Assert.IsTrue(Math.Abs(confettiMachine.EmissionDuration) < 0.1f);
 
             foreach (ParticleSystem particleSystem in particleSystems)
             {
-                Assert.IsTrue(Math.Abs(particleSystem.main.duration) < 0.001f);
+                // Note it is not possible to set a particle system's duration to zero, Unity will silently set it to 0.05f.
+                Assert.IsTrue(Math.Abs(particleSystem.main.duration) < 0.1f);
             }
 
             yield break;

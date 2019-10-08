@@ -19,7 +19,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
         private const string pathToPrefab = "Confetti/Prefabs/InnoactiveConfettiMachine";
         private const string pathToMockPrefab = "Confetti/Prefabs/MockConfettiMachine";
         private const string positionProviderName = "Target Position";
-        private const float duration = 0.15f;
+        private const float duration = 0.2f;
         private const float areaRadius = 11f;
         private readonly IMode defaultMode = new Mode("Default", new WhitelistTypeRule<IOptional>());
 
@@ -250,8 +250,6 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
 
             Assert.IsFalse(machine == null);
             Assert.IsTrue(machine.transform.position == target.transform.position);
-
-            yield break;
         }
 
         [UnityTest]
@@ -313,18 +311,18 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
                 behavior.Update();
             }
 
-            yield return null;
-            behavior.Update();
-
-            // And wait duration seconds,
+            // And wait for it to be active,
             float startTime = Time.time;
-            while (Time.time < startTime + duration + 0.1f)
+            while (behavior.LifeCycle.Stage != Stage.Active)
             {
                 yield return null;
                 behavior.Update();
             }
 
-            // Then the activation state of the behavior is "active".
+            float behaviorDuration = Time.time - startTime;
+
+            // Then the activation state of the behavior is "active" after the expected duration.
+            Assert.AreEqual(duration, behaviorDuration, Time.deltaTime);
             Assert.AreEqual(Stage.Active, behavior.LifeCycle.Stage);
         }
 
@@ -357,8 +355,6 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             // Then the activation state of the behavior is "active" and there is no confetti machine in the scene.
             Assert.AreEqual(Stage.Active, behavior.LifeCycle.Stage);
             Assert.AreEqual(null, machine);
-
-            yield return new WaitForSeconds(duration + 0.1f);
         }
 
         [UnityTest]
@@ -453,8 +449,6 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
 
             // Then it autocompletes immediately.
             Assert.AreEqual(Stage.Active, behavior.LifeCycle.Stage);
-
-            yield break;
         }
 
         [UnityTest]
@@ -489,8 +483,6 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
 
             // Then it autocompletes immediately.
             Assert.AreEqual(Stage.Inactive, behavior.LifeCycle.Stage);
-
-            yield break;
         }
     }
 }
