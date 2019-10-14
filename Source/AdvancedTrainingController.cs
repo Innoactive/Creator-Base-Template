@@ -82,11 +82,6 @@ namespace Innoactive.Hub.Training.Template
         private Dropdown modePicker;
         #endregion
 
-        [Space]
-        [Tooltip("The name of the folder and the file (without the extension .json) of the serialized training course in the 'Training' directory of the 'StreamingAssets' directory which should be loaded.")]
-        [SerializeField]
-        private string trainingCourseName;
-
         [Tooltip("The two-letter ISO language code (e.g. \"EN\") of the fallback language which is used by the text to speech engine if no valid localization file is found.")]
         [SerializeField]
         private string fallbackLanguage = "EN";
@@ -218,7 +213,8 @@ namespace Innoactive.Hub.Training.Template
         {
             // Get the directory of all localization files of the selected training.
             // It should be in the '[YOUR_PROJECT_ROOT_FOLDER]/StreamingAssets/Training/[TRAINING_NAME]' folder.
-            string pathToLocalizations = string.Format("{0}/Training/{1}/Localization/", Application.streamingAssetsPath, trainingCourseName).Replace('/', Path.DirectorySeparatorChar);
+            string pathToCourse = Path.GetDirectoryName(Path.Combine(Application.streamingAssetsPath, RuntimeConfigurator.GetSelectedTrainingCourse()));
+            string pathToLocalizations = string.Format("{0}/Localization/", pathToCourse).Replace('/', Path.DirectorySeparatorChar);
 
             // Save all existing localization files in a list.
             List<string> availableLocalizations = new List<string>();
@@ -256,7 +252,8 @@ namespace Innoactive.Hub.Training.Template
 
             // Get the path to the file.
             // It should be in the '[YOUR_PROJECT_ROOT_FOLDER]/StreamingAssets/Training/[TRAINING_NAME]/Localization' folder.
-            string pathToLocalization = string.Format("{0}/Training/{1}/Localization/{2}.json", Application.streamingAssetsPath, trainingCourseName, language);
+            string pathToCourse = Path.GetDirectoryName(Path.Combine(Application.streamingAssetsPath, RuntimeConfigurator.GetSelectedTrainingCourse()));
+            string pathToLocalization = string.Format("{0}/Localization/{1}.json", pathToCourse, language).Replace('/', Path.DirectorySeparatorChar);
 
             // Check if the file really exists and load it.
             if (File.Exists(pathToLocalization))
@@ -266,7 +263,7 @@ namespace Innoactive.Hub.Training.Template
             }
 
             // Log a warning if no language file was found.
-            logger.WarnFormat("No language file for language '{0}' found for training {1} at '{2}'.", selectedLanguage, trainingCourseName, pathToLocalization);
+            logger.WarnFormat("No language file for language '{0}' found for training at '{1}'.", selectedLanguage, pathToCourse);
         }
 
         private void FastForwardChapters(int numberOfChapters)
