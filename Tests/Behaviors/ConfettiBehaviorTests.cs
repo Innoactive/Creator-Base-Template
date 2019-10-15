@@ -295,12 +295,11 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
         public IEnumerator IsActiveAfterPositiveDuration()
         {
             // Given the position provider training object, some valid default settings, and the activation mode = Activation,
-            float longDuration = 0.6f;
             GameObject target = new GameObject(positionProviderName);
             TrainingSceneObject positionProvider = target.AddComponent<TrainingSceneObject>();
             positionProvider.ChangeUniqueName(positionProviderName);
 
-            ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, longDuration, BehaviorExecutionStages.Activation);
+            ConfettiBehavior behavior = new ConfettiBehavior(false, positionProvider, pathToPrefab, areaRadius, duration, BehaviorExecutionStages.Activation);
             behavior.Configure(defaultMode);
 
             // When I activate that behavior and wait for one update cycle,
@@ -323,7 +322,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             float behaviorDuration = Time.time - startTime;
 
             // Then the activation state of the behavior is "active" after the expected duration.
-            Assert.AreEqual(longDuration, behaviorDuration, 0.2);
+            Assert.AreEqual(duration, behaviorDuration, Time.deltaTime);
             Assert.AreEqual(Stage.Active, behavior.LifeCycle.Stage);
         }
 

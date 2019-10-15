@@ -102,24 +102,30 @@ namespace Innoactive.Hub.Training.Template
         private class ActivatingProcess : IStageProcess<EntityData>
         {
             private readonly BehaviorExecutionStages stages;
+            private float timeStarted;
+            private GameObject confettiPrefab;
 
             public void Start(EntityData data)
             {
+                // Load the given prefab and stop the coroutine if not possible.
+                confettiPrefab = Resources.Load<GameObject>(data.ConfettiMachinePrefabPath);
+
+                if (data.Duration > 0f)
+                {
+                    timeStarted = Time.time;
+                }
             }
 
             public IEnumerator Update(EntityData data)
             {
+                if (confettiPrefab == null)
+                {
+                    logger.Warn("No valid prefab path provided.");
+                    yield break;
+                }
+
                 if ((data.ExecutionStages & stages) > 0)
                 {
-                    // Load the given prefab and stop the coroutine if not possible.
-                    GameObject confettiPrefab = Resources.Load<GameObject>(data.ConfettiMachinePrefabPath);
-
-                    if (confettiPrefab == null)
-                    {
-                        logger.Warn("No valid prefab path provided.");
-                        yield break;
-                    }
-
                     // If the confetti rain should spawn above the player, get the position of the player's headset and raise the y coordinate a bit.
                     // Otherwise, use the position of the position provider.
                     Vector3 spawnPosition;
@@ -160,14 +166,9 @@ namespace Innoactive.Hub.Training.Template
                     IParticleMachine particleMachine = data.ConfettiMachine.GetComponent<IParticleMachine>();
                     particleMachine.Activate(data.AreaRadius, data.Duration);
 
-                    if (data.Duration > 0f)
+                    while (Time.time - timeStarted < data.Duration)
                     {
-                        float timeStarted = Time.time;
-
-                        while (Time.time - timeStarted < data.Duration)
-                        {
-                            yield return null;
-                        }
+                        yield return null;
                     }
                 }
             }
