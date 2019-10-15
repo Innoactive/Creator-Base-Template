@@ -166,9 +166,12 @@ namespace Innoactive.Hub.Training.Template
                     IParticleMachine particleMachine = data.ConfettiMachine.GetComponent<IParticleMachine>();
                     particleMachine.Activate(data.AreaRadius, data.Duration);
 
-                    while (Time.time - timeStarted < data.Duration)
+                    if (data.Duration > 0)
                     {
-                        yield return null;
+                        while (Time.time - timeStarted < data.Duration)
+                        {
+                            yield return null;
+                        }
                     }
                 }
             }
