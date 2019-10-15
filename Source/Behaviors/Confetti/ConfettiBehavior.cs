@@ -107,6 +107,11 @@ namespace Innoactive.Hub.Training.Template
 
             public void Start(EntityData data)
             {
+                if (ShouldExecuteCurrentStage(data) == false)
+                {
+                    return;
+                }
+
                 // Load the given prefab and stop the coroutine if not possible.
                 confettiPrefab = Resources.Load<GameObject>(data.ConfettiMachinePrefabPath);
 
@@ -159,26 +164,28 @@ namespace Innoactive.Hub.Training.Template
 
             public IEnumerator Update(EntityData data)
             {
+                if (ShouldExecuteCurrentStage(data) == false)
+                {
+                    yield break;
+                }
+
                 if (confettiPrefab == null || data.ConfettiMachine == null || data.ConfettiMachine.GetComponent(typeof(IParticleMachine)) == null)
                 {
                     yield break;
                 }
 
-                if ((data.ExecutionStages & stages) > 0)
+                if (data.Duration > 0)
                 {
-                    if (data.Duration > 0)
+                    while (Time.time - timeStarted < data.Duration)
                     {
-                        while (Time.time - timeStarted < data.Duration)
-                        {
-                            yield return null;
-                        }
+                        yield return null;
                     }
                 }
             }
 
             public void End(EntityData data)
             {
-                if ((data.ExecutionStages & stages) > 0 && data.ConfettiMachine != null && data.ConfettiMachine.Equals(null) == false)
+                if (ShouldExecuteCurrentStage(data) && data.ConfettiMachine != null && data.ConfettiMachine.Equals(null) == false)
                 {
                     Object.Destroy(data.ConfettiMachine);
                     data.ConfettiMachine = null;
@@ -192,6 +199,11 @@ namespace Innoactive.Hub.Training.Template
             public EmitConfettiProcess(BehaviorExecutionStages stages)
             {
                 this.stages = stages;
+            }
+
+            private bool ShouldExecuteCurrentStage(EntityData data)
+            {
+                return (data.ExecutionStages & stages) > 0;
             }
         }
 
