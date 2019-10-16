@@ -322,7 +322,7 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
             float behaviorDuration = Time.time - startTime;
 
             // Then the activation state of the behavior is "active" after the expected duration.
-            Assert.AreEqual(duration, behaviorDuration, 0.1f);
+            Assert.AreEqual(duration, behaviorDuration, Time.deltaTime);
             Assert.AreEqual(Stage.Active, behavior.LifeCycle.Stage);
         }
 

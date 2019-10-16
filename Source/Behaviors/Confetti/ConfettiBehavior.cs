@@ -2,11 +2,11 @@
 using System.Runtime.Serialization;
 using Innoactive.Hub.Training.Attributes;
 using Innoactive.Hub.Training.Behaviors;
+using Innoactive.Hub.Training.Configuration;
 using Innoactive.Hub.Training.SceneObjects;
 using Innoactive.Hub.Training.Utils;
 using Newtonsoft.Json;
 using UnityEngine;
-using VRTK;
 using Object = UnityEngine.Object;
 
 namespace Innoactive.Hub.Training.Template
@@ -99,82 +99,93 @@ namespace Innoactive.Hub.Training.Template
             };
         }
 
-        private class ActivatingProcess : IStageProcess<EntityData>
+        private class EmitConfettiProcess : IStageProcess<EntityData>
         {
             private readonly BehaviorExecutionStages stages;
+            private float timeStarted;
+            private GameObject confettiPrefab;
 
             public void Start(EntityData data)
             {
+                if (ShouldExecuteCurrentStage(data) == false)
+                {
+                    return;
+                }
+
+                // Load the given prefab and stop the coroutine if not possible.
+                confettiPrefab = Resources.Load<GameObject>(data.ConfettiMachinePrefabPath);
+
+                if (confettiPrefab == null)
+                {
+                    logger.Warn("No valid prefab path provided.");
+                    return;
+                }
+
+                // If the confetti rain should spawn above the player, get the position of the player's headset and raise the y coordinate a bit.
+                // Otherwise, use the position of the position provider.
+                Vector3 spawnPosition;
+
+                if (data.IsAboveTrainee)
+                {
+                    spawnPosition = RuntimeConfigurator.Configuration.Trainee.GameObject.transform.position;
+                    spawnPosition.y += distanceAboveTrainee;
+                }
+                else
+                {
+                    spawnPosition = data.PositionProvider.Value.GameObject.transform.position;
+                }
+
+                // Spawn the machine and check if it has the interface IParticleMachine
+                data.ConfettiMachine = Object.Instantiate(confettiPrefab, spawnPosition, Quaternion.Euler(90, 0, 0));
+
+                if (data.ConfettiMachine == null)
+                {
+                    logger.Warn("The provided prefab is missing.");
+                    return;
+                }
+
+                data.ConfettiMachine.name = "Behavior" + confettiPrefab.name;
+
+                if (data.ConfettiMachine.GetComponent(typeof(IParticleMachine)) == null)
+                {
+                    logger.Warn("The provided prefab does not have any component of type \"IParticleMachine\".");
+                    return;
+                }
+
+                // Change the settings and activate the machine
+                IParticleMachine particleMachine = data.ConfettiMachine.GetComponent<IParticleMachine>();
+                particleMachine.Activate(data.AreaRadius, data.Duration);
+
+                if (data.Duration > 0f)
+                {
+                    timeStarted = Time.time;
+                }
             }
 
             public IEnumerator Update(EntityData data)
             {
-                if ((data.ExecutionStages & stages) > 0)
+                if (ShouldExecuteCurrentStage(data) == false)
                 {
-                    // Load the given prefab and stop the coroutine if not possible.
-                    GameObject confettiPrefab = Resources.Load<GameObject>(data.ConfettiMachinePrefabPath);
+                    yield break;
+                }
 
-                    if (confettiPrefab == null)
+                if (confettiPrefab == null || data.ConfettiMachine == null || data.ConfettiMachine.GetComponent(typeof(IParticleMachine)) == null)
+                {
+                    yield break;
+                }
+
+                if (data.Duration > 0)
+                {
+                    while (Time.time - timeStarted < data.Duration)
                     {
-                        logger.Warn("No valid prefab path provided.");
-                        yield break;
-                    }
-
-                    // If the confetti rain should spawn above the player, get the position of the player's headset and raise the y coordinate a bit.
-                    // Otherwise, use the position of the position provider.
-                    Vector3 spawnPosition;
-
-                    if (data.IsAboveTrainee)
-                    {
-                        // VRTK_DeviceFinder.HeadsetTransform throws an exception if you launch the training with an ExampleSimplestTrainingLoader.
-                        // Looks like it needs two frames to setup (during the first frame, the headset is enabled. During the second, it is actually registered).
-                        // yield return null twice for now, we'll refactor that later.
                         yield return null;
-                        yield return null;
-                        spawnPosition = VRTK_DeviceFinder.HeadsetTransform().position;
-                        spawnPosition.y += distanceAboveTrainee;
-                    }
-                    else
-                    {
-                        spawnPosition = data.PositionProvider.Value.GameObject.transform.position;
-                    }
-
-                    // Spawn the machine and check if it has the interface IParticleMachine
-                    data.ConfettiMachine = Object.Instantiate(confettiPrefab, spawnPosition, Quaternion.Euler(90, 0, 0));
-
-                    if (data.ConfettiMachine == null)
-                    {
-                        logger.Warn("The provided prefab is missing.");
-                        yield break;
-                    }
-
-                    data.ConfettiMachine.name = "Behavior" + confettiPrefab.name;
-
-                    if (data.ConfettiMachine.GetComponent(typeof(IParticleMachine)) == null)
-                    {
-                        logger.Warn("The provided prefab does not have any component of type \"IParticleMachine\".");
-                        yield break;
-                    }
-
-                    // Change the settings and activate the machine
-                    IParticleMachine particleMachine = data.ConfettiMachine.GetComponent<IParticleMachine>();
-                    particleMachine.Activate(data.AreaRadius, data.Duration);
-
-                    if (data.Duration > 0f)
-                    {
-                        float timeStarted = Time.time;
-
-                        while (Time.time - timeStarted < data.Duration)
-                        {
-                            yield return null;
-                        }
                     }
                 }
             }
 
             public void End(EntityData data)
             {
-                if ((data.ExecutionStages & stages) > 0 && data.ConfettiMachine != null && data.ConfettiMachine.Equals(null) == false)
+                if (ShouldExecuteCurrentStage(data) && data.ConfettiMachine != null && data.ConfettiMachine.Equals(null) == false)
                 {
                     Object.Destroy(data.ConfettiMachine);
                     data.ConfettiMachine = null;
@@ -185,13 +196,18 @@ namespace Innoactive.Hub.Training.Template
             {
             }
 
-            public ActivatingProcess(BehaviorExecutionStages stages)
+            public EmitConfettiProcess(BehaviorExecutionStages stages)
             {
                 this.stages = stages;
             }
+
+            private bool ShouldExecuteCurrentStage(EntityData data)
+            {
+                return (data.ExecutionStages & stages) > 0;
+            }
         }
 
-        private readonly IProcess<EntityData> process = new Process<EntityData>(new ActivatingProcess(BehaviorExecutionStages.Activation), new EmptyStageProcess<EntityData>(), new ActivatingProcess(BehaviorExecutionStages.Deactivation));
+        private readonly IProcess<EntityData> process = new Process<EntityData>(new EmitConfettiProcess(BehaviorExecutionStages.Activation), new EmptyStageProcess<EntityData>(), new EmitConfettiProcess(BehaviorExecutionStages.Deactivation));
 
         protected override IProcess<EntityData> Process
         {
