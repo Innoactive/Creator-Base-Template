@@ -13,7 +13,7 @@ namespace Innoactive.Hub.Training.Template.Animation.Editor
 
         public override GUIContent DisplayedName
         {
-            get { return new GUIContent("Innoactive/Animation"); }
+            get { return new GUIContent("Innoactive/Play Animation"); }
         }
     }
 }

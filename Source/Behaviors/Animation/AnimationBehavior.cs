@@ -12,7 +12,7 @@ namespace Innoactive.Hub.Training.Template.Animation
     [DataContract(IsReference = true)]
     public class AnimationBehavior : Behavior<AnimationBehavior.EntityData>
     {
-        [DisplayName("Animate Object")]
+        [DisplayName("Play Animation")]
         public class EntityData : IBehaviorData
         {
             [DataMember]
@@ -32,7 +32,7 @@ namespace Innoactive.Hub.Training.Template.Animation
         }
 
         [JsonConstructor]
-        public AnimationBehavior() : this("", "", BehaviorExecutionStages.None)
+        public AnimationBehavior() : this("", "", BehaviorExecutionStages.Activation)
         {
         }
 
@@ -40,7 +40,7 @@ namespace Innoactive.Hub.Training.Template.Animation
         {
         }
 
-        public AnimationBehavior(string target, string animationTriggerParameter, BehaviorExecutionStages executionStage, string name = "Animate Object")
+        public AnimationBehavior(string target, string animationTriggerParameter, BehaviorExecutionStages executionStage, string name = "Play Animation")
         {
             Data = new EntityData()
             {
