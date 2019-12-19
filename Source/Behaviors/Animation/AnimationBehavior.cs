@@ -23,9 +23,6 @@ namespace Innoactive.Hub.Training.Template.Animation
             [DisplayNameAttribute("Animation Trigger Parameter")]
             public string AnimationTriggerParameter { get; set; }
 
-            /// <summary>
-            /// A property that determines if the audio should be played at activation or deactivation (or both).
-            /// </summary>
             [DataMember]
             public BehaviorExecutionStages ExecutionStage { get; set; }
 

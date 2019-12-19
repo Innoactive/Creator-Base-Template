@@ -2,16 +2,16 @@
 The _Animation Behavior_ allows you to trigger animations which are setup through [Unity's Animation System](https://docs.unity3d.com/Manual/AnimationOverview.html). Therefore, you can start animations within a step to e.g. animate avatars or move objects around.
 
 # Usage
-To make use of the _Animation Behavior_ some important steps in the setup of objects have to be considered.
+To use the _Animation Behavior_, do as follows:
 
 ## Setup Objects
-1. The object that will be animated and has the [_Animator_](https://docs.unity3d.com/Manual/class-Animator.html) attached needs an additional _AnimationEvents_ component
+1. The object that will be animated and has the [_Animator_](https://docs.unity3d.com/Manual/class-Animator.html) component attached needs an additional _AnimationEvents_ component
 2. The _TrainingSceneObject_ needs an _AnimationProperty_ with a reference to the _AnimationEvents_
 
 ![Training Scene Object setup](.Docu/AnimationObjects.png)
 
 ## Setup Animations
-1. Conditions of transitions within the [_Animator Controller_](https://docs.unity3d.com/Manual/class-AnimatorController.html) must be triggers and have the same name as the state that is transitioned to
+1. Only triggers can be conditions of transitions within the [_Animator Controller_](https://docs.unity3d.com/Manual/class-AnimatorController.html), and they should be named the same as the target state.
 
 ![Animator Controller](.Docu/AnimatorSetup.PNG)
 
@@ -20,6 +20,6 @@ To make use of the _Animation Behavior_ some important steps in the setup of obj
 ![Animation Clip](.Docu/AnimationClip.png)
 
 ## Setup Behavior
-Setting up the Behavior itself within the workflow editor requires a reference to the _AnimationProperty_. Additionally, add the string parameter you want to trigger which was created in the _Animator Controller_.
+Reference the _AnimationProperty_ in the animation behavior. Set the string parameter to the same value as in the _Animator Controller_.
 
 ![Animation Clip](.Docu/AnimationBehavior.PNG)
