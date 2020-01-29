@@ -52,5 +52,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spectatorCamPrefabOverload: {fileID: 1776092326729858, guid: d58ac3a0c2c7919489afaca3d7019183,
-    type: 3}
+    type: 2}
   font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
