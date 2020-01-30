@@ -1,7 +1,10 @@
-﻿using Innoactive.Hub.SDK.Models;
+﻿using System;
+using Innoactive.Hub.SDK.Models;
+using Innoactive.Hub.Training.Configuration;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
+using VRTK;
 
 namespace Innoactive.Hub.PlayerSetup
 {
@@ -25,6 +28,8 @@ namespace Innoactive.Hub.PlayerSetup
         [Tooltip("Size of the font used")]
         [SerializeField]
         protected int fontSize = 30;
+
+        private GameObject trainee;
         
         private GameObject currentSpectatorInstance = null;
 
@@ -41,8 +46,6 @@ namespace Innoactive.Hub.PlayerSetup
             }
             GameObject spectatorPrefab = spectatorCamPrefabOverload == null ? Resources.Load<GameObject>("Spectator Camera") : spectatorCamPrefabOverload;
             currentSpectatorInstance = Instantiate(spectatorPrefab, transform.position, transform.rotation);
-            Camera spectatorCamera = currentSpectatorInstance.GetComponentInChildren<Camera>();
-
             SetFont();
         }
 
@@ -53,6 +56,34 @@ namespace Innoactive.Hub.PlayerSetup
                 text.font = font;
                 text.fontSize = fontSize;
             }
+        }
+
+        protected void LateUpdate()
+        {
+            UpdateCameraPositionAndRotation();
+        }
+
+        /// <summary>
+        /// Set the position and rotation depending on the passed time.
+        /// </summary>
+        protected virtual void UpdateCameraPositionAndRotation()
+        {
+            if (trainee == null)
+            {
+                try
+                {
+                    trainee = RuntimeConfigurator.Configuration.Trainee.GameObject;
+                }
+                catch (NullReferenceException)
+                {
+                    return;
+                }
+            }
+            
+            currentSpectatorInstance.transform.SetPositionAndRotation(
+                Vector3.Lerp(currentSpectatorInstance.transform.position, trainee.transform.position, Time.deltaTime),
+                Quaternion.Lerp(currentSpectatorInstance.transform.rotation, trainee.transform.rotation, Time.deltaTime)
+            );
         }
     }
 }
