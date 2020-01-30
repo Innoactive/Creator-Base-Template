@@ -1520,9 +1520,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Skip Step
-
-'
+  m_Text: Skip Step
 --- !u!114 &114118894652756266
 MonoBehaviour:
   m_ObjectHideFlags: 1
