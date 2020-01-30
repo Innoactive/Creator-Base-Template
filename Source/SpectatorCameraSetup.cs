@@ -1,5 +1,6 @@
 ﻿using Innoactive.Hub.SDK.Models;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Innoactive.Hub.PlayerSetup
@@ -20,6 +21,10 @@ namespace Innoactive.Hub.PlayerSetup
         [Tooltip("The font used in the spectator view.")]
         [SerializeField]
         protected Font font;
+        
+        [Tooltip("Size of the font used")]
+        [SerializeField]
+        protected int fontSize = 30;
         
         private GameObject currentSpectatorInstance = null;
 
@@ -46,6 +51,7 @@ namespace Innoactive.Hub.PlayerSetup
             foreach (Text text in currentSpectatorInstance.GetComponentsInChildren<Text>(true))
             {
                 text.font = font;
+                text.fontSize = fontSize;
             }
         }
     }
