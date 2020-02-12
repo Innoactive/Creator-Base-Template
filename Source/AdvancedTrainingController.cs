@@ -186,21 +186,20 @@ namespace Innoactive.Hub.Training.Template
         private void SetupTraining()
         {
             // You can define which TTS engine is used through TTS config.
-            TextToSpeechConfig ttsConfig = new TextToSpeechConfig()
-            {
-                // Define which TTS provider is used.
-                Provider = typeof(MicrosoftSapiTextToSpeechProvider).Name,
-
-                // The acceptable values for the Voice and the Language differ from TTS provider to provider.
-                // Microsoft SAPI TTS provider takes either "Male" or "Female" value as a voice.
-                Voice = "Female",
-
-                // Microsoft SAPI TTS provider takes either natural language name, or two-letter ISO language code.
-                Language = selectedLanguage
-            };
+            TextToSpeechConfiguration ttsConfiguration = RuntimeConfigurator.Configuration.GetTextToSpeechConfiguration();
+            
+            // Define which TTS provider is used.
+            ttsConfiguration.Provider = typeof(MicrosoftSapiTextToSpeechProvider).Name;
+            
+            // The acceptable values for the Voice and the Language differ from TTS provider to provider.
+            // Microsoft SAPI TTS provider takes either "Male" or "Female" value as a voice.
+            ttsConfiguration.Voice = "Female";
+            
+            // Microsoft SAPI TTS provider takes either natural language name, or two-letter ISO language code.
+            ttsConfiguration.Language = selectedLanguage;
 
             // If TTS config overload is set, it is used instead the config that is located at `[YOUR_PROJECT_ROOT_FOLDER]/Config/text-to-speech-config.json`.
-            RuntimeConfigurator.Configuration.TextToSpeechConfig = ttsConfig;
+            RuntimeConfigurator.Configuration.SetTextToSpeechConfiguration(ttsConfiguration);
 
             // Load the localization file of the current selected language.
             LoadLocalizationForTraining();
