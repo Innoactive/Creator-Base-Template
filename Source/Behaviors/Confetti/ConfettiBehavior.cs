@@ -69,8 +69,6 @@ namespace Innoactive.Hub.Training.Template
             public string Name { get; set; }
         }
 
-        private static readonly Common.Logging.ILog logger = Logging.LogManager.GetLogger<ConfettiBehavior>();
-
         private const float defaultDuration = 15f;
         private const string defaultPathConfettiPrefab = "Confetti/Prefabs/InnoactiveConfettiMachine";
         private const float defaultRadius = 1f;
@@ -117,7 +115,7 @@ namespace Innoactive.Hub.Training.Template
 
                 if (confettiPrefab == null)
                 {
-                    logger.Warn("No valid prefab path provided.");
+                    Debug.LogWarning("No valid prefab path provided.");
                     return;
                 }
 
@@ -140,7 +138,7 @@ namespace Innoactive.Hub.Training.Template
 
                 if (data.ConfettiMachine == null)
                 {
-                    logger.Warn("The provided prefab is missing.");
+                    Debug.LogWarning("The provided prefab is missing.");
                     return;
                 }
 
@@ -148,7 +146,7 @@ namespace Innoactive.Hub.Training.Template
 
                 if (data.ConfettiMachine.GetComponent(typeof(IParticleMachine)) == null)
                 {
-                    logger.Warn("The provided prefab does not have any component of type \"IParticleMachine\".");
+                    Debug.LogWarning("The provided prefab does not have any component of type \"IParticleMachine\".");
                     return;
                 }
 

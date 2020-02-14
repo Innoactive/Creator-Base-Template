@@ -9,8 +9,6 @@ namespace Innoactive.Hub.Training
     /// </summary>
     public class ConfettiMachine : MonoBehaviour, IParticleMachine
     {
-        private static readonly Common.Logging.ILog logger = Logging.LogManager.GetLogger<ConfettiMachine>();
-
         [SerializeField]
         [Tooltip("List of all particle systems with individual confetti particle materials.")]
         private ParticleSystem[] confettiSystems;
@@ -112,7 +110,7 @@ namespace Innoactive.Hub.Training
             if (newRadius < 0.01f)
             {
                 newRadius = 0.01f;
-                logger.Warn("You provided a too small or negative area radius. The area radius can not be smaller than 0.01.");
+                Debug.LogWarning("You provided a too small or negative area radius. The area radius can not be smaller than 0.01.");
             }
 
             foreach (ParticleSystem confettiSystem in confettiSystems)
@@ -135,7 +133,7 @@ namespace Innoactive.Hub.Training
             if (newDuration < 0f)
             {
                 newDuration = 0f;
-                logger.Warn("You provided a negative duration. The duration has to be positive or 0.");
+                Debug.LogWarning("You provided a negative duration. The duration has to be positive or 0.");
             }
 
             foreach (ParticleSystem confettiSystem in confettiSystems)
@@ -174,7 +172,7 @@ namespace Innoactive.Hub.Training
         {
             if (confettiSystems.Length == 0)
             {
-                logger.Warn("There are no particle systems added to the array \"Confetti Systems\". Please add them in the inspector.");
+                Debug.LogWarning("There are no particle systems added to the array \"Confetti Systems\". Please add them in the inspector.");
                 return;
             }
 

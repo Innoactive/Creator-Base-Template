@@ -1,10 +1,5 @@
-﻿using System;
-using Innoactive.Hub.SDK.Models;
-using Innoactive.Hub.Training.Configuration;
-using UnityEngine;
-using UnityEngine.Serialization;
+﻿using UnityEngine;
 using UnityEngine.UI;
-using VRTK;
 
 namespace Innoactive.Hub.PlayerSetup
 {
@@ -15,8 +10,6 @@ namespace Innoactive.Hub.PlayerSetup
     /// </summary>
     public class SpectatorCameraSetup : MonoBehaviour
     {
-        private static readonly Common.Logging.ILog logger = Logging.LogManager.GetLogger<SpectatorCameraSetup>();
-
         [Tooltip("This prefab will be used if set. Otherwise, the default Spectator Cam is used.")]
         [SerializeField]
         protected GameObject spectatorCamPrefabOverload;
