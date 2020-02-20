@@ -7,6 +7,7 @@ using Innoactive.Hub.TextToSpeech;
 using Innoactive.Hub.Training.Configuration;
 using Innoactive.Hub.Training.Configuration.Modes;
 using Innoactive.Hub.Training.TextToSpeech;
+using Innoactive.Creator.Internationalization;
 using Innoactive.Hub.Training.Unity.Utils;
 using Innoactive.Hub.Training.Utils;
 using UnityEngine;

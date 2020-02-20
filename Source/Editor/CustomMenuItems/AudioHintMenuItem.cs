@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using UnityEngine;
+using System.Collections.Generic;
 using Innoactive.Hub.Training.Audio;
+using Innoactive.Creator.Internationalization;
 using Innoactive.Hub.Training.Behaviors;
 using Innoactive.Hub.Training.Editors.Configuration;
-using UnityEngine;
 
 namespace Innoactive.Hub.Training.Template.Editors
 {
