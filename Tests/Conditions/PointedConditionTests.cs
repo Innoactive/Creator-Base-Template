@@ -1,6 +1,5 @@
-﻿#if UNITY_EDITOR
-
-using System.Collections;
+﻿using System.Collections;
+using Innoactive.Creator.Core.Tests.Utils;
 using Innoactive.Hub.Training;
 using Innoactive.Hub.Training.Configuration.Modes;
 using Innoactive.Hub.Training.SceneObjects;
@@ -11,7 +10,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace Innoactive.Hub.Unity.Tests.Training.Template.Conditions
+namespace Innoactive.Creator.Template.Tests.Conditions
 {
     public class PointedConditionTests : RuntimeTests
     {
@@ -148,5 +147,3 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Conditions
         }
     }
 }
-
-#endif

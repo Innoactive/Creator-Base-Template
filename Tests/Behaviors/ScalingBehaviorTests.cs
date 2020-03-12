@@ -1,7 +1,6 @@
-#if UNITY_EDITOR
-
 using Innoactive.Hub.Training;
 using System.Collections;
+using Innoactive.Creator.Core.Tests.Utils;
 using Innoactive.Hub.Training.Behaviors;
 using Innoactive.Hub.Training.Configuration.Modes;
 using Innoactive.Hub.Training.SceneObjects;
@@ -10,7 +9,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
+namespace Innoactive.Creator.Template.Tests.Behaviors
 {
     public class ScalingBehaviorTests : RuntimeTests
     {
@@ -268,5 +267,3 @@ namespace Innoactive.Hub.Unity.Tests.Training.Template.Behaviors
         }
     }
 }
-
-#endif

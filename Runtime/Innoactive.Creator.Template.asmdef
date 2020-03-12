@@ -1,0 +1,17 @@
+{
+    "name": "Innoactive.Creator.Template",
+    "references": [
+        "GUID:c8561f9de838ac04d8feeda695bc572d",
+        "GUID:42a7f63f1de938c4aacfe96b96e26d88",
+        "GUID:5907d0959af934345b9d18d84d8fa0f7"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
