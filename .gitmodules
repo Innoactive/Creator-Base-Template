@@ -1,6 +1,3 @@
-[submodule "Extensions/SteamVR"]
-	path = Extensions/SteamVR
-	url = git@github.com:Innoactive/SteamVR.git
 [submodule "Extensions/PostProcessing"]
 	path = Extensions/PostProcessing
 	url=git@github.com:Innoactive/PostProcessing.git
