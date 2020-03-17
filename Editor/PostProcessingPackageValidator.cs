@@ -47,29 +47,13 @@ namespace Innoactive.Creator.XRInteraction.Editors.Utils
                     RetrievePackageListResult();
                     break;
                 case PackageRequestStatus.Adding:
-                    
-                    if (packageCollection.Any(packageInfo => packageInfo.name == Package))
-                    {
-                        packageRequestStatus = PackageRequestStatus.None;
-                    }
-                    else
-                    {
-                        EnablePackage();
-                    }
-                    
+                    AddPackageIfMissing();
                     break;
                 case PackageRequestStatus.WaitingForPackage:
                     WaitForPackageStatus();
                     break;
                 default:
-                    
-                    listRequest = null;
-                    addRequest = null;
-                    packageCollection = null;
-                    
-                    packageRequestStatus = PackageRequestStatus.None;
-                    EditorApplication.update -= EditorUpdate;
-                    
+                    CleanPackageValidation();
                     break;
             }
         }
@@ -99,10 +83,17 @@ namespace Innoactive.Creator.XRInteraction.Editors.Utils
             }
         }
 
-        private static void EnablePackage()
+        private static void AddPackageIfMissing()
         {
-            packageRequestStatus = PackageRequestStatus.WaitingForPackage;
-            addRequest = Client.Add(Package);
+            if (packageCollection.Any(packageInfo => packageInfo.name == Package))
+            {
+                packageRequestStatus = PackageRequestStatus.None;
+            }
+            else
+            {
+                packageRequestStatus = PackageRequestStatus.WaitingForPackage;
+                addRequest = Client.Add(Package);
+            }
         }
 
         private static void WaitForPackageStatus()
@@ -122,6 +113,16 @@ namespace Innoactive.Creator.XRInteraction.Editors.Utils
                 packageRequestStatus = PackageRequestStatus.None;
                 Debug.LogFormat("The package '{0} version {1}' has been automatically added", addRequest.Result.displayName, addRequest.Result.version);
             }
+        }
+
+        private static void CleanPackageValidation()
+        {
+            listRequest = null;
+            addRequest = null;
+            packageCollection = null;
+                    
+            packageRequestStatus = PackageRequestStatus.None;
+            EditorApplication.update -= EditorUpdate;
         }
     }
 }
