@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using Innoactive.Hub.Threading;
 using Innoactive.Hub.TextToSpeech;
 using Innoactive.Hub.Training.Configuration;
@@ -86,6 +87,7 @@ namespace Innoactive.Hub.Training.Template
         private List<string> localizationFileNames;
 
         private string selectedLanguage;
+        private FieldInfo skipStepPickerEditorValueField;
 
         private IStep displayedStep;
         private IChapter lastDisplayedChapter;
@@ -340,6 +342,12 @@ namespace Innoactive.Hub.Training.Template
 
         private void SetupSkipStepPicker()
         {
+            // Dropdown.onValueChanged won't be call if Dropdown.value is equal to the selected value. 
+            // Dropdown.value can't be less than 0 or grater than Dropdown.options.Count -1.
+            // This causes the dropdown to never call onValueChanged in cases when there is only 1 transition.
+            // By setting the value to be out of range from the "editor" instead than from Dropdown.value we ensure that Dropdown.onValueChanged is always called.
+            skipStepPickerEditorValueField = skipStepPicker.GetType().GetField("m_Value", BindingFlags.NonPublic | BindingFlags.Instance);
+            
             // When a target step was chosen,
             skipStepPicker.onValueChanged.AddListener(index =>
             {
@@ -499,9 +507,11 @@ namespace Innoactive.Hub.Training.Template
 
         private void SetupSkipStepPickerOptions()
         {
+            // Reset the skip step picker.
+            skipStepPicker.ClearOptions();
+
             if (displayedStep == null)
             {
-                skipStepPicker.ClearOptions();
                 return;
             }
 
@@ -516,27 +526,11 @@ namespace Innoactive.Hub.Training.Template
                 // Convert the transitions to a list of target step names and use them as dropdown options.
                 // null as target step means "end of chapter".
                 dropdownOptions = transitions.Select(transition => (transition.Data.TargetStep != null) ? transition.Data.TargetStep.Data.Name : "End of the Chapter").ToList();
-                dropdownOptions.Add("Dummy");
             }
-
-
-
-            // Reset the skip step picker.
-            skipStepPicker.ClearOptions();
 
             // Populate it with new options.
             skipStepPicker.AddOptions(dropdownOptions);
-            skipStepPicker.value = dropdownOptions.Count - 1;
-
-            skipStepPicker.ClearOptions();
-            dropdownOptions.RemoveAt(dropdownOptions.Count - 1);
-            skipStepPicker.AddOptions(dropdownOptions);
-
-
-            // Refresh skip step picker immediately.
-            // Note that this method is not a part of the `UnityEngine.UI.Dropdown` interface.
-            // It is an extension method defined in `Innoactive.Hub.Training.Unity.Utils.UnityUiUtils` class.
-            skipStepPicker.Refresh();
+            skipStepPickerEditorValueField?.SetValue(skipStepPicker, dropdownOptions.Count);
         }
 
         private void SetupTrainingIndicator()
