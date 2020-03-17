@@ -3909,8 +3909,8 @@ GameObject:
   - component: {fileID: 4188743169029924}
   - component: {fileID: 114436518167541212}
   - component: {fileID: 20959362268147600}
-  - component: {fileID: 3266005639059345621}
-  - component: {fileID: 1518159660961000187}
+  - component: {fileID: -2580457835689158991}
+  - component: {fileID: -8288581634918823980}
   m_Layer: 0
   m_Name: AdvancedTrainerCamera
   m_TagString: Untagged
@@ -3988,7 +3988,7 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!114 &3266005639059345621
+--- !u!114 &-2580457835689158991
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4048,7 +4048,7 @@ MonoBehaviour:
   m_BeforeTransparentBundles: []
   m_BeforeStackBundles: []
   m_AfterStackBundles: []
---- !u!114 &1518159660961000187
+--- !u!114 &-8288581634918823980
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4060,7 +4060,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b9a305e18de0c04dbd257a21cd47087, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sharedProfile: {fileID: 11400000, guid: 9071ed4a712cca544b69aa12947b1d42, type: 2}
+  sharedProfile: {fileID: 11400000, guid: 56599cb9a9d4e1149b081a5df65c8bac, type: 2}
   isGlobal: 1
   blendDistance: 0
   weight: 1
