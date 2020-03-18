@@ -21,6 +21,7 @@ namespace Innoactive.Creator.XRInteraction.Editors.Utils
             Listing,
             Adding,
             WaitingForPackage,
+            ReimportAssets,
             Failure
         }
         
@@ -51,6 +52,9 @@ namespace Innoactive.Creator.XRInteraction.Editors.Utils
                     break;
                 case PackageRequestStatus.WaitingForPackage:
                     WaitForPackageStatus();
+                    break;
+                case PackageRequestStatus.ReimportAssets:
+                    ReimportPrefab();
                     break;
                 default:
                     CleanPackageValidation();
@@ -110,9 +114,25 @@ namespace Innoactive.Creator.XRInteraction.Editors.Utils
             }
             else
             {
-                packageRequestStatus = PackageRequestStatus.None;
+                packageRequestStatus = PackageRequestStatus.ReimportAssets;
                 Debug.LogFormat("The package '{0} version {1}' has been automatically added", addRequest.Result.displayName, addRequest.Result.version);
             }
+        }
+
+        private static void ReimportPrefab()
+        {
+            string[] prefabGUIDs = AssetDatabase.FindAssets("AdvancedTrainerCamera t:Prefab", null);
+
+            if (prefabGUIDs.Any() == false)
+            {
+                Debug.LogWarning("There are not assets found to reimport.");
+                return;
+            }
+
+            string assetPath = AssetDatabase.GUIDToAssetPath(prefabGUIDs.First());
+            AssetDatabase.ImportAsset(assetPath);
+
+            packageRequestStatus = PackageRequestStatus.None;
         }
 
         private static void CleanPackageValidation()
