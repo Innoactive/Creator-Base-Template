@@ -91,7 +91,7 @@ namespace Innoactive.Creator.XRInteraction.Editors.Utils
         {
             if (packageCollection.Any(packageInfo => packageInfo.name == Package))
             {
-                packageRequestStatus = PackageRequestStatus.None;
+                packageRequestStatus = PackageRequestStatus.ReimportAssets;
             }
             else
             {
@@ -114,7 +114,7 @@ namespace Innoactive.Creator.XRInteraction.Editors.Utils
             }
             else
             {
-                packageRequestStatus = PackageRequestStatus.ReimportAssets;
+                packageRequestStatus = PackageRequestStatus.None;
                 Debug.LogFormat("The package '{0} version {1}' has been automatically added", addRequest.Result.displayName, addRequest.Result.version);
             }
         }
@@ -131,6 +131,8 @@ namespace Innoactive.Creator.XRInteraction.Editors.Utils
 
             string assetPath = AssetDatabase.GUIDToAssetPath(prefabGUIDs.First());
             AssetDatabase.ImportAsset(assetPath);
+            
+            Debug.LogFormat("The asset '{0}' has been automatically reimported", assetPath);
 
             packageRequestStatus = PackageRequestStatus.None;
         }
