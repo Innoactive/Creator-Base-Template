@@ -1,5 +1,6 @@
 ﻿using System.Collections;
-using Innoactive.Hub.Training.Configuration;
+using Innoactive.Creator.Core;
+using Innoactive.Creator.Core.Configuration;
 using UnityEngine;
 
 namespace Innoactive.Hub.Training.Template

@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Innoactive.Hub.Threading;
-using Innoactive.Hub.TextToSpeech;
-using Innoactive.Hub.Training.Configuration;
-using Innoactive.Hub.Training.Configuration.Modes;
-using Innoactive.Hub.Training.TextToSpeech;
-using Innoactive.Creator.Internationalization;
-using Innoactive.Hub.Training.Unity.Utils;
-using Innoactive.Hub.Training.Utils;
+using Innoactive.Creator.Core;
+using Innoactive.Creator.Core.Configuration;
+using Innoactive.Creator.Core.Configuration.Modes;
+using Innoactive.Creator.Core.Internationalization;
+using Innoactive.Creator.TextToSpeech;
+using Innoactive.Creator.Unity;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -502,7 +500,7 @@ namespace Innoactive.Hub.Training.Template
             // Refresh chapter picker immediately.
             // Note that this method is not a part of the `UnityEngine.UI.Dropdown` interface.
             // It is an extension method defined in `Innoactive.Hub.Training.Unity.Utils.UnityUiUtils` class.
-            chapterPicker.Refresh();
+            //chapterPicker.Refresh();
         }
 
         private void SetupSkipStepPickerOptions()

@@ -1,10 +1,10 @@
-﻿using Innoactive.Hub.Training.Conditions;
-using Innoactive.Hub.Training.Editors.Configuration;
+﻿using Innoactive.Creator.Core.Conditions;
+using Innoactive.CreatorEditor.UI;
 using UnityEngine;
 
 namespace Innoactive.Hub.Training.Template.Editors
 {
-    public class PointedMenuItem : Menu.Item<ICondition>
+    public class PointedMenuItem : StepInspectorMenu.Item<ICondition>
     {
         public override GUIContent DisplayedName
         {

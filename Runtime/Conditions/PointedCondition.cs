@@ -1,9 +1,10 @@
 ﻿using System.Collections;
 using System.Runtime.Serialization;
-using Innoactive.Hub.Training.Attributes;
-using Innoactive.Hub.Training.Conditions;
-using Innoactive.Hub.Training.SceneObjects;
-using Innoactive.Hub.Training.SceneObjects.Properties;
+using Innoactive.Creator.Core;
+using Innoactive.Creator.Core.Attributes;
+using Innoactive.Creator.Core.Conditions;
+using Innoactive.Creator.Core.Properties;
+using Innoactive.Creator.Core.SceneObjects;
 using Newtonsoft.Json;
 
 namespace Innoactive.Hub.Training.Template

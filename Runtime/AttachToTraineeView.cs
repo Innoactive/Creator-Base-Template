@@ -1,5 +1,5 @@
 ﻿using System;
-using Innoactive.Hub.Training.Configuration;
+using Innoactive.Creator.Core.Configuration;
 using UnityEngine;
 
 /// <summary>

@@ -1,9 +1,9 @@
-using Innoactive.Hub.Training;
 using System.Collections;
-using Innoactive.Creator.Core.Tests.Utils;
-using Innoactive.Hub.Training.Behaviors;
-using Innoactive.Hub.Training.Configuration.Modes;
-using Innoactive.Hub.Training.SceneObjects;
+using Innoactive.Creator.Core;
+using Innoactive.Creator.Core.Behaviors;
+using Innoactive.Creator.Core.Configuration.Modes;
+using Innoactive.Creator.Core.SceneObjects;
+using Innoactive.Creator.Tests.Utils;
 using Innoactive.Hub.Training.Template;
 using NUnit.Framework;
 using UnityEngine;

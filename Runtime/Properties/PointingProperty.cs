@@ -1,5 +1,5 @@
 ﻿using System;
-using Innoactive.Hub.Training.SceneObjects.Properties;
+using Innoactive.Creator.Core.Properties;
 using UnityEngine;
 using VRTK;
 

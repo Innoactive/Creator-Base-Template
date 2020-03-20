@@ -1,13 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using Innoactive.Hub.Training.Audio;
-using Innoactive.Creator.Internationalization;
-using Innoactive.Hub.Training.Behaviors;
-using Innoactive.Hub.Training.Editors.Configuration;
+using Innoactive.Creator.Core.Behaviors;
+using Innoactive.Creator.Core.Internationalization;
+using Innoactive.Creator.TextToSpeech.Audio;
+using Innoactive.CreatorEditor.UI;
 
 namespace Innoactive.Hub.Training.Template.Editors
 {
-    public class AudioHintMenuItem : Menu.Item<IBehavior>
+    public class AudioHintMenuItem : StepInspectorMenu.Item<IBehavior>
     {
         public override GUIContent DisplayedName
         {

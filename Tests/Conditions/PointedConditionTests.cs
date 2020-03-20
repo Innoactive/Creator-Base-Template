@@ -1,11 +1,11 @@
 ﻿using System.Collections;
-using Innoactive.Creator.Core.Tests.Utils;
-using Innoactive.Hub.Training;
-using Innoactive.Hub.Training.Configuration.Modes;
-using Innoactive.Hub.Training.SceneObjects;
-using Innoactive.Hub.Training.SceneObjects.Properties;
+using Innoactive.Creator.Core;
+using Innoactive.Creator.Core.Configuration.Modes;
+using Innoactive.Creator.Core.Properties;
+using Innoactive.Creator.Core.SceneObjects;
+using Innoactive.Creator.Core.Utils;
+using Innoactive.Creator.Tests.Utils;
 using Innoactive.Hub.Training.Template;
-using Innoactive.Hub.Training.Utils;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;

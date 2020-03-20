@@ -1,10 +1,11 @@
 ﻿using System.Collections;
 using System.Runtime.Serialization;
-using Innoactive.Hub.Training.Attributes;
-using Innoactive.Hub.Training.Behaviors;
-using Innoactive.Hub.Training.Configuration;
-using Innoactive.Hub.Training.SceneObjects;
-using Innoactive.Hub.Training.Utils;
+using Innoactive.Creator.Core;
+using Innoactive.Creator.Core.Attributes;
+using Innoactive.Creator.Core.Behaviors;
+using Innoactive.Creator.Core.Configuration;
+using Innoactive.Creator.Core.SceneObjects;
+using Innoactive.Creator.Core.Utils;
 using Newtonsoft.Json;
 using UnityEngine;
 using Object = UnityEngine.Object;

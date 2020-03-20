@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections;
-using Innoactive.Creator.Core.Tests.Utils;
+using Innoactive.Creator.Tests.Utils;
 using Innoactive.Hub.Training;
 using NUnit.Framework;
 using UnityEngine;

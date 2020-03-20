@@ -1,10 +1,10 @@
-﻿using Innoactive.Hub.Training.Behaviors;
-using Innoactive.Hub.Training.Editors.Configuration;
+﻿using Innoactive.Creator.Core.Behaviors;
+using Innoactive.CreatorEditor.UI;
 using UnityEngine;
 
 namespace Innoactive.Hub.Training.Template.Editors
 {
-    public class ConfettiMenuItem : Menu.Item<IBehavior>
+    public class ConfettiMenuItem : StepInspectorMenu.Item<IBehavior>
     {
         public override GUIContent DisplayedName
         {
