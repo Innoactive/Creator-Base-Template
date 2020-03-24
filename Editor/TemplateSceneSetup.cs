@@ -2,6 +2,9 @@
 
 namespace Innoactive.CreatorEditor.BasicTemplate
 {
+    /// <summary>
+    /// Will be called on OnSceneSetup to add the spectator menu.
+    /// </summary>
     public class TemplateSceneSetup : OnSceneSetup
     {
         public override void Setup()
