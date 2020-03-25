@@ -7,6 +7,13 @@ namespace Innoactive.CreatorEditor.BasicTemplate
     /// </summary>
     public class TemplateSceneSetup : OnSceneSetup
     {
+        /// <inheritdoc />
+        public override int Priority { get; } = 20;
+        
+        /// <inheritdoc />
+        public override string Key { get; } = "BasicTemplateSetup";
+        
+        /// <inheritdoc />
         public override void Setup()
         {
             if (GameObject.Find("[CAMERA_CONFIGURATION]") == null)

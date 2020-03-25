@@ -78,13 +78,15 @@ namespace Innoactive.Creator.XRInteraction.Editors.Utils
             if (listRequest.Status == StatusCode.Failure)
             {
                 packageRequestStatus = PackageRequestStatus.Failure;
-                Debug.LogErrorFormat("There was an error trying to enable '{0}'.\n{1}", Package, listRequest.Error.message);
+                Debug.LogErrorFormat("There was an error trying to enable '{0}' - Error Code: [{1}] .\n{2}", Package, listRequest.Error.errorCode, listRequest.Error.message);
             }
             else
             {
                 packageRequestStatus = PackageRequestStatus.Adding;
                 packageCollection = listRequest.Result;
             }
+
+            listRequest = null;
         }
 
         private static void AddPackageIfMissing()
@@ -110,37 +112,40 @@ namespace Innoactive.Creator.XRInteraction.Editors.Utils
             if (addRequest.Status >= StatusCode.Failure)
             {
                 packageRequestStatus = PackageRequestStatus.Failure;
-                Debug.LogErrorFormat("There was an error trying to enable '{0}'.\n{1}", Package, addRequest.Error.message);
+                Debug.LogErrorFormat("There was an error trying to enable '{0}' - Error Code: [{1}] .\n{2}", Package, addRequest.Error.errorCode, addRequest.Error.message);
             }
             else
             {
                 packageRequestStatus = PackageRequestStatus.None;
                 Debug.LogFormat("The package '{0} version {1}' has been automatically added", addRequest.Result.displayName, addRequest.Result.version);
             }
+
+            addRequest = null;
         }
 
         private static void ReimportPrefab()
         {
-            string[] prefabGUIDs = AssetDatabase.FindAssets("AdvancedTrainerCamera t:Prefab", null);
+            string[] prefabGUIDs = AssetDatabase.FindAssets("t:Prefab", null);
 
             if (prefabGUIDs.Any() == false)
             {
-                Debug.LogWarning("There are not assets found to reimport.");
+                Debug.LogWarning("There are not prefabs found to reimport.");
                 return;
             }
 
-            string assetPath = AssetDatabase.GUIDToAssetPath(prefabGUIDs.First());
-            AssetDatabase.ImportAsset(assetPath);
+            foreach (string assetGUID in prefabGUIDs)
+            {
+                string assetPath = AssetDatabase.GUIDToAssetPath(assetGUID);
+                AssetDatabase.ImportAsset(assetPath);
             
-            Debug.LogFormat("The asset '{0}' has been automatically reimported", assetPath);
+                Debug.LogFormat("The prefab '{0}' has been automatically reimported", assetPath);
+            }
 
             packageRequestStatus = PackageRequestStatus.None;
         }
 
         private static void CleanPackageValidation()
         {
-            listRequest = null;
-            addRequest = null;
             packageCollection = null;
                     
             packageRequestStatus = PackageRequestStatus.None;
