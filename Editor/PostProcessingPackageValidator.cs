@@ -129,7 +129,7 @@ namespace Innoactive.Creator.XRInteraction.Editors.Utils
 
             if (prefabGUIDs.Any() == false)
             {
-                Debug.LogWarning("There are not prefabs found to reimport.");
+                Debug.LogWarning("No prefabs found to reimport.");
                 return;
             }
 
