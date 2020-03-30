@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace Innoactive.Hub.Training.Template
+namespace Innoactive.Creator.Template.Behaviors
 {
     /// <summary>
     /// This behavior causes confetti to rain.
@@ -87,32 +87,28 @@ namespace Innoactive.Hub.Training.Template
 
         public ConfettiBehavior(bool isAboveTrainee, string positionProviderSceneObjectName, string confettiMachinePrefabPath, float radius, float duration, BehaviorExecutionStages executionStages)
         {
-            Data = new EntityData
-            {
-                IsAboveTrainee = isAboveTrainee,
-                PositionProvider = new SceneObjectReference(positionProviderSceneObjectName),
-                ConfettiMachinePrefabPath = confettiMachinePrefabPath,
-                AreaRadius = radius,
-                Duration = duration,
-                ExecutionStages = executionStages
-            };
+            Data.IsAboveTrainee = isAboveTrainee;
+            Data.PositionProvider = new SceneObjectReference(positionProviderSceneObjectName);
+            Data.ConfettiMachinePrefabPath = confettiMachinePrefabPath;
+            Data.AreaRadius = radius;
+            Data.Duration = duration;
+            Data.ExecutionStages = executionStages;
         }
 
-        private class EmitConfettiProcess : IStageProcess<EntityData>
+        private class EmitConfettiProcess : Process<EntityData>
         {
-            private readonly BehaviorExecutionStages stages;
             private float timeStarted;
             private GameObject confettiPrefab;
 
-            public void Start(EntityData data)
+            public EmitConfettiProcess(EntityData data) : base(data)
             {
-                if (ShouldExecuteCurrentStage(data) == false)
-                {
-                    return;
-                }
-
+            }
+            
+            /// <inheritdoc />
+            public override void Start()
+            {
                 // Load the given prefab and stop the coroutine if not possible.
-                confettiPrefab = Resources.Load<GameObject>(data.ConfettiMachinePrefabPath);
+                confettiPrefab = Resources.Load<GameObject>(Data.ConfettiMachinePrefabPath);
 
                 if (confettiPrefab == null)
                 {
@@ -124,96 +120,85 @@ namespace Innoactive.Hub.Training.Template
                 // Otherwise, use the position of the position provider.
                 Vector3 spawnPosition;
 
-                if (data.IsAboveTrainee)
+                if (Data.IsAboveTrainee)
                 {
                     spawnPosition = RuntimeConfigurator.Configuration.Trainee.GameObject.transform.position;
                     spawnPosition.y += distanceAboveTrainee;
                 }
                 else
                 {
-                    spawnPosition = data.PositionProvider.Value.GameObject.transform.position;
+                    spawnPosition = Data.PositionProvider.Value.GameObject.transform.position;
                 }
 
                 // Spawn the machine and check if it has the interface IParticleMachine
-                data.ConfettiMachine = Object.Instantiate(confettiPrefab, spawnPosition, Quaternion.Euler(90, 0, 0));
+                Data.ConfettiMachine = Object.Instantiate(confettiPrefab, spawnPosition, Quaternion.Euler(90, 0, 0));
 
-                if (data.ConfettiMachine == null)
+                if (Data.ConfettiMachine == null)
                 {
                     Debug.LogWarning("The provided prefab is missing.");
                     return;
                 }
 
-                data.ConfettiMachine.name = "Behavior" + confettiPrefab.name;
+                Data.ConfettiMachine.name = "Behavior" + confettiPrefab.name;
 
-                if (data.ConfettiMachine.GetComponent(typeof(IParticleMachine)) == null)
+                if (Data.ConfettiMachine.GetComponent(typeof(IParticleMachine)) == null)
                 {
                     Debug.LogWarning("The provided prefab does not have any component of type \"IParticleMachine\".");
                     return;
                 }
 
                 // Change the settings and activate the machine
-                IParticleMachine particleMachine = data.ConfettiMachine.GetComponent<IParticleMachine>();
-                particleMachine.Activate(data.AreaRadius, data.Duration);
+                IParticleMachine particleMachine = Data.ConfettiMachine.GetComponent<IParticleMachine>();
+                particleMachine.Activate(Data.AreaRadius, Data.Duration);
 
-                if (data.Duration > 0f)
+                if (Data.Duration > 0f)
                 {
                     timeStarted = Time.time;
                 }
             }
 
-            public IEnumerator Update(EntityData data)
+            /// <inheritdoc />
+            public override IEnumerator Update()
             {
-                if (ShouldExecuteCurrentStage(data) == false)
+                if (confettiPrefab == null || Data.ConfettiMachine == null || Data.ConfettiMachine.GetComponent(typeof(IParticleMachine)) == null)
                 {
                     yield break;
                 }
 
-                if (confettiPrefab == null || data.ConfettiMachine == null || data.ConfettiMachine.GetComponent(typeof(IParticleMachine)) == null)
+                if (Data.Duration > 0)
                 {
-                    yield break;
-                }
-
-                if (data.Duration > 0)
-                {
-                    while (Time.time - timeStarted < data.Duration)
+                    while (Time.time - timeStarted < Data.Duration)
                     {
                         yield return null;
                     }
                 }
             }
 
-            public void End(EntityData data)
+            /// <inheritdoc />
+            public override void End()
             {
-                if (ShouldExecuteCurrentStage(data) && data.ConfettiMachine != null && data.ConfettiMachine.Equals(null) == false)
+                if (Data.ConfettiMachine != null && Data.ConfettiMachine.Equals(null) == false)
                 {
-                    Object.Destroy(data.ConfettiMachine);
-                    data.ConfettiMachine = null;
+                    Object.Destroy(Data.ConfettiMachine);
+                    Data.ConfettiMachine = null;
                 }
             }
 
-            public void FastForward(EntityData data)
-            {
-            }
-
-            public EmitConfettiProcess(BehaviorExecutionStages stages)
-            {
-                this.stages = stages;
-            }
-
-            private bool ShouldExecuteCurrentStage(EntityData data)
-            {
-                return (data.ExecutionStages & stages) > 0;
-            }
+            /// <inheritdoc />
+            public override void FastForward() {}
         }
 
-        private readonly IProcess<EntityData> process = new Process<EntityData>(new EmitConfettiProcess(BehaviorExecutionStages.Activation), new EmptyStageProcess<EntityData>(), new EmitConfettiProcess(BehaviorExecutionStages.Deactivation));
 
-        protected override IProcess<EntityData> Process
+        /// <inheritdoc />
+        public override IProcess GetActivatingProcess()
         {
-            get
-            {
-                return process;
-            }
+            return new EmitConfettiProcess(Data);
+        }
+        
+        /// <inheritdoc />
+        public override IProcess GetDeactivatingProcess()
+        {
+            return new EmitConfettiProcess(Data);
         }
     }
 }

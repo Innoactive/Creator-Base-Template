@@ -1,19 +1,17 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Innoactive.Creator.Core.Behaviors;
-using Innoactive.Creator.Core.Internationalization;
 using Innoactive.Creator.TextToSpeech.Audio;
-using Innoactive.CreatorEditor.UI;
+using Innoactive.Creator.Core.Internationalization;
+using Innoactive.CreatorEditor.UI.StepInspector.Menu;
 
-namespace Innoactive.Hub.Training.Template.Editors
+namespace Innoactive.CreatorEditor.Template.UI.Behaviors
 {
-    public class AudioHintMenuItem : StepInspectorMenu.Item<IBehavior>
+    public class AudioHintMenuItem : MenuItem<IBehavior>
     {
-        public override GUIContent DisplayedName
-        {
-            get { return new GUIContent("Innoactive/Audio Hint"); }
-        }
+        /// <inheritdoc />
+        public override string DisplayedName { get; } = "Innoactive/Audio Hint";
 
+        /// <inheritdoc />
         public override IBehavior GetNewItem()
         {
             DelayBehavior delayBehavior = new DelayBehavior(5f);

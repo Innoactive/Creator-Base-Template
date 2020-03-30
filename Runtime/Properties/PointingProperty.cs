@@ -3,7 +3,7 @@ using Innoactive.Creator.Core.Properties;
 using UnityEngine;
 using VRTK;
 
-namespace Innoactive.Hub.Training.Template
+namespace Innoactive.Creator.Template.Properties
 {
     // PointingProperty requires VRTK_Pointer to work.
     [RequireComponent(typeof(VRTK_Pointer))]

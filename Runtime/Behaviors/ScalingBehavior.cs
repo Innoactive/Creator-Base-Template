@@ -7,7 +7,7 @@ using Innoactive.Creator.Core.SceneObjects;
 using Newtonsoft.Json;
 using UnityEngine;
 
-namespace Innoactive.Hub.Training.Template
+namespace Innoactive.Creator.Template.Behaviors
 {
     // This behavior linearly changes scale of a Target object over Duration seconds, until it matches TargetScale.
     [DataContract(IsReference = true)]
@@ -43,56 +43,57 @@ namespace Innoactive.Hub.Training.Template
 
         public ScalingBehavior(SceneObjectReference target, Vector3 targetScale, float duration)
         {
-            Data = new EntityData()
-            {
-                Target = target,
-                TargetScale = targetScale,
-                Duration = duration,
-            };
+            Data.Target = target;
+            Data.TargetScale = targetScale;
+            Data.Duration = duration;
         }
 
-        public class ActivatingProcess : IStageProcess<EntityData>
+        private class ActivatingProcess : Process<EntityData>
         {
-            public void Start(EntityData data)
+            public ActivatingProcess(EntityData data) : base(data)
+            {
+            }
+            
+            /// <inheritdoc />
+            public override void Start()
             {
             }
 
-            public IEnumerator Update(EntityData data)
+            /// <inheritdoc />
+            public override IEnumerator Update()
             {
                 float startedAt = Time.time;
 
-                Transform scaledTransform = data.Target.Value.GameObject.transform;
+                Transform scaledTransform = Data.Target.Value.GameObject.transform;
 
                 Vector3 initialScale = scaledTransform.localScale;
 
-                while (Time.time - startedAt < data.Duration)
+                while (Time.time - startedAt < Data.Duration)
                 {
-                    float progress = (Time.time - startedAt) / data.Duration;
+                    float progress = (Time.time - startedAt) / Data.Duration;
 
-                    scaledTransform.localScale = Vector3.Lerp(initialScale, data.TargetScale, progress);
+                    scaledTransform.localScale = Vector3.Lerp(initialScale, Data.TargetScale, progress);
                     yield return null;
                 }
             }
 
-            public void End(EntityData data)
+            /// <inheritdoc />
+            public override void End()
             {
-                Transform scaledTransform = data.Target.Value.GameObject.transform;
-                scaledTransform.localScale = data.TargetScale;
+                Transform scaledTransform = Data.Target.Value.GameObject.transform;
+                scaledTransform.localScale = Data.TargetScale;
             }
 
-            public void FastForward(EntityData data)
+            /// <inheritdoc />
+            public override void FastForward()
             {
             }
         }
-
-        private readonly IProcess<EntityData> process = new Process<EntityData>(new ActivatingProcess(), new EmptyStageProcess<EntityData>(), new EmptyStageProcess<EntityData>());
-
-        protected override IProcess<EntityData> Process
+        
+        /// <inheritdoc />
+        public override IProcess GetActivatingProcess()
         {
-            get
-            {
-                return process;
-            }
+            return new ActivatingProcess(Data);
         }
     }
 }

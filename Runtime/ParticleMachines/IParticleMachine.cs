@@ -1,4 +1,4 @@
-﻿namespace Innoactive.Hub.Training
+﻿namespace Innoactive.Creator.Template
 {
     public interface IParticleMachine
     {

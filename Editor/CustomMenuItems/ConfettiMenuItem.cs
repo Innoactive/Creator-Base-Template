@@ -1,16 +1,15 @@
 ﻿using Innoactive.Creator.Core.Behaviors;
-using Innoactive.CreatorEditor.UI;
-using UnityEngine;
+using Innoactive.Creator.Template.Behaviors;
+using Innoactive.CreatorEditor.UI.StepInspector.Menu;
 
-namespace Innoactive.Hub.Training.Template.Editors
+namespace Innoactive.CreatorEditor.Template.UI.Behaviors
 {
-    public class ConfettiMenuItem : StepInspectorMenu.Item<IBehavior>
+    public class ConfettiMenuItem : MenuItem<IBehavior>
     {
-        public override GUIContent DisplayedName
-        {
-            get { return new GUIContent("Innoactive/Spawn Confetti"); }
-        }
+        /// <inheritdoc />
+        public override string DisplayedName { get; } = "Innoactive/Spawn Confetti";
 
+        /// <inheritdoc />
         public override IBehavior GetNewItem()
         {
             return new ConfettiBehavior();

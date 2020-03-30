@@ -1,16 +1,15 @@
 ﻿using Innoactive.Creator.Core.Behaviors;
-using Innoactive.CreatorEditor.UI;
-using UnityEngine;
+using Innoactive.Creator.Template.Behaviors;
+using Innoactive.CreatorEditor.UI.StepInspector.Menu;
 
-namespace Innoactive.Hub.Training.Template.Editors
+namespace Innoactive.CreatorEditor.Template.UI.Behaviors
 {
-    public class ScalingMenuItem : StepInspectorMenu.Item<IBehavior>
+    public class ScalingMenuItem : MenuItem<IBehavior>
     {
-        public override GUIContent DisplayedName
-        {
-            get { return new GUIContent("Innoactive/Scale Object"); }
-        }
+        /// <inheritdoc />
+        public override string DisplayedName { get; } = "Innoactive/Scale Object";
 
+        /// <inheritdoc />
         public override IBehavior GetNewItem()
         {
             return new ScalingBehavior();

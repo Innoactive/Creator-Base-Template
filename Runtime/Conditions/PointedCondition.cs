@@ -1,13 +1,13 @@
-﻿using System.Collections;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 using Innoactive.Creator.Core;
 using Innoactive.Creator.Core.Attributes;
 using Innoactive.Creator.Core.Conditions;
 using Innoactive.Creator.Core.Properties;
 using Innoactive.Creator.Core.SceneObjects;
+using Innoactive.Creator.Template.Properties;
 using Newtonsoft.Json;
 
-namespace Innoactive.Hub.Training.Template
+namespace Innoactive.Creator.Template.Conditions
 {
     [DataContract(IsReference = true)]
     // Condition which is completed when Pointer points at Target.
@@ -42,53 +42,52 @@ namespace Innoactive.Hub.Training.Template
 
         public PointedCondition(ScenePropertyReference<PointingProperty> pointer, ScenePropertyReference<ColliderWithTriggerProperty> target)
         {
-            Data = new EntityData()
-            {
-                Pointer = pointer,
-                Target = target
-            };
+            Data.Pointer = pointer;
+            Data.Target = target;
         }
 
-        private class EntityAutocompleter : BaseAutocompleter<EntityData>
+        private class EntityAutocompleter : Autocompleter<EntityData>
         {
-            public void Complete(EntityData data)
+            public EntityAutocompleter(EntityData data) : base(data)
             {
-                data.Pointer.Value.FastForwardPoint(data.Target);
-                base.Complete(data);
+            }
+        
+            /// <inheritdoc />
+            public override void Complete()
+            {
+                Data.Pointer.Value.FastForwardPoint(Data.Target);
             }
         }
 
-        private class ActiveProcess : IStageProcess<EntityData>
+        private class ActiveProcess : BaseActiveProcessOverCompletable<EntityData>
         {
             private bool wasPointed;
             private ColliderWithTriggerProperty target;
+            
+            public ActiveProcess(EntityData data) : base(data)
+            {
+            }
 
-            public void Start(EntityData data)
+            /// <inheritdoc />
+            public override void Start()
             {
                 wasPointed = false;
-                target = data.Target.Value;
-                data.IsCompleted = false;
+                target = Data.Target.Value;
+                Data.IsCompleted = false;
 
-                data.Pointer.Value.PointerEnter += OnPointerEnter;
+                Data.Pointer.Value.PointerEnter += OnPointerEnter;
             }
 
-            public IEnumerator Update(EntityData data)
+            /// <inheritdoc />
+            public override void End()
             {
-                while (wasPointed == false)
-                {
-                    yield return null;
-                }
-
-                data.IsCompleted = true;
+                Data.Pointer.Value.PointerEnter -= OnPointerEnter;
             }
 
-            public void End(EntityData data)
+            /// <inheritdoc />
+            protected override bool CheckIfCompleted()
             {
-                data.Pointer.Value.PointerEnter -= OnPointerEnter;
-            }
-
-            public void FastForward(EntityData data)
-            {
+                return wasPointed;
             }
 
             private void OnPointerEnter(ColliderWithTriggerProperty pointed)
@@ -99,25 +98,17 @@ namespace Innoactive.Hub.Training.Template
                 }
             }
         }
-
-        private readonly IProcess<EntityData> process = new Process<EntityData>(new EmptyStageProcess<EntityData>(), new ActiveProcess(), new EmptyStageProcess<EntityData>());
-
-        protected override IProcess<EntityData> Process
+        
+        /// <inheritdoc />
+        public override IProcess GetActiveProcess()
         {
-            get
-            {
-                return process;
-            }
+            return new ActiveProcess(Data);
         }
 
-        private readonly IAutocompleter<EntityData> autocompleter = new EntityAutocompleter();
-
-        protected override IAutocompleter<EntityData> Autocompleter
+        /// <inheritdoc />
+        protected override IAutocompleter GetAutocompleter()
         {
-            get
-            {
-                return autocompleter;
-            }
+            return new EntityAutocompleter(Data);
         }
     }
 }

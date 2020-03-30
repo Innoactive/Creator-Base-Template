@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-namespace Innoactive.Hub.Training
+namespace Innoactive.Creator.Template
 {
     /// <summary>
     /// Manager of all listed particle systems using confetti as particles.

@@ -1,16 +1,15 @@
 ﻿using Innoactive.Creator.Core.Conditions;
-using Innoactive.CreatorEditor.UI;
-using UnityEngine;
+using Innoactive.Creator.Template.Conditions;
+using Innoactive.CreatorEditor.UI.StepInspector.Menu;
 
-namespace Innoactive.Hub.Training.Template.Editors
+namespace Innoactive.CreatorEditor.Template.UI.Behaviors
 {
-    public class PointedMenuItem : StepInspectorMenu.Item<ICondition>
+    public class PointedMenuItem : MenuItem<ICondition>
     {
-        public override GUIContent DisplayedName
-        {
-            get { return new GUIContent("Innoactive/Point Object"); }
-        }
+        /// <inheritdoc />
+        public override string DisplayedName { get; } = "Innoactive/Point Object";
 
+        /// <inheritdoc />
         public override ICondition GetNewItem()
         {
             return new PointedCondition();
