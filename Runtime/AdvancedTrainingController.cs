@@ -202,7 +202,9 @@ namespace Innoactive.Hub.Training.Template
             LoadLocalizationForTraining();
 
             // Load training course from a file. That will synthesize an audio for the training instructions, too.
-            TrainingRunner.Initialize(RuntimeConfigurator.Configuration.LoadCourse());
+            string coursePath = RuntimeConfigurator.GetSelectedTrainingCourse();
+            ICourse trainingCourse = RuntimeConfigurator.Configuration.LoadCourse(coursePath);
+            TrainingRunner.Initialize(trainingCourse);
         }
 
         private List<string> FetchAvailableLocalizationsForTraining()
@@ -443,22 +445,22 @@ namespace Innoactive.Hub.Training.Template
             List<string> availableModes = new List<string>();
 
             // Add each mode name to the list of available modes.
-            foreach (IMode mode in RuntimeConfigurator.Configuration.AvailableModes)
+            foreach (IMode mode in RuntimeConfigurator.Configuration.Modes.AvailableModes)
             {
                 availableModes.Add(mode.Name);
             }
-
+            
             // Setup the dropdown menu.
             modePicker.AddOptions(availableModes);
-
+            
             // Set the picker value to the current selected mode.
-            modePicker.value = RuntimeConfigurator.Configuration.GetCurrentModeIndex();
-
+            modePicker.value = RuntimeConfigurator.Configuration.Modes.CurrentModeIndex;
+            
             // When the selected mode is changed,
             modePicker.onValueChanged.AddListener(itemIndex =>
             {
                 // Set the mode based on the user selection.
-                RuntimeConfigurator.Configuration.SetMode(itemIndex);
+                RuntimeConfigurator.Configuration.Modes.SetMode(itemIndex);
             });
         }
         #endregion

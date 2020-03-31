@@ -17,7 +17,8 @@ namespace Innoactive.Hub.Training.Template
             yield return null;
 
             // Load the currently selected training course.
-            ICourse trainingCourse = RuntimeConfigurator.Configuration.LoadCourse();
+            string coursePath = RuntimeConfigurator.GetSelectedTrainingCourse();
+            ICourse trainingCourse = RuntimeConfigurator.Configuration.LoadCourse(coursePath);
 
             // Start the training execution.
             TrainingRunner.Initialize(trainingCourse);
