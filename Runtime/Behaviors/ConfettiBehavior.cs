@@ -97,16 +97,23 @@ namespace Innoactive.Creator.Template.Behaviors
 
         private class EmitConfettiProcess : Process<EntityData>
         {
+            private readonly BehaviorExecutionStages stages;
             private float timeStarted;
             private GameObject confettiPrefab;
-
-            public EmitConfettiProcess(EntityData data) : base(data)
-            {
-            }
             
+            public EmitConfettiProcess(EntityData data, BehaviorExecutionStages stages) : base(data)
+            {
+                this.stages = stages;
+            }
+
             /// <inheritdoc />
             public override void Start()
             {
+                if (ShouldExecuteCurrentStage(Data) == false)
+                {
+                    return;
+                }
+
                 // Load the given prefab and stop the coroutine if not possible.
                 confettiPrefab = Resources.Load<GameObject>(Data.ConfettiMachinePrefabPath);
 
@@ -160,6 +167,11 @@ namespace Innoactive.Creator.Template.Behaviors
             /// <inheritdoc />
             public override IEnumerator Update()
             {
+                if (ShouldExecuteCurrentStage(Data) == false)
+                {
+                    yield break;
+                }
+
                 if (confettiPrefab == null || Data.ConfettiMachine == null || Data.ConfettiMachine.GetComponent(typeof(IParticleMachine)) == null)
                 {
                     yield break;
@@ -177,7 +189,7 @@ namespace Innoactive.Creator.Template.Behaviors
             /// <inheritdoc />
             public override void End()
             {
-                if (Data.ConfettiMachine != null && Data.ConfettiMachine.Equals(null) == false)
+                if (ShouldExecuteCurrentStage(Data) && Data.ConfettiMachine != null && Data.ConfettiMachine.Equals(null) == false)
                 {
                     Object.Destroy(Data.ConfettiMachine);
                     Data.ConfettiMachine = null;
@@ -186,19 +198,24 @@ namespace Innoactive.Creator.Template.Behaviors
 
             /// <inheritdoc />
             public override void FastForward() {}
+
+            private bool ShouldExecuteCurrentStage(EntityData data)
+            {
+                return (data.ExecutionStages & stages) > 0;
+            }
         }
 
 
         /// <inheritdoc />
         public override IProcess GetActivatingProcess()
         {
-            return new EmitConfettiProcess(Data);
+            return new EmitConfettiProcess(Data, BehaviorExecutionStages.Activation);
         }
         
         /// <inheritdoc />
         public override IProcess GetDeactivatingProcess()
         {
-            return new EmitConfettiProcess(Data);
+            return new EmitConfettiProcess(Data, BehaviorExecutionStages.Deactivation);
         }
     }
 }
