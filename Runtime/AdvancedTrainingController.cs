@@ -212,7 +212,8 @@ namespace Innoactive.Hub.Training.Template
             // Get the directory of all localization files of the selected training.
             // It should be in the '[YOUR_PROJECT_ROOT_FOLDER]/StreamingAssets/Training/[TRAINING_NAME]' folder.
             string pathToCourse = RuntimeConfigurator.Instance.GetSelectedTrainingCourse();
-            string pathToLocalizations = string.Format("{0}/Localization/", pathToCourse).Replace('/', Path.DirectorySeparatorChar);
+            pathToCourse = Path.GetDirectoryName(pathToCourse);
+            string pathToLocalizations = string.Format("{0}/{1}/Localization/", Application.streamingAssetsPath, pathToCourse);
 
             // Save all existing localization files in a list.
             List<string> availableLocalizations = new List<string>();
