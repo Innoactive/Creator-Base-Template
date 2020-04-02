@@ -16,11 +16,7 @@ namespace Innoactive.CreatorEditor.BasicTemplate
         /// <inheritdoc />
         public override void Setup()
         {
-            if (GameObject.Find("[CAMERA_CONFIGURATION]") == null)
-            {
-                GameObject cameraConfig = (GameObject)GameObject.Instantiate(Resources.Load("CustomCamera/Prefabs/[CAMERA_CONFIGURATION]"));
-                cameraConfig.name = "[CAMERA_CONFIGURATION]";
-            }
+            SetupPrefab("[CAMERA_CONFIGURATION]");
         }
     }
 }

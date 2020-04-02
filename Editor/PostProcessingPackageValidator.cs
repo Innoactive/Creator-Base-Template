@@ -21,7 +21,6 @@ namespace Innoactive.Creator.XRInteraction.Editors.Utils
             Listing,
             Adding,
             WaitingForPackage,
-            ReimportAssets,
             Failure
         }
         
@@ -52,9 +51,6 @@ namespace Innoactive.Creator.XRInteraction.Editors.Utils
                     break;
                 case PackageRequestStatus.WaitingForPackage:
                     WaitForPackageStatus();
-                    break;
-                case PackageRequestStatus.ReimportAssets:
-                    ReimportPrefab();
                     break;
                 default:
                     CleanPackageValidation();
@@ -93,7 +89,7 @@ namespace Innoactive.Creator.XRInteraction.Editors.Utils
         {
             if (packageCollection.Any(packageInfo => packageInfo.name == Package))
             {
-                packageRequestStatus = PackageRequestStatus.ReimportAssets;
+                packageRequestStatus = PackageRequestStatus.None;
             }
             else
             {
@@ -121,27 +117,6 @@ namespace Innoactive.Creator.XRInteraction.Editors.Utils
             }
 
             addRequest = null;
-        }
-
-        private static void ReimportPrefab()
-        {
-            string[] prefabGUIDs = AssetDatabase.FindAssets("t:Prefab", null);
-
-            if (prefabGUIDs.Any() == false)
-            {
-                Debug.LogWarning("No prefabs found to reimport.");
-                return;
-            }
-
-            foreach (string assetGUID in prefabGUIDs)
-            {
-                string assetPath = AssetDatabase.GUIDToAssetPath(assetGUID);
-                AssetDatabase.ImportAsset(assetPath);
-            
-                Debug.LogFormat("The prefab '{0}' has been automatically reimported", assetPath);
-            }
-
-            packageRequestStatus = PackageRequestStatus.None;
         }
 
         private static void CleanPackageValidation()
