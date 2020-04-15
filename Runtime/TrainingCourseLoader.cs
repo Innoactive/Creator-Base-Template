@@ -21,8 +21,8 @@ namespace Innoactive.Hub.Training.Template
             ICourse trainingCourse = RuntimeConfigurator.Configuration.LoadCourse(coursePath);
 
             // Start the training execution.
-            TrainingRunner.Initialize(trainingCourse);
-            TrainingRunner.Run();
+            CourseRunner.Initialize(trainingCourse);
+            CourseRunner.Run();
         }
     }
 }

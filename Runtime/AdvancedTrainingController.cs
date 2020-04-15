@@ -134,7 +134,7 @@ namespace Innoactive.Hub.Training.Template
 
         private void Update()
         {
-            IChapter currentChapter = TrainingRunner.Current == null ? null : TrainingRunner.Current.Data.Current;
+            IChapter currentChapter = CourseRunner.Current == null ? null : CourseRunner.Current.Data.Current;
             IStep currentStep = currentChapter == null ? null : currentChapter.Data.Current;
 
             if (currentChapter != lastDisplayedChapter)
@@ -171,7 +171,7 @@ namespace Innoactive.Hub.Training.Template
         private void UpdateDisplayedChapter(IChapter chapter)
         {
                 // Get a collection of available chapters.
-                IList<IChapter> chapters = TrainingRunner.Current == null ? new List<IChapter>() : TrainingRunner.Current.Data.Chapters.ToList();
+                IList<IChapter> chapters = CourseRunner.Current == null ? new List<IChapter>() : CourseRunner.Current.Data.Chapters.ToList();
 
                 // Skip all finished chapters.
                 int startingIndex = chapter == null ? 0 : chapters.IndexOf(chapter);
@@ -204,16 +204,15 @@ namespace Innoactive.Hub.Training.Template
             // Load training course from a file. That will synthesize an audio for the training instructions, too.
             string coursePath = RuntimeConfigurator.Instance.GetSelectedTrainingCourse();
             ICourse trainingCourse = RuntimeConfigurator.Configuration.LoadCourse(coursePath);
-            TrainingRunner.Initialize(trainingCourse);
+            CourseRunner.Initialize(trainingCourse);
         }
 
         private List<string> FetchAvailableLocalizationsForTraining()
         {
             // Get the directory of all localization files of the selected training.
             // It should be in the '[YOUR_PROJECT_ROOT_FOLDER]/StreamingAssets/Training/[TRAINING_NAME]' folder.
-            string pathToCourse = RuntimeConfigurator.Instance.GetSelectedTrainingCourse();
-            pathToCourse = Path.GetDirectoryName(pathToCourse);
-            string pathToLocalizations = string.Format("{0}/{1}/Localization/", Application.streamingAssetsPath, pathToCourse);
+            string pathToCourse = Path.GetDirectoryName(Path.Combine(Application.streamingAssetsPath, RuntimeConfigurator.Instance.GetSelectedTrainingCourse()));
+            string pathToLocalizations = string.Format("{0}/Localization/", pathToCourse).Replace('/', Path.DirectorySeparatorChar);
 
             // Save all existing localization files in a list.
             List<string> availableLocalizations = new List<string>();
@@ -273,7 +272,7 @@ namespace Innoactive.Hub.Training.Template
                 return;
             }
 
-            TrainingRunner.SkipChapters(numberOfChapters);
+            CourseRunner.SkipChapters(numberOfChapters);
         }
 
         #region Setup UI
@@ -282,13 +281,13 @@ namespace Innoactive.Hub.Training.Template
             // When selected chapter has changed,
             chapterPicker.onValueChanged.AddListener(index =>
             {
-                if (TrainingRunner.IsRunning == false)
+                if (CourseRunner.IsRunning == false)
                 {
                     return;
                 }
 
                 // If the training hasn't started it, ignore it. We will use this value when the training starts.
-                if (TrainingRunner.Current.LifeCycle.Stage == Stage.Inactive)
+                if (CourseRunner.Current.LifeCycle.Stage == Stage.Inactive)
                 {
                     return;
                 }
@@ -315,7 +314,7 @@ namespace Innoactive.Hub.Training.Template
             startTrainingButton.onClick.AddListener(() =>
             {
                 // Subscribe to the "stage changed" event of the current training in order to change the skip step button to the start button after finishing the training.
-                TrainingRunner.Current.LifeCycle.StageChanged += (sender, args) =>
+                CourseRunner.Current.LifeCycle.StageChanged += (sender, args) =>
                 {
                     if (args.Stage == Stage.Inactive)
                     {
@@ -328,7 +327,7 @@ namespace Innoactive.Hub.Training.Template
                 FastForwardChapters(chapterPicker.value);
 
                 // Start the training
-                TrainingRunner.Run();
+                CourseRunner.Run();
 
                 // Disable button as you have to reset scene before starting the training again.
                 startTrainingButton.interactable = false;
@@ -355,7 +354,7 @@ namespace Innoactive.Hub.Training.Template
                 // If there's an active step and it's not the last step,
                 if (displayedStep != null && index < displayedStep.Data.Transitions.Data.Transitions.Count && displayedStep.LifeCycle.Stage != Stage.Inactive)
                 {
-                    TrainingRunner.SkipStep(displayedStep.Data.Transitions.Data.Transitions[index]);
+                    CourseRunner.SkipStep(displayedStep.Data.Transitions.Data.Transitions[index]);
                 }
             });
         }
@@ -482,7 +481,7 @@ namespace Innoactive.Hub.Training.Template
         private void PopulateChapterPickerOptions(int startingIndex)
         {
             // Get a collection of available chapters.
-            IList<IChapter> chapters = TrainingRunner.Current.Data.Chapters;
+            IList<IChapter> chapters = CourseRunner.Current.Data.Chapters;
 
             // Skip finished chapters and convert the rest to a list of chapter names.
             List<string> dropdownOptions = new List<string>();
@@ -536,7 +535,7 @@ namespace Innoactive.Hub.Training.Template
 
         private void SetupTrainingIndicator()
         {
-            TrainingRunner.Current.LifeCycle.StageChanged += (sender, args) =>
+            CourseRunner.Current.LifeCycle.StageChanged += (sender, args) =>
             {
                 if (args.Stage == Stage.Activating)
                 {
