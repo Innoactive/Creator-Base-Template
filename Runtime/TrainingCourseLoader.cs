@@ -1,9 +1,9 @@
-﻿using System.Collections;
+﻿using UnityEngine;
+using System.Collections;
 using Innoactive.Creator.Core;
 using Innoactive.Creator.Core.Configuration;
-using UnityEngine;
 
-namespace Innoactive.Hub.Training.Template
+namespace Innoactive.Creator.BasicTemplate
 {
     /// <summary>
     /// Loads and starts the training course currently selected in the '[TRAINING_CONFIGURATION]' gameObject.

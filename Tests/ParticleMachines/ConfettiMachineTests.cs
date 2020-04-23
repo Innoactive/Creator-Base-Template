@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections;
 using Innoactive.Creator.Tests.Utils;
-using Innoactive.Hub.Training;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
 
-namespace Innoactive.Creator.Template.Tests.ParticleMachine
+namespace Innoactive.Creator.BasicTemplate.Tests.ParticleMachine
 {
     public class ConfettiMachineTests : RuntimeTests
     {

@@ -1,13 +1,13 @@
-﻿using System.Collections;
+﻿using UnityEngine;
+using Newtonsoft.Json;
+using System.Collections;
 using System.Runtime.Serialization;
 using Innoactive.Creator.Core;
-using Innoactive.Creator.Core.Attributes;
 using Innoactive.Creator.Core.Behaviors;
+using Innoactive.Creator.Core.Attributes;
 using Innoactive.Creator.Core.SceneObjects;
-using Newtonsoft.Json;
-using UnityEngine;
 
-namespace Innoactive.Creator.Template.Behaviors
+namespace Innoactive.Creator.BasicTemplate.Behaviors
 {
     // This behavior linearly changes scale of a Target object over Duration seconds, until it matches TargetScale.
     [DataContract(IsReference = true)]

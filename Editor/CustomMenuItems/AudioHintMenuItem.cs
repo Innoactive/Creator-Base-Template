@@ -4,7 +4,7 @@ using Innoactive.Creator.TextToSpeech.Audio;
 using Innoactive.Creator.Core.Internationalization;
 using Innoactive.CreatorEditor.UI.StepInspector.Menu;
 
-namespace Innoactive.CreatorEditor.Template.UI.Behaviors
+namespace Innoactive.CreatorEditor.BasicTemplate.UI.Behaviors
 {
     public class AudioHintMenuItem : MenuItem<IBehavior>
     {
@@ -25,8 +25,8 @@ namespace Innoactive.CreatorEditor.Template.UI.Behaviors
                 delayBehavior,
                 audioBehavior
             });
+            
             behaviorSequence.Data.Name = "Audio Hint";
-
             behaviorSequence.Data.IsBlocking = false;
 
             return behaviorSequence;

@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections;
+using Innoactive.Creator.BasicTemplate.Behaviors;
 using Innoactive.Creator.Core;
 using Innoactive.Creator.Core.Behaviors;
 using Innoactive.Creator.Core.Configuration.Modes;
 using Innoactive.Creator.Core.SceneObjects;
-using Innoactive.Creator.Template.Behaviors;
+
 using Innoactive.Creator.Tests.Utils;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
 
-namespace Innoactive.Creator.Template.Tests.Behaviors
+namespace Innoactive.Creator.BasicTemplate.Tests.Behaviors
 {
     public class ConfettiBehaviorTests : RuntimeTests
     {

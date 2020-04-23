@@ -1,19 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using Innoactive.Creator.Core;
+using Innoactive.Creator.Unity;
+using Innoactive.Creator.TextToSpeech;
 using Innoactive.Creator.Core.Configuration;
 using Innoactive.Creator.Core.Configuration.Modes;
 using Innoactive.Creator.Core.Internationalization;
-using Innoactive.Creator.TextToSpeech;
-using Innoactive.Creator.Unity;
-using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
-namespace Innoactive.Hub.Training.Template
+namespace Innoactive.Creator.BasicTemplate
 {
     /// <summary>
     /// Controller class for an example of a custom training overlay with audio and localization.

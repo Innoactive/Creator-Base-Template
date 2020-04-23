@@ -1,8 +1,8 @@
 ﻿using Innoactive.Creator.Core.Behaviors;
-using Innoactive.Creator.Template.Behaviors;
+using Innoactive.Creator.BasicTemplate.Behaviors;
 using Innoactive.CreatorEditor.UI.StepInspector.Menu;
 
-namespace Innoactive.CreatorEditor.Template.UI.Behaviors
+namespace Innoactive.CreatorEditor.BasicTemplate.UI.Behaviors
 {
     public class ConfettiMenuItem : MenuItem<IBehavior>
     {

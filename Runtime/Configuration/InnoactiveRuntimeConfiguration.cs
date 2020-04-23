@@ -3,7 +3,7 @@ using Innoactive.Creator.Core.Behaviors;
 using Innoactive.Creator.Core.Configuration;
 using Innoactive.Creator.Core.Configuration.Modes;
 
-namespace Innoactive.Hub.Training.Template.Configuration
+namespace Innoactive.Creator.BasicTemplate.Configuration
 {
     public class InnoactiveRuntimeConfiguration : DefaultRuntimeConfiguration
     {

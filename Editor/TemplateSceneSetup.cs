@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Innoactive.CreatorEditor.BasicTemplate
+﻿namespace Innoactive.CreatorEditor.BasicTemplate
 {
     /// <summary>
     /// Will be called on OnSceneSetup to add the spectator menu.
@@ -16,8 +14,7 @@ namespace Innoactive.CreatorEditor.BasicTemplate
         /// <inheritdoc />
         public override void Setup()
         {
-            SetupPrefab("[CAMERA_CONFIGURATION]");
+            SetupPrefab("[COURSE_CONTROLLER]");
         }
     }
 }
-
