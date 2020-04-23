@@ -18,7 +18,7 @@ namespace Innoactive.Creator.BasicTemplate
     /// <summary>
     /// Controller class for an example of a custom training overlay with audio and localization.
     /// </summary>
-    public class AdvancedTrainingController : MonoBehaviour
+    public class AdvancedCourseController : MonoBehaviour
     {
         #region UI elements
         [Tooltip("Chapter picker dropdown.")]
@@ -90,7 +90,6 @@ namespace Innoactive.Creator.BasicTemplate
         private IStep displayedStep;
         private IChapter lastDisplayedChapter;
 
-        // Called once when object is created.
         private void Awake()
         {
             // Create new audio source and make it the default audio player.
