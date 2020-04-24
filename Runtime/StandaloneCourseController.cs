@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Innoactive.Creator.Core.Configuration;
+using UnityEngine.XR;
 
 namespace Innoactive.Creator.BasicTemplate
 {
@@ -14,22 +16,50 @@ namespace Innoactive.Creator.BasicTemplate
         [Tooltip("Size of the font used")]
         [SerializeField]
         protected int fontSize = 30;
-        
+
+        private InputDevice controller;
+
         private void Start()
         {
             SetFont();
             SetMainCamera();
-            PositionCourseMenu();
+            ShowCourseControllerMenu();
         }
 
-        private void PositionCourseMenu()
+        private void OnEnable()
+        {
+            InputDevices.deviceConnected += RegisterDevices;
+            List<InputDevice> devices = new List<InputDevice>();
+            InputDevices.GetDevices(devices);
+
+            foreach (InputDevice device in devices)
+            {
+                RegisterDevices(device);
+            }
+        }
+        
+        private void OnDisable()
+        {
+            InputDevices.deviceConnected -= RegisterDevices;
+        }
+
+        private void Update()
+        {
+            controller.TryGetFeatureValue(CommonUsages.menuButton, out bool onOnMenu);
+            
+            if (onOnMenu)
+            {
+                ShowCourseControllerMenu();
+            }
+        }
+
+        private void ShowCourseControllerMenu()
         {
             try
             {
                 Transform trainee = RuntimeConfigurator.Configuration.Trainee.GameObject.transform;
                 
                 transform.SetPositionAndRotation(trainee.position + trainee.forward, trainee.rotation);
-                transform.SetParent(trainee);
             }
             catch (NullReferenceException)
             {
@@ -51,6 +81,17 @@ namespace Innoactive.Creator.BasicTemplate
             {
                 text.font = font;
                 text.fontSize = fontSize;
+            }
+        }
+        
+        private void RegisterDevices(InputDevice connectedDevice)
+        {
+            if (connectedDevice.isValid)
+            {
+                if ((connectedDevice.characteristics & InputDeviceCharacteristics.Left) != 0)
+                {
+                    controller = connectedDevice;
+                }
             }
         }
     }

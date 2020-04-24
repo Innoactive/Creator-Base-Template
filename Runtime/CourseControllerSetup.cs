@@ -11,10 +11,10 @@ namespace Innoactive.Creator.BasicTemplate
             Standalone = 1
         }
         
-        [SerializeField]
+        [SerializeField, HideInInspector]
         private CourseMode courseMode;
         
-        [SerializeField, HideInInspector]
+        [SerializeField]
         private GameObject courseControllerPrefab = null;
 
         private GameObject currentControllerInstance = null;

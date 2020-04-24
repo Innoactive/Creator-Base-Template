@@ -3911,7 +3911,7 @@ GameObject:
   - component: {fileID: 20959362268147600}
   - component: {fileID: -2580457835689158991}
   - component: {fileID: -8288581634918823980}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: DefaultCourseController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4005,7 +4005,7 @@ MonoBehaviour:
   volumeTrigger: {fileID: 4188743169029924}
   volumeLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 512
   stopNaNPropagation: 1
   finalBlitToCameraTarget: 0
   antialiasingMode: 1

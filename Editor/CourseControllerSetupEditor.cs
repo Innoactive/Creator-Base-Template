@@ -1,20 +1,17 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
-using Innoactive.Creator.BasicTemplate;
 using UnityEditor;
 using UnityEngine;
+using Innoactive.Creator.BasicTemplate;
 
 namespace Innoactive.CreatorEditor.BasicTemplate
 {
     [CustomEditor(typeof(CourseControllerSetup))]
     public class CourseControllerSetupEditor : Editor
     {
-
         private SerializedProperty courseModeProperty;
         private SerializedProperty prefabProperty;
+        private int lastMode;
         
         private void OnEnable()
         {
@@ -33,12 +30,11 @@ namespace Innoactive.CreatorEditor.BasicTemplate
         private void SetPrefab()
         {
             GameObject prefab = prefabProperty.objectReferenceValue as GameObject;
-
+            int currentMode = courseModeProperty.enumValueIndex;
+            
             if (prefab == null)
             {
-                int courseMode = courseModeProperty.enumValueIndex;
-
-                switch (courseMode)
+                switch (currentMode)
                 {
                     case 0:
                         SetDefaultCourseController();
@@ -48,6 +44,15 @@ namespace Innoactive.CreatorEditor.BasicTemplate
                         break;
                 }
             }
+            else
+            {
+                if (lastMode != currentMode)
+                {
+                    prefabProperty.objectReferenceValue = null;
+                }
+            }
+
+            lastMode = currentMode;
         }
 
         private void SetDefaultCourseController()
