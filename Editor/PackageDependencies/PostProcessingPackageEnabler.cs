@@ -1,4 +1,6 @@
-﻿namespace Innoactive.CreatorEditor.PackageManager.BasicTemplate
+﻿using System;
+
+namespace Innoactive.CreatorEditor.PackageManager.BasicTemplate
 {
     /// <summary>
     /// Adds Unity's Post-Processing package as a dependency.
@@ -10,5 +12,8 @@
 
         /// <inheritdoc/>
         public override int Priority { get; } = 10;
+
+        /// <inheritdoc/>
+        protected override string[] Layers { get; } = {"Post-Processing"};
     }
 }
