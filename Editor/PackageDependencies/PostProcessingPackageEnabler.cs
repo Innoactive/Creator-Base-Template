@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Innoactive.CreatorEditor.PackageManager.BasicTemplate
+﻿namespace Innoactive.CreatorEditor.PackageManager.BasicTemplate
 {
     /// <summary>
     /// Adds Unity's Post-Processing package as a dependency.

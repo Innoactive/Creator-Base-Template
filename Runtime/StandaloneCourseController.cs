@@ -16,11 +16,28 @@ namespace Innoactive.Creator.BasicTemplate
         [Tooltip("Size of the font used")]
         [SerializeField]
         protected int fontSize = 30;
+        
+        [Tooltip("Size of the font used")]
+        [SerializeField]
+        protected float distance = 2f;
 
+        private Vector3 originalForward;
+        private Transform trainee;
         private InputDevice controller;
+
+        private bool lastMenuState;
 
         private void Start()
         {
+            try
+            {
+                trainee = RuntimeConfigurator.Configuration.Trainee.GameObject.transform;
+            }
+            catch (NullReferenceException)
+            {
+                //TODO
+            }
+            
             SetFont();
             SetMainCamera();
             ShowCourseControllerMenu();
@@ -28,42 +45,49 @@ namespace Innoactive.Creator.BasicTemplate
 
         private void OnEnable()
         {
-            InputDevices.deviceConnected += RegisterDevices;
+            InputDevices.deviceConnected += RegisterDevice;
             List<InputDevice> devices = new List<InputDevice>();
             InputDevices.GetDevices(devices);
 
             foreach (InputDevice device in devices)
             {
-                RegisterDevices(device);
+                RegisterDevice(device);
             }
         }
         
         private void OnDisable()
         {
-            InputDevices.deviceConnected -= RegisterDevices;
+            InputDevices.deviceConnected -= RegisterDevice;
         }
 
         private void Update()
         {
-            controller.TryGetFeatureValue(CommonUsages.menuButton, out bool onOnMenu);
+            controller.TryGetFeatureValue(CommonUsages.menuButton, out bool isMenuActive);
             
-            if (onOnMenu)
+            ShowCourseControllerMenu();
+            
+            if (lastMenuState != isMenuActive)
             {
-                ShowCourseControllerMenu();
+                if (isMenuActive)
+                {
+                    originalForward = trainee.forward;
+                }
+                else
+                {
+                    
+                }
             }
+
+            lastMenuState = isMenuActive;
         }
 
         private void ShowCourseControllerMenu()
         {
-            try
-            {
-                Transform trainee = RuntimeConfigurator.Configuration.Trainee.GameObject.transform;
-                
-                transform.SetPositionAndRotation(trainee.position + trainee.forward, trainee.rotation);
-            }
-            catch (NullReferenceException)
-            {
-            }
+            Quaternion traineeRotation = trainee.rotation;
+            Vector3 position = trainee.position + (originalForward * distance);
+            Quaternion rotation = new Quaternion(0.0f, -traineeRotation.y, 0.0f, traineeRotation.w);
+            
+            transform.SetPositionAndRotation(position, rotation);
         }
 
         private void SetMainCamera()
@@ -84,7 +108,7 @@ namespace Innoactive.Creator.BasicTemplate
             }
         }
         
-        private void RegisterDevices(InputDevice connectedDevice)
+        private void RegisterDevice(InputDevice connectedDevice)
         {
             if (connectedDevice.isValid)
             {
