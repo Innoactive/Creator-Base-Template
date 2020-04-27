@@ -9,19 +9,11 @@ namespace Innoactive.Creator.BasicTemplate
 {
     public class StandaloneCourseController : MonoBehaviour
     {
-        [Tooltip("The font used in the spectator view.")]
-        [SerializeField]
-        protected Font font;
-        
-        [Tooltip("Size of the font used")]
-        [SerializeField]
-        protected int fontSize = 30;
-        
         [Tooltip("Size of the font used")]
         [SerializeField]
         protected float distance = 2f;
 
-        private Vector3 originalForward;
+        private Canvas canvas;
         private Transform trainee;
         private InputDevice controller;
 
@@ -32,15 +24,14 @@ namespace Innoactive.Creator.BasicTemplate
             try
             {
                 trainee = RuntimeConfigurator.Configuration.Trainee.GameObject.transform;
+                canvas = GetComponentInChildren<Canvas>();
+                canvas.worldCamera = Camera.main;
+                canvas.enabled = false;
             }
-            catch (NullReferenceException)
+            catch (Exception exception)
             {
-                //TODO
+                Debug.LogErrorFormat("{0} while initializing {1}.\n{2}", exception.GetType().Name, GetType().Name, exception.StackTrace);
             }
-            
-            SetFont();
-            SetMainCamera();
-            ShowCourseControllerMenu();
         }
 
         private void OnEnable()
@@ -62,52 +53,25 @@ namespace Innoactive.Creator.BasicTemplate
 
         private void Update()
         {
-            controller.TryGetFeatureValue(CommonUsages.menuButton, out bool isMenuActive);
-            
-            ShowCourseControllerMenu();
-            
-            if (lastMenuState != isMenuActive)
+            if (IsMenuButtonDown())
             {
-                if (isMenuActive)
-                {
-                    originalForward = trainee.forward;
-                }
-                else
-                {
-                    
-                }
-            }
-
-            lastMenuState = isMenuActive;
-        }
-
-        private void ShowCourseControllerMenu()
-        {
-            Quaternion traineeRotation = trainee.rotation;
-            Vector3 position = trainee.position + (originalForward * distance);
-            Quaternion rotation = new Quaternion(0.0f, -traineeRotation.y, 0.0f, traineeRotation.w);
-            
-            transform.SetPositionAndRotation(position, rotation);
-        }
-
-        private void SetMainCamera()
-        {
-            if (Camera.main != null)
-            {
-                Canvas canvas = GetComponentInChildren<Canvas>();
-                canvas.worldCamera = Camera.main;
+                ToggleCourseControllerMenu();
             }
         }
-        
-        private void SetFont()
+
+        private void ToggleCourseControllerMenu()
         {
-            foreach (Text text in GetComponentsInChildren<Text>(true))
+            canvas.enabled = !canvas.enabled;
+
+            if (canvas.enabled)
             {
-                text.font = font;
-                text.fontSize = fontSize;
+                Vector3 position = trainee.position + (trainee.forward * distance);
+                Quaternion rotation = new Quaternion(0.0f, trainee.rotation.y, 0.0f, trainee.rotation.w);
+
+                transform.SetPositionAndRotation(position, rotation);
             }
         }
-        
+
         private void RegisterDevice(InputDevice connectedDevice)
         {
             if (connectedDevice.isValid)
@@ -117,6 +81,16 @@ namespace Innoactive.Creator.BasicTemplate
                     controller = connectedDevice;
                 }
             }
+        }
+
+        private bool IsMenuButtonDown()
+        {
+            controller.TryGetFeatureValue(CommonUsages.menuButton, out bool isMenuActive);
+            bool wasPressed = lastMenuState == false && isMenuActive;
+
+            lastMenuState = isMenuActive;
+
+            return wasPressed;
         }
     }
 }
