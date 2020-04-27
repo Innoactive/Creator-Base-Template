@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using Innoactive.Creator.Core.Configuration;
 using UnityEngine.XR;
+using Innoactive.Creator.Core.Configuration;
 
 namespace Innoactive.Creator.BasicTemplate
 {
@@ -15,9 +14,8 @@ namespace Innoactive.Creator.BasicTemplate
 
         private Canvas canvas;
         private Transform trainee;
-        private InputDevice controller;
-
         private bool lastMenuState;
+        private InputDevice controller;
 
         private void Start()
         {
