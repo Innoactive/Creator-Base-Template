@@ -8,7 +8,7 @@ namespace Innoactive.Creator.BasicTemplate
     /// <summary>
     /// Puts the parent GameObject to the same position and rotation of the trainee camera.
     /// </summary>
-    public class DefaultCourseController : MonoBehaviour
+    public class AttachToTraineeView : MonoBehaviour
     {
         [Tooltip("The font used in the spectator view.")]
         [SerializeField]
