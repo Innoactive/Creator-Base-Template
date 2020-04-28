@@ -1,9 +1,11 @@
-﻿using System;
+﻿using TMPro;
+using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using Innoactive.Creator.Core;
@@ -15,15 +17,12 @@ using Innoactive.Creator.Core.Internationalization;
 
 namespace Innoactive.Creator.BasicTemplate
 {
-    /// <summary>
-    /// Controller class for an example of a custom training overlay with audio and localization.
-    /// </summary>
-    public class AdvancedCourseController : MonoBehaviour
+    public class StandaloneCourseController : MonoBehaviour
     {
         #region UI elements
         [Tooltip("Chapter picker dropdown.")]
         [SerializeField]
-        private Dropdown chapterPicker;
+        private TMP_Dropdown chapterPicker;
 
         [Tooltip("The image next to a step name which is visible when a training is running.")]
         [SerializeField]
@@ -31,7 +30,7 @@ namespace Innoactive.Creator.BasicTemplate
 
         [Tooltip("Name of the step that is currently executed.")]
         [SerializeField]
-        private Text stepName;
+        private TextMeshProUGUI stepName;
 
         [Tooltip("Button that shows additional information about the step.")]
         [SerializeField]
@@ -43,7 +42,7 @@ namespace Innoactive.Creator.BasicTemplate
 
         [Tooltip("Short description of the text which is visible when Info Toggle is toggled on.")]
         [SerializeField]
-        private Text stepInfoText;
+        private TextMeshProUGUI stepInfoText;
 
         [Tooltip("Button that starts execution of the training.")]
         [SerializeField]
@@ -51,7 +50,7 @@ namespace Innoactive.Creator.BasicTemplate
 
         [Tooltip("Step picker dropdown.")]
         [SerializeField]
-        private Dropdown skipStepPicker;
+        private TMP_Dropdown skipStepPicker;
 
         [Tooltip("Button that resets the scene to its initial state.")]
         [SerializeField]
@@ -71,11 +70,11 @@ namespace Innoactive.Creator.BasicTemplate
 
         [Tooltip("Language picker dropdown.")]
         [SerializeField]
-        private Dropdown languagePicker;
+        private TMP_Dropdown languagePicker;
 
         [Tooltip("Mode picker dropdown.")]
         [SerializeField]
-        private Dropdown modePicker;
+        private TMP_Dropdown modePicker;
         #endregion
 
         [Tooltip("The two-letter ISO language code (e.g. \"EN\") of the fallback language which is used by the text to speech engine if no valid localization file is found.")]
@@ -89,19 +88,27 @@ namespace Innoactive.Creator.BasicTemplate
 
         private IStep displayedStep;
         private IChapter lastDisplayedChapter;
+        
+        
+        [Tooltip("Initial distance between this controller and the trainee.")]
+        [SerializeField]
+        protected float appearanceDistance = 2f;
+
+        private Canvas canvas;
+        private Transform trainee;
+        private bool lastMenuState;
+        private InputDevice controller;
+        private List<TMP_Dropdown> dropdownsList = new List<TMP_Dropdown>();
 
         private void Awake()
         {
-            // Create new audio source and make it the default audio player.
-            //RuntimeConfigurator.Instance.InstructionPlayer = gameObject.AddComponent<AudioSource>();
-
             // Get the current system language as default language.
             selectedLanguage = LocalizationUtils.GetSystemLanguageAsTwoLetterIsoCode();
 
             // Check if the fallback language is a valid language.
             fallbackLanguage = fallbackLanguage.Trim();
-            string validFallbackLanguage;
-            if (fallbackLanguage.TryConvertToTwoLetterIsoCode(out validFallbackLanguage))
+            
+            if (fallbackLanguage.TryConvertToTwoLetterIsoCode(out string validFallbackLanguage))
             {
                 fallbackLanguage = validFallbackLanguage;
             }
@@ -129,6 +136,38 @@ namespace Innoactive.Creator.BasicTemplate
             SetupTraining();
             // Update the UI.
             SetupTrainingDependantUi();
+            
+            dropdownsList.AddRange(new []{ chapterPicker, skipStepPicker, languagePicker, modePicker });
+            
+            try
+            {
+                trainee = RuntimeConfigurator.Configuration.Trainee.GameObject.transform;
+                
+                canvas = GetComponentInChildren<Canvas>();
+                canvas.worldCamera = Camera.main;
+                canvas.enabled = false;
+            }
+            catch (Exception exception)
+            {
+                Debug.LogErrorFormat("{0} while initializing {1}.\n{2}", exception.GetType().Name, GetType().Name, exception.StackTrace);
+            }
+        }
+
+        private void OnEnable()
+        {
+            InputDevices.deviceConnected += RegisterDevice;
+            List<InputDevice> devices = new List<InputDevice>();
+            InputDevices.GetDevices(devices);
+
+            foreach (InputDevice device in devices)
+            {
+                RegisterDevice(device);
+            }
+        }
+        
+        private void OnDisable()
+        {
+            InputDevices.deviceConnected -= RegisterDevice;
         }
 
         private void Update()
@@ -147,8 +186,57 @@ namespace Innoactive.Creator.BasicTemplate
                 displayedStep = currentStep;
                 UpdateDisplayedStep(currentStep);
             }
+            
+            if (IsMenuButtonDown())
+            {
+                ToggleCourseControllerMenu();
+            }
         }
 
+        private void ToggleCourseControllerMenu()
+        {
+            canvas.enabled = !canvas.enabled;
+
+            if (canvas.enabled)
+            {
+                Vector3 position = trainee.position + (trainee.forward * appearanceDistance);
+                Quaternion rotation = new Quaternion(0.0f, trainee.rotation.y, 0.0f, trainee.rotation.w);
+
+                transform.SetPositionAndRotation(position, rotation);
+            }
+            else
+            {
+                foreach (TMP_Dropdown dropdown in dropdownsList)
+                {
+                    if (dropdown.IsExpanded)
+                    {
+                        dropdown.Hide();
+                    }
+                }
+            }
+        }
+
+        private void RegisterDevice(InputDevice connectedDevice)
+        {
+            if (connectedDevice.isValid)
+            {
+                if ((connectedDevice.characteristics & InputDeviceCharacteristics.Left) != 0)
+                {
+                    controller = connectedDevice;
+                }
+            }
+        }
+
+        private bool IsMenuButtonDown()
+        {
+            controller.TryGetFeatureValue(CommonUsages.menuButton, out bool isMenuActive);
+            bool wasPressed = lastMenuState == false && isMenuActive;
+
+            lastMenuState = isMenuActive;
+
+            return wasPressed;
+        }
+        
         private void UpdateDisplayedStep(IStep step)
         {
             if (step == null)
@@ -273,7 +361,7 @@ namespace Innoactive.Creator.BasicTemplate
 
             CourseRunner.SkipChapters(numberOfChapters);
         }
-
+        
         #region Setup UI
         private void SetupChapterPicker()
         {
@@ -497,11 +585,6 @@ namespace Innoactive.Creator.BasicTemplate
 
             // Reset the selected value
             chapterPicker.value = 0;
-
-            // Refresh chapter picker immediately.
-            // Note that this method is not a part of the `UnityEngine.UI.Dropdown` interface.
-            // It is an extension method defined in `Innoactive.Hub.Training.Unity.Utils.UnityUiUtils` class.
-            //chapterPicker.Refresh();
         }
 
         private void SetupSkipStepPickerOptions()

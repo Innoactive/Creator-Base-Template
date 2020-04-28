@@ -26,7 +26,7 @@ namespace Innoactive.CreatorEditor.PackageManager.BasicTemplate
             }
         }
         
-        ~ TextMeshProPackageEnabler()
+        ~TextMeshProPackageEnabler()
         {
             OnPackageEnabled -= PostProcess;
         }
