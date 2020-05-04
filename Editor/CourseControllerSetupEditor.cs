@@ -9,6 +9,9 @@ namespace Innoactive.CreatorEditor.BasicTemplate
     [CustomEditor(typeof(CourseControllerSetup))]
     public class CourseControllerSetupEditor : Editor
     {
+        private const string DefaultPrefab = "DefaultCourseController";
+        private const string StandalonePrefab = "StandaloneCourseController";
+        
         private SerializedProperty courseModeProperty;
         private SerializedProperty prefabProperty;
         private int lastMode;
@@ -22,27 +25,19 @@ namespace Innoactive.CreatorEditor.BasicTemplate
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
-            SetPrefab();
+            ValidateControllerModeSelection();
 
             serializedObject.ApplyModifiedProperties();
         }
 
-        private void SetPrefab()
+        private void ValidateControllerModeSelection()
         {
             GameObject prefab = prefabProperty.objectReferenceValue as GameObject;
             int currentMode = courseModeProperty.enumValueIndex;
             
             if (prefab == null)
             {
-                switch (currentMode)
-                {
-                    case 0:
-                        SetDefaultCourseController();
-                        break;
-                    case 1:
-                        SetStandaloneCourseController();
-                        break;
-                }
+                SetPrefab(currentMode);
             }
             else
             {
@@ -55,15 +50,28 @@ namespace Innoactive.CreatorEditor.BasicTemplate
             lastMode = currentMode;
         }
 
+        private void SetPrefab(int currentMode)
+        {
+            switch (currentMode)
+            {
+                case 0:
+                    SetDefaultCourseController();
+                    break;
+                case 1:
+                    SetStandaloneCourseController();
+                    break;
+            }
+        }
+
         private void SetDefaultCourseController()
         {
-            GameObject prefab = GetPrefab("DefaultCourseController");
+            GameObject prefab = GetPrefab(DefaultPrefab);
             prefabProperty.objectReferenceValue = prefab;
         }
         
         private void SetStandaloneCourseController()
         {
-            GameObject prefab = GetPrefab("StandaloneCourseController");
+            GameObject prefab = GetPrefab(StandalonePrefab);
             prefabProperty.objectReferenceValue = prefab;
         }
 
@@ -78,7 +86,6 @@ namespace Innoactive.CreatorEditor.BasicTemplate
             }
 
             string assetPath = AssetDatabase.GUIDToAssetPath(prefabsGUIDs.First());
-
             return AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
         }
     }
