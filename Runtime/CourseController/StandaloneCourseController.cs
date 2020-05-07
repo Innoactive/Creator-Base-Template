@@ -139,6 +139,7 @@ namespace Innoactive.Creator.BasicTemplate
 
             // Load the training and localize it to the selected language.
             SetupTraining();
+            
             // Update the UI.
             SetupTrainingDependantUI();
         }

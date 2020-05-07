@@ -60,14 +60,18 @@ namespace Innoactive.Creator.BasicTemplate
         [Tooltip("Toggle that turns training audio on or off.")]
         [SerializeField]
         private Toggle soundToggle;
+        
+        [Tooltip("Image that shows the sound icon.")]
+        [SerializeField]
+        private Image soundImage;
 
         [Tooltip("Icon that indicates that sound is enabled.")]
         [SerializeField]
-        private Image soundOnImage;
+        private Sprite soundOnImage;
 
         [Tooltip("Icon that indicates that sound is disabled.")]
         [SerializeField]
-        private Image soundOffImage;
+        private Sprite soundOffImage;
 
         [Tooltip("Language picker dropdown.")]
         [SerializeField]
@@ -102,7 +106,6 @@ namespace Innoactive.Creator.BasicTemplate
             catch (Exception exception)
             {
                 Debug.LogError($"{exception.GetType().Name}, {exception.Message}\n{exception.StackTrace}", RuntimeConfigurator.Instance.gameObject);
-                return;
             }
 
             // Get the current system language as default language.
@@ -165,8 +168,8 @@ namespace Innoactive.Creator.BasicTemplate
             if (step == null)
             {
                 // If there is no next step, clear the info text.
-                stepInfoText.text = "";
-                stepName.text = "";
+                stepInfoText.text = string.Empty;
+                stepName.text = string.Empty;
             }
             else
             {
@@ -310,6 +313,14 @@ namespace Innoactive.Creator.BasicTemplate
             // When info toggle is pressed,
             stepInfoToggle.onValueChanged.AddListener(newValue =>
             {
+                if (string.IsNullOrEmpty(stepInfoText.text))
+                {
+                    // Show or hide description of the step.
+                    stepInfoBackground.enabled = false;
+                    stepInfoText.enabled = false;
+                    return;
+                }
+                
                 // Show or hide description of the step.
                 stepInfoBackground.enabled = newValue;
                 stepInfoText.enabled = newValue;
@@ -321,6 +332,12 @@ namespace Innoactive.Creator.BasicTemplate
             // When user clicks on Start Training button,
             startTrainingButton.onClick.AddListener(() =>
             {
+                if (CourseRunner.Current == null)
+                {
+                    Debug.LogError("No training course is selected.", RuntimeConfigurator.Instance.gameObject);
+                    return;
+                }
+                
                 // Subscribe to the "stage changed" event of the current training in order to change the skip step button to the start button after finishing the training.
                 CourseRunner.Current.LifeCycle.StageChanged += (sender, args) =>
                 {
@@ -336,15 +353,15 @@ namespace Innoactive.Creator.BasicTemplate
 
                 // Start the training
                 CourseRunner.Run();
+                
+                // Show the skip step button instead of the start button.
+                skipStepPicker.gameObject.SetActive(true);
+                startTrainingButton.gameObject.SetActive(false);
 
                 // Disable button as you have to reset scene before starting the training again.
                 startTrainingButton.interactable = false;
                 // Disable the language picker as it is not allowed to change the language during the training's execution.
                 languagePicker.interactable = false;
-
-                // Show the skip step button instead of the start button.
-                skipStepPicker.gameObject.SetActive(true);
-                startTrainingButton.gameObject.SetActive(false);
             });
         }
 
@@ -388,12 +405,7 @@ namespace Innoactive.Creator.BasicTemplate
             soundToggle.onValueChanged.AddListener(isSoundOn =>
             {
                 // Set active image for sound.
-                soundToggle.image = isSoundOn ? soundOnImage : soundOffImage;
-                soundToggle.targetGraphic = isSoundOn ? soundOnImage : soundOffImage;
-                
-                // Show one icon and hide another.
-                soundOnImage.enabled = isSoundOn;
-                soundOffImage.enabled = isSoundOn == false;
+                soundImage.sprite = isSoundOn ? soundOnImage : soundOffImage;
 
                 // Mute the instruction audio.
                 RuntimeConfigurator.Configuration.InstructionPlayer.mute = isSoundOn == false;
@@ -497,26 +509,30 @@ namespace Innoactive.Creator.BasicTemplate
         private void PopulateChapterPickerOptions(int startingIndex)
         {
             // Get a collection of available chapters.
-            IList<IChapter> chapters = CourseRunner.Current.Data.Chapters;
+            IList<IChapter> chapters = CourseRunner.Current?.Data.Chapters;
 
-            // Skip finished chapters and convert the rest to a list of chapter names.
-            List<string> dropdownOptions = new List<string>();
-            for (int i = startingIndex; i < chapters.Count; i++)
+            if (chapters != null)
             {
-                dropdownOptions.Add(chapters[i].Data.Name);
+                // Skip finished chapters and convert the rest to a list of chapter names.
+                List<string> dropdownOptions = new List<string>();
+                
+                for (int i = startingIndex; i < chapters.Count; i++)
+                {
+                    dropdownOptions.Add(chapters[i].Data.Name);
+                }
+
+                // Reset the chapter picker.
+                chapterPicker.ClearOptions();
+
+                // Populate it with new options.
+                chapterPicker.AddOptions(dropdownOptions);
+
+                // Reset the selected value
+                chapterPicker.value = 0;
+
+                // If there is only one option, the dropdown is currently disabled.
+                chapterPicker.enabled = dropdownOptions.Count > 1;
             }
-
-            // Reset the chapter picker.
-            chapterPicker.ClearOptions();
-
-            // Populate it with new options.
-            chapterPicker.AddOptions(dropdownOptions);
-
-            // Reset the selected value
-            chapterPicker.value = 0;
-
-            // If there is only one option, the dropdown is currently disabled.
-            chapterPicker.enabled = dropdownOptions.Count > 1;
         }
 
         private void SetupSkipStepPickerOptions()
@@ -549,6 +565,11 @@ namespace Innoactive.Creator.BasicTemplate
 
         private void SetupTrainingIndicator()
         {
+            if (CourseRunner.Current == null)
+            {
+                return;
+            }
+            
             CourseRunner.Current.LifeCycle.StageChanged += (sender, args) =>
             {
                 if (args.Stage == Stage.Activating)
