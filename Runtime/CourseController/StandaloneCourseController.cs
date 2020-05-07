@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.XR;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using Innoactive.Creator.Core;
@@ -17,6 +16,9 @@ using Innoactive.Creator.Core.Internationalization;
 
 namespace Innoactive.Creator.BasicTemplate
 {
+    /// <summary>
+    /// Standalone controller class for an example of a custom training overlay with audio and localization.
+    /// </summary>
     public class StandaloneCourseController : MonoBehaviour
     {
         #region UI elements

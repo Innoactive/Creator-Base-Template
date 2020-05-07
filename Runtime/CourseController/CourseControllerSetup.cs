@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace Innoactive.Creator.BasicTemplate
 {
+    /// <summary>
+    /// Allows to select a desired CourseController.
+    /// </summary>
     public class CourseControllerSetup : MonoBehaviour
     {
         private enum CourseMode

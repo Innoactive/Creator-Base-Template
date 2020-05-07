@@ -6,8 +6,11 @@ using Innoactive.Creator.BasicTemplate;
 
 namespace Innoactive.CreatorEditor.BasicTemplate
 {
+    /// <summary>
+    /// Editor drawer for <see cref="CourseControllerSetup"/>.
+    /// </summary>
     [CustomEditor(typeof(CourseControllerSetup))]
-    public class CourseControllerSetupEditor : Editor
+    internal class CourseControllerSetupEditor : Editor
     {
         private const string DefaultPrefab = "DefaultCourseController";
         private const string StandalonePrefab = "StandaloneCourseController";

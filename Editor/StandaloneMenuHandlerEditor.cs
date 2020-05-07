@@ -6,8 +6,11 @@ using UnityEngine;
 
 namespace Innoactive.CreatorEditor.BasicTemplate
 {
+    /// <summary>
+    /// Editor drawer for <see cref="StandaloneMenuHandler"/>.
+    /// </summary>
     [CustomEditor(typeof(StandaloneMenuHandler))]
-    public class StandaloneMenuHandlerEditor : Editor
+    internal class StandaloneMenuHandlerEditor : Editor
     {
         private enum Button
         {

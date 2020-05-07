@@ -8,23 +8,25 @@ using Innoactive.Creator.Core.Configuration;
 
 namespace Innoactive.Creator.BasicTemplate
 {
+    /// <summary>
+    /// Shows and hides the StandaloneCourseController prefab.
+    /// </summary>
     public class StandaloneMenuHandler : MonoBehaviour
     {
         [Tooltip("Initial distance between this controller and the trainee.")] [SerializeField]
         protected float appearanceDistance = 2f;
 
-        private float s_DefaultPressThreshold = 0.1f;
-        private Canvas canvas;
-        private Transform trainee;
-        private bool lastMenuState;
-        private readonly List<InputDevice> controllers = new List<InputDevice>();
-        private readonly List<TMP_Dropdown> dropdownsList = new List<TMP_Dropdown>();
-
         [SerializeField, HideInInspector] private string buttonTypeName = "bool";
         [SerializeField, HideInInspector] private string buttonName = "MenuButton";
 
+        private Canvas canvas;
         private Type buttonType;
-
+        private Transform trainee;
+        private bool lastMenuState;
+        private float defaultPressThreshold = 0.1f;
+        private readonly List<InputDevice> controllers = new List<InputDevice>();
+        private readonly List<TMP_Dropdown> dropdownsList = new List<TMP_Dropdown>();
+        
         private void OnValidate()
         {
             buttonType = Type.GetType(buttonTypeName);
@@ -151,7 +153,7 @@ namespace Innoactive.Creator.BasicTemplate
                 {
                     if (controller.TryGetFeatureValue(new InputFeatureUsage<float>(buttonName), out float value))
                     {
-                        float threshold = (pressThreshold >= 0.0f) ? pressThreshold : s_DefaultPressThreshold;
+                        float threshold = (pressThreshold >= 0.0f) ? pressThreshold : defaultPressThreshold;
                         isPressed = value >= threshold;
                         return true;
                     }
@@ -160,7 +162,7 @@ namespace Innoactive.Creator.BasicTemplate
                 {
                     if (controller.TryGetFeatureValue(new InputFeatureUsage<Vector2>(buttonName), out Vector2 value))
                     {
-                        float threshold = (pressThreshold >= 0.0f) ? pressThreshold : s_DefaultPressThreshold;
+                        float threshold = (pressThreshold >= 0.0f) ? pressThreshold : defaultPressThreshold;
                         isPressed = value.x >= threshold;
                         return true;
                     }
