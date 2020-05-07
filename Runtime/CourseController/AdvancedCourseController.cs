@@ -88,10 +88,23 @@ namespace Innoactive.Creator.BasicTemplate
         private FieldInfo skipStepPickerEditorValueField;
 
         private IStep displayedStep;
+        private ICourse trainingCourse;
         private IChapter lastDisplayedChapter;
 
         private void Awake()
         {
+            try
+            {
+                // Load training course from a file.
+                string coursePath = RuntimeConfigurator.Instance.GetSelectedTrainingCourse();
+                trainingCourse = RuntimeConfigurator.Configuration.LoadCourse(coursePath);
+            }
+            catch (Exception exception)
+            {
+                Debug.LogError($"{exception.GetType().Name}, {exception.Message}\n{exception.StackTrace}", RuntimeConfigurator.Instance.gameObject);
+                return;
+            }
+
             // Get the current system language as default language.
             selectedLanguage = LocalizationUtils.GetSystemLanguageAsTwoLetterIsoCode();
 
@@ -124,14 +137,15 @@ namespace Innoactive.Creator.BasicTemplate
 
             // Load the training and localize it to the selected language.
             SetupTraining();
+            
             // Update the UI.
-            SetupTrainingDependantUi();
+            SetupTrainingDependantUI();
         }
 
         private void Update()
         {
             IChapter currentChapter = CourseRunner.Current == null ? null : CourseRunner.Current.Data.Current;
-            IStep currentStep = currentChapter == null ? null : currentChapter.Data.Current;
+            IStep currentStep = currentChapter?.Data.Current;
 
             if (currentChapter != lastDisplayedChapter)
             {
@@ -182,7 +196,7 @@ namespace Innoactive.Creator.BasicTemplate
             TextToSpeechConfiguration ttsConfiguration = RuntimeConfigurator.Configuration.GetTextToSpeechConfiguration();
             
             // Define which TTS provider is used.
-            ttsConfiguration.Provider = typeof(MicrosoftSapiTextToSpeechProvider).Name;
+            ttsConfiguration.Provider = nameof(MicrosoftSapiTextToSpeechProvider);
             
             // The acceptable values for the Voice and the Language differ from TTS provider to provider.
             // Microsoft SAPI TTS provider takes either "Male" or "Female" value as a voice.
@@ -197,9 +211,7 @@ namespace Innoactive.Creator.BasicTemplate
             // Load the localization file of the current selected language.
             LoadLocalizationForTraining();
 
-            // Load training course from a file. That will synthesize an audio for the training instructions, too.
-            string coursePath = RuntimeConfigurator.Instance.GetSelectedTrainingCourse();
-            ICourse trainingCourse = RuntimeConfigurator.Configuration.LoadCourse(coursePath);
+            // Initializes the training course. That will synthesize an audio for the training instructions, too.
             CourseRunner.Initialize(trainingCourse);
         }
 
@@ -208,7 +220,7 @@ namespace Innoactive.Creator.BasicTemplate
             // Get the directory of all localization files of the selected training.
             // It should be in the '[YOUR_PROJECT_ROOT_FOLDER]/StreamingAssets/Training/[TRAINING_NAME]' folder.
             string pathToCourse = Path.GetDirectoryName(Path.Combine(Application.streamingAssetsPath, RuntimeConfigurator.Instance.GetSelectedTrainingCourse()));
-            string pathToLocalizations = string.Format("{0}/Localization/", pathToCourse).Replace('/', Path.DirectorySeparatorChar);
+            string pathToLocalizations = $"{pathToCourse}/Localization/".Replace('/', Path.DirectorySeparatorChar);
 
             // Save all existing localization files in a list.
             List<string> availableLocalizations = new List<string>();
@@ -247,7 +259,7 @@ namespace Innoactive.Creator.BasicTemplate
             // Get the path to the file.
             // It should be in the '[YOUR_PROJECT_ROOT_FOLDER]/StreamingAssets/Training/[TRAINING_NAME]/Localization' folder.
             string pathToCourse = Path.GetDirectoryName(Path.Combine(Application.streamingAssetsPath, RuntimeConfigurator.Instance.GetSelectedTrainingCourse()));
-            string pathToLocalization = string.Format("{0}/Localization/{1}.json", pathToCourse, language).Replace('/', Path.DirectorySeparatorChar);
+            string pathToLocalization = $"{pathToCourse}/Localization/{language}.json".Replace('/', Path.DirectorySeparatorChar);
 
             // Check if the file really exists and load it.
             if (File.Exists(pathToLocalization))
@@ -377,11 +389,13 @@ namespace Innoactive.Creator.BasicTemplate
             {
                 // Set active image for sound.
                 soundToggle.image = isSoundOn ? soundOnImage : soundOffImage;
+                soundToggle.targetGraphic = isSoundOn ? soundOnImage : soundOffImage;
+                
                 // Show one icon and hide another.
                 soundOnImage.enabled = isSoundOn;
                 soundOffImage.enabled = isSoundOn == false;
 
-                // Mute the instuction audio.
+                // Mute the instruction audio.
                 RuntimeConfigurator.Configuration.InstructionPlayer.mute = isSoundOn == false;
             });
         }
@@ -431,8 +445,11 @@ namespace Innoactive.Creator.BasicTemplate
                 // Load the training and localize it to the selected language.
                 SetupTraining();
                 // Update the UI.
-                SetupTrainingDependantUi();
+                SetupTrainingDependantUI();
             });
+            
+            // If there is only one option, the dropdown is currently disabled.
+            languagePicker.enabled = supportedLanguages.Count > 1;
         }
 
         private void SetupModePicker()
@@ -452,6 +469,9 @@ namespace Innoactive.Creator.BasicTemplate
             // Set the picker value to the current selected mode.
             modePicker.value = RuntimeConfigurator.Configuration.Modes.CurrentModeIndex;
             
+            // If there is only one option, the dropdown is currently disabled.
+            modePicker.enabled = availableModes.Count > 1;
+            
             // When the selected mode is changed,
             modePicker.onValueChanged.AddListener(itemIndex =>
             {
@@ -462,7 +482,7 @@ namespace Innoactive.Creator.BasicTemplate
         #endregion
 
         #region Setup training-dependant UI
-        private void SetupTrainingDependantUi()
+        private void SetupTrainingDependantUI()
         {
             SetupChapterPickerOptions();
             SetupTrainingIndicator();
@@ -494,6 +514,9 @@ namespace Innoactive.Creator.BasicTemplate
 
             // Reset the selected value
             chapterPicker.value = 0;
+
+            // If there is only one option, the dropdown is currently disabled.
+            chapterPicker.enabled = dropdownOptions.Count > 1;
         }
 
         private void SetupSkipStepPickerOptions()
@@ -522,6 +545,9 @@ namespace Innoactive.Creator.BasicTemplate
             // Populate it with new options.
             skipStepPicker.AddOptions(dropdownOptions);
             skipStepPickerEditorValueField?.SetValue(skipStepPicker, dropdownOptions.Count);
+            
+            // If there is only one option, the dropdown is currently disabled.
+            skipStepPicker.enabled = dropdownOptions.Count > 1;
         }
 
         private void SetupTrainingIndicator()
