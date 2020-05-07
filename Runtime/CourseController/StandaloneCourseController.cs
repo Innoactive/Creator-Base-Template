@@ -330,6 +330,12 @@ namespace Innoactive.Creator.BasicTemplate
             // When user clicks on Start Training button,
             startTrainingButton.onClick.AddListener(() =>
             {
+                if (CourseRunner.Current == null)
+                {
+                    Debug.LogError("No training course is selected.", RuntimeConfigurator.Instance.gameObject);
+                    return;
+                }
+                
                 // Subscribe to the "stage changed" event of the current training in order to change the skip step button to the start button after finishing the training.
                 CourseRunner.Current.LifeCycle.StageChanged += (sender, args) =>
                 {
@@ -345,15 +351,15 @@ namespace Innoactive.Creator.BasicTemplate
 
                 // Start the training
                 CourseRunner.Run();
-
+                
+                // Show the skip step button instead of the start button.
+                skipStepPicker.gameObject.SetActive(true);
+                startTrainingButton.gameObject.SetActive(false);
+                
                 // Disable button as you have to reset scene before starting the training again.
                 startTrainingButton.interactable = false;
                 // Disable the language picker as it is not allowed to change the language during the training's execution.
                 languagePicker.interactable = false;
-
-                // Show the skip step button instead of the start button.
-                skipStepPicker.gameObject.SetActive(true);
-                startTrainingButton.gameObject.SetActive(false);
             });
         }
 
@@ -553,9 +559,6 @@ namespace Innoactive.Creator.BasicTemplate
             // Populate it with new options.
             skipStepPicker.AddOptions(dropdownOptions);
             skipStepPickerEditorValueField?.SetValue(skipStepPicker, dropdownOptions.Count);
-            
-            // If there is only one option, the dropdown is currently disabled.
-            skipStepPicker.enabled = dropdownOptions.Count > 1;
         }
 
         private void SetupTrainingIndicator()

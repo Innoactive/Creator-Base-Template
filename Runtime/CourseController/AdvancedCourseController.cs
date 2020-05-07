@@ -545,9 +545,6 @@ namespace Innoactive.Creator.BasicTemplate
             // Populate it with new options.
             skipStepPicker.AddOptions(dropdownOptions);
             skipStepPickerEditorValueField?.SetValue(skipStepPicker, dropdownOptions.Count);
-            
-            // If there is only one option, the dropdown is currently disabled.
-            skipStepPicker.enabled = dropdownOptions.Count > 1;
         }
 
         private void SetupTrainingIndicator()
