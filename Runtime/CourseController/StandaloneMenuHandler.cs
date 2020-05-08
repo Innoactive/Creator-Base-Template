@@ -16,8 +16,11 @@ namespace Innoactive.Creator.BasicTemplate
         [Tooltip("Initial distance between this controller and the trainee.")] [SerializeField]
         protected float appearanceDistance = 2f;
 
-        [SerializeField, HideInInspector] private string buttonTypeName = "bool";
-        [SerializeField, HideInInspector] private string buttonName = "MenuButton";
+        [SerializeField, HideInInspector] 
+        private string buttonTypeName = "bool";
+        
+        [SerializeField, HideInInspector] 
+        private string buttonName = "MenuButton";
 
         private Canvas canvas;
         private Type buttonType;

@@ -42,12 +42,9 @@ namespace Innoactive.CreatorEditor.BasicTemplate
             {
                 SetPrefab(currentMode);
             }
-            else
+            else if (lastMode != currentMode)
             {
-                if (lastMode != currentMode)
-                {
-                    prefabProperty.objectReferenceValue = null;
-                }
+                prefabProperty.objectReferenceValue = null;
             }
 
             lastMode = currentMode;
@@ -55,26 +52,11 @@ namespace Innoactive.CreatorEditor.BasicTemplate
 
         private void SetPrefab(int currentMode)
         {
-            switch (currentMode)
-            {
-                case 0:
-                    SetDefaultCourseController();
-                    break;
-                case 1:
-                    SetStandaloneCourseController();
-                    break;
-            }
-        }
-
-        private void SetDefaultCourseController()
-        {
-            GameObject prefab = GetPrefab(DefaultPrefab);
-            prefabProperty.objectReferenceValue = prefab;
-        }
-        
-        private void SetStandaloneCourseController()
-        {
-            GameObject prefab = GetPrefab(StandalonePrefab);
+            GameObject prefab;
+            
+            // Default = 0
+            // Standalone = 1
+            prefab = GetPrefab(currentMode == 0 ? DefaultPrefab : StandalonePrefab);
             prefabProperty.objectReferenceValue = prefab;
         }
 

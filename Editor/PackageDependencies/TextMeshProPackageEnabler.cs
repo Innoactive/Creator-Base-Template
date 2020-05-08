@@ -22,21 +22,21 @@ namespace Innoactive.CreatorEditor.PackageManager.BasicTemplate
         {
             if (Directory.Exists(TMPEssentialResourcesPath) == false)
             {
-                OnPackageEnabled += PostProcess;
+                OnPackageEnabled += ImportTMPSettings;
             }
         }
         
         public void Dispose()
         {
-            OnPackageEnabled -= PostProcess;
+            OnPackageEnabled -= ImportTMPSettings;
         }
 
-        private void PostProcess(object sender, EventArgs e)
+        private void ImportTMPSettings(object sender, EventArgs e)
         {
             Type tmpSettings = Type.GetType(TMPSettingsAssemblyQualifiedName);
             tmpSettings?.GetMethod(TMPSettingsMethodName)?.Invoke(null, null);
             
-            OnPackageEnabled -= PostProcess;
+            OnPackageEnabled -= ImportTMPSettings;
         }
     }
 }
