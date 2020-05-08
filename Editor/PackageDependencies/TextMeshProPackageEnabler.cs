@@ -6,7 +6,7 @@ namespace Innoactive.CreatorEditor.PackageManager.BasicTemplate
     /// <summary>
     /// Adds Unity's Text Mesh Pro package as a dependency and prompts the 'TMP Importer' window if the 'TMP Essentials' are missing in the project.
     /// </summary>
-    public class TextMeshProPackageEnabler : Dependency
+    public class TextMeshProPackageEnabler : Dependency, IDisposable
     {
         private const string TMPEssentialResourcesPath = "Assets/TextMesh Pro";
         private const string TMPSettingsAssemblyQualifiedName = "TMPro.TMP_Settings, Unity.TextMeshPro, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null";
@@ -26,7 +26,7 @@ namespace Innoactive.CreatorEditor.PackageManager.BasicTemplate
             }
         }
         
-        ~TextMeshProPackageEnabler()
+        public void Dispose()
         {
             OnPackageEnabled -= PostProcess;
         }
