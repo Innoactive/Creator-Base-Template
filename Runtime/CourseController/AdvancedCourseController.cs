@@ -100,7 +100,7 @@ namespace Innoactive.Creator.BasicTemplate
             try
             {
                 // Load training course from a file.
-                string coursePath = RuntimeConfigurator.Instance.GetSelectedTrainingCourse();
+                string coursePath = RuntimeConfigurator.Instance.GetSelectedCourse();
                 trainingCourse = RuntimeConfigurator.Configuration.LoadCourse(coursePath);
             }
             catch (Exception exception)

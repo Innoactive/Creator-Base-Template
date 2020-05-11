@@ -101,7 +101,7 @@ namespace Innoactive.Creator.BasicTemplate
             try
             {
                 // Load training course from a file.
-                string coursePath = RuntimeConfigurator.Instance.GetSelectedTrainingCourse();
+                string coursePath = RuntimeConfigurator.Instance.GetSelectedCourse();
                 trainingCourse = RuntimeConfigurator.Configuration.LoadCourse(coursePath);
             }
             catch (Exception exception)
@@ -223,7 +223,7 @@ namespace Innoactive.Creator.BasicTemplate
         {
             // Get the directory of all localization files of the selected training.
             // It should be in the '[YOUR_PROJECT_ROOT_FOLDER]/StreamingAssets/Training/[TRAINING_NAME]' folder.
-            string pathToCourse = Path.GetDirectoryName(Path.Combine(Application.streamingAssetsPath, RuntimeConfigurator.Instance.GetSelectedTrainingCourse()));
+            string pathToCourse = Path.GetDirectoryName(Path.Combine(Application.streamingAssetsPath, RuntimeConfigurator.Instance.GetSelectedCourse()));
             string pathToLocalizations = $"{pathToCourse}/Localization/".Replace('/', Path.DirectorySeparatorChar);
 
             // Save all existing localization files in a list.
@@ -262,7 +262,7 @@ namespace Innoactive.Creator.BasicTemplate
 
             // Get the path to the file.
             // It should be in the '[YOUR_PROJECT_ROOT_FOLDER]/StreamingAssets/Training/[TRAINING_NAME]/Localization' folder.
-            string pathToCourse = Path.GetDirectoryName(Path.Combine(Application.streamingAssetsPath, RuntimeConfigurator.Instance.GetSelectedTrainingCourse()));
+            string pathToCourse = Path.GetDirectoryName(Path.Combine(Application.streamingAssetsPath, RuntimeConfigurator.Instance.GetSelectedCourse()));
             string pathToLocalization = $"{pathToCourse}/Localization/{language}.json".Replace('/', Path.DirectorySeparatorChar);
 
             // Check if the file really exists and load it.
