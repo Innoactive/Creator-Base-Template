@@ -3,7 +3,7 @@ using System.Collections;
 using Innoactive.Creator.Core;
 using Innoactive.Creator.Core.Configuration;
 
-namespace Innoactive.Creator.BasicTemplate
+namespace Innoactive.Creator.BaseTemplate
 {
     /// <summary>
     /// Loads and starts the training course currently selected in the '[TRAINING_CONFIGURATION]' gameObject.

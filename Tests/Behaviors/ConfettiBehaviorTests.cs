@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections;
-using Innoactive.Creator.BasicTemplate.Behaviors;
+using Innoactive.Creator.BaseTemplate.Behaviors;
 using Innoactive.Creator.Core;
 using Innoactive.Creator.Core.Behaviors;
 using Innoactive.Creator.Core.Configuration.Modes;
@@ -12,7 +12,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
 
-namespace Innoactive.Creator.BasicTemplate.Tests.Behaviors
+namespace Innoactive.Creator.BaseTemplate.Tests.Behaviors
 {
     public class ConfettiBehaviorTests : RuntimeTests
     {

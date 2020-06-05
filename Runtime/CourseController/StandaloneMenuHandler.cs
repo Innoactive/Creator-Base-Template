@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using Innoactive.Creator.Core;
 using Innoactive.Creator.Core.Configuration;
 
-namespace Innoactive.Creator.BasicTemplate
+namespace Innoactive.Creator.BaseTemplate
 {
     /// <summary>
     /// Shows and hides the StandaloneCourseController prefab.

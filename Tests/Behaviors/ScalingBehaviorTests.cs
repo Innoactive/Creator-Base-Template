@@ -1,15 +1,15 @@
 using System.Collections;
+using Innoactive.Creator.BaseTemplate.Behaviors;
 using Innoactive.Creator.Core;
 using Innoactive.Creator.Core.Behaviors;
 using Innoactive.Creator.Core.Configuration.Modes;
 using Innoactive.Creator.Core.SceneObjects;
-using Innoactive.Creator.BasicTemplate.Behaviors;
 using Innoactive.Creator.Tests.Utils;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace Innoactive.Creator.BasicTemplate.Tests.Behaviors
+namespace Innoactive.Creator.BaseTemplate.Tests.Behaviors
 {
     public class ScalingBehaviorTests : RuntimeTests
     {
