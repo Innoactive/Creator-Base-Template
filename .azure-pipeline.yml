@@ -150,9 +150,9 @@ stages:
 
       - task: CopyFiles@2
         inputs:
-          SourceFolder: 'IA-Training-Template/'
+          SourceFolder: 'Creator-Base-Template/'
           Contents: '**'
-          TargetFolder: '$(Path.Creator)/Template/Basic-Training'
+          TargetFolder: '$(Path.Creator)/Template/Base-Training'
         displayName: Copy IA Template
 
       - task: DeleteFiles@1
