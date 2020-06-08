@@ -1,4 +1,4 @@
-﻿namespace Innoactive.Creator.BasicTemplate
+﻿namespace Innoactive.Creator.BaseTemplate
 {
     public interface IParticleMachine
     {

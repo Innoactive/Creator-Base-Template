@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using UnityEngine;
 
-namespace Innoactive.Creator.BasicTemplate
+namespace Innoactive.Creator.BaseTemplate
 {
     /// <summary>
     /// Allows to select a desired CourseController.

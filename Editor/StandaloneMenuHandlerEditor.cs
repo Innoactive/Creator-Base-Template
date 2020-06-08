@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Innoactive.Creator.BasicTemplate;
+using Innoactive.Creator.BaseTemplate;
 using UnityEditor;
 using UnityEngine;
 
-namespace Innoactive.CreatorEditor.BasicTemplate
+namespace Innoactive.CreatorEditor.BaseTemplate
 {
     /// <summary>
     /// Editor drawer for <see cref="StandaloneMenuHandler"/>.

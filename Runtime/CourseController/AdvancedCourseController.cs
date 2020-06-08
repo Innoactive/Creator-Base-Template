@@ -13,7 +13,7 @@ using Innoactive.Creator.Core.Configuration;
 using Innoactive.Creator.Core.Configuration.Modes;
 using Innoactive.Creator.Core.Internationalization;
 
-namespace Innoactive.Creator.BasicTemplate
+namespace Innoactive.Creator.BaseTemplate
 {
     /// <summary>
     /// Controller class for an example of a custom training overlay with audio and localization.

@@ -2,9 +2,9 @@
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using Innoactive.Creator.BasicTemplate;
+using Innoactive.Creator.BaseTemplate;
 
-namespace Innoactive.CreatorEditor.BasicTemplate
+namespace Innoactive.CreatorEditor.BaseTemplate
 {
     /// <summary>
     /// Editor drawer for <see cref="CourseControllerSetup"/>.

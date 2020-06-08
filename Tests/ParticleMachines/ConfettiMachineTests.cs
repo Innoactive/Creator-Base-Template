@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
 
-namespace Innoactive.Creator.BasicTemplate.Tests.ParticleMachine
+namespace Innoactive.Creator.BaseTemplate.Tests.ParticleMachine
 {
     public class ConfettiMachineTests : RuntimeTests
     {

@@ -1,4 +1,4 @@
-﻿namespace Innoactive.CreatorEditor.BasicTemplate
+﻿namespace Innoactive.CreatorEditor.BaseTemplate
 {
     /// <summary>
     /// Will be called on OnSceneSetup to add the spectator menu.

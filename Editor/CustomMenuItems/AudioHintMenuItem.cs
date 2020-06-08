@@ -4,7 +4,7 @@ using Innoactive.Creator.TextToSpeech.Audio;
 using Innoactive.Creator.Core.Internationalization;
 using Innoactive.CreatorEditor.UI.StepInspector.Menu;
 
-namespace Innoactive.CreatorEditor.BasicTemplate.UI.Behaviors
+namespace Innoactive.CreatorEditor.BaseTemplate.UI.Behaviors
 {
     public class AudioHintMenuItem : MenuItem<IBehavior>
     {

@@ -10,7 +10,7 @@ using Innoactive.Creator.Core.SceneObjects;
 using Innoactive.Creator.Core.Configuration;
 using Object = UnityEngine.Object;
 
-namespace Innoactive.Creator.BasicTemplate.Behaviors
+namespace Innoactive.Creator.BaseTemplate.Behaviors
 {
     /// <summary>
     /// This behavior causes confetti to rain.

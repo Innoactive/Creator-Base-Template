@@ -7,7 +7,7 @@ using Innoactive.Creator.Core.Behaviors;
 using Innoactive.Creator.Core.Attributes;
 using Innoactive.Creator.Core.SceneObjects;
 
-namespace Innoactive.Creator.BasicTemplate.Behaviors
+namespace Innoactive.Creator.BaseTemplate.Behaviors
 {
     // This behavior linearly changes scale of a Target object over Duration seconds, until it matches TargetScale.
     [DataContract(IsReference = true)]
