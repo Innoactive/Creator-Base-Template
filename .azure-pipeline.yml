@@ -152,7 +152,7 @@ stages:
         inputs:
           SourceFolder: 'Creator-Base-Template/'
           Contents: '**'
-          TargetFolder: '$(Path.Creator)/Template/Base-Training'
+          TargetFolder: '$(Path.Creator)/Base-Template'
         displayName: Copy IA Template
 
       - task: DeleteFiles@1
