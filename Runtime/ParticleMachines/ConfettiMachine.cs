@@ -11,7 +11,7 @@ namespace Innoactive.Creator.BaseTemplate
     {
         [SerializeField]
         [Tooltip("List of all particle systems with individual confetti particle materials.")]
-        private ParticleSystem[] confettiSystems;
+        private ParticleSystem[] confettiSystems = null;
 
         [SerializeField]
         [Tooltip("Duration in seconds after the machine finishes to emit confetti.")]
@@ -19,7 +19,7 @@ namespace Innoactive.Creator.BaseTemplate
 
         [SerializeField]
         [Tooltip("If this flag is set to true, the machine starts emitting confetti automatically after spawning.")]
-        private bool activateOnStart;
+        private bool activateOnStart = false;
 
         [SerializeField]
         [Tooltip("Audio source playing audio during confetti emission.")]

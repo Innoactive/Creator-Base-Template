@@ -24,63 +24,63 @@ namespace Innoactive.Creator.BaseTemplate
         #region UI elements
         [Tooltip("Chapter picker dropdown.")]
         [SerializeField]
-        private TMP_Dropdown chapterPicker;
+        private TMP_Dropdown chapterPicker = null;
 
         [Tooltip("The image next to a step name which is visible when a training is running.")]
         [SerializeField]
-        private Image trainingStateIndicator;
+        private Image trainingStateIndicator = null;
 
         [Tooltip("Name of the step that is currently executed.")]
         [SerializeField]
-        private TextMeshProUGUI stepName;
+        private TextMeshProUGUI stepName = null;
 
         [Tooltip("Button that shows additional information about the step.")]
         [SerializeField]
-        private Toggle stepInfoToggle;
+        private Toggle stepInfoToggle = null;
 
         [Tooltip("Background for additional step information.")]
         [SerializeField]
-        private Image stepInfoBackground;
+        private Image stepInfoBackground = null;
 
         [Tooltip("Short description of the text which is visible when Info Toggle is toggled on.")]
         [SerializeField]
-        private TextMeshProUGUI stepInfoText;
+        private TextMeshProUGUI stepInfoText = null;
 
         [Tooltip("Button that starts execution of the training.")]
         [SerializeField]
-        private Button startTrainingButton;
+        private Button startTrainingButton = null;
 
         [Tooltip("Step picker dropdown.")]
         [SerializeField]
-        private TMP_Dropdown skipStepPicker;
+        private TMP_Dropdown skipStepPicker = null;
 
         [Tooltip("Button that resets the scene to its initial state.")]
         [SerializeField]
-        private Button resetSceneButton;
+        private Button resetSceneButton = null;
 
         [Tooltip("Toggle that turns training audio on or off.")]
         [SerializeField]
-        private Toggle soundToggle;
+        private Toggle soundToggle = null;
 
         [Tooltip("Image that shows the sound icon.")]
         [SerializeField]
-        private Image soundImage;
+        private Image soundImage = null;
         
         [Tooltip("Icon that indicates that sound is enabled.")]
         [SerializeField]
-        private Sprite soundOnImage;
+        private Sprite soundOnImage = null;
 
         [Tooltip("Icon that indicates that sound is disabled.")]
         [SerializeField]
-        private Sprite soundOffImage;
+        private Sprite soundOffImage = null;
 
         [Tooltip("Language picker dropdown.")]
         [SerializeField]
-        private TMP_Dropdown languagePicker;
+        private TMP_Dropdown languagePicker = null;
 
         [Tooltip("Mode picker dropdown.")]
         [SerializeField]
-        private TMP_Dropdown modePicker;
+        private TMP_Dropdown modePicker = null;
         #endregion
 
         [Tooltip("The two-letter ISO language code (e.g. \"EN\") of the fallback language which is used by the text to speech engine if no valid localization file is found.")]
