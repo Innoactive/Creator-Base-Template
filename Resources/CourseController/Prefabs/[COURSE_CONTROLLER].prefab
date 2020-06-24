@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4221297129693644}
   - component: {fileID: 114632730000728066}
+  - component: {fileID: 4109576349920361998}
   m_Layer: 0
   m_Name: '[COURSE_CONTROLLER]'
   m_TagString: Untagged
@@ -46,3 +47,16 @@ MonoBehaviour:
   courseMode: 0
   courseControllerPrefab: {fileID: 1776092326729858, guid: d58ac3a0c2c7919489afaca3d7019183,
     type: 3}
+--- !u!114 &4109576349920361998
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1433457108436006}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e218973d8ce7b141a938229d9877d26, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lockSceneObjectsOnSceneStart: 1
