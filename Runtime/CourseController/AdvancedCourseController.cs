@@ -97,19 +97,8 @@ namespace Innoactive.Creator.BaseTemplate
 
         private void Awake()
         {
-            try
-            {
-                // Load training course from a file.
-                string coursePath = RuntimeConfigurator.Instance.GetSelectedCourse();
-                trainingCourse = RuntimeConfigurator.Configuration.LoadCourse(coursePath);
-            }
-            catch (Exception exception)
-            {
-                Debug.LogError($"{exception.GetType().Name}, {exception.Message}\n{exception.StackTrace}", RuntimeConfigurator.Instance.gameObject);
-            }
-
             // Get the current system language as default language.
-            selectedLanguage = LocalizationUtils.GetSystemLanguageAsTwoLetterIsoCode();
+            selectedLanguage = LocalizationUtils.GetSystemLanguageAsTwoLetterIsoCode().ToUpper();
 
             // Check if the fallback language is a valid language.
             fallbackLanguage = fallbackLanguage.Trim();
@@ -198,21 +187,32 @@ namespace Innoactive.Creator.BaseTemplate
             // You can define which TTS engine is used through TTS config.
             TextToSpeechConfiguration ttsConfiguration = RuntimeConfigurator.Configuration.GetTextToSpeechConfiguration();
             
-            // Define which TTS provider is used.
-            ttsConfiguration.Provider = nameof(MicrosoftSapiTextToSpeechProvider);
-            
+            // If you want to change the default TTS settings,
+            // go to `Innoactive > Creator > Windows > TextToSpeech Settings` in your Unity Editor.
+            // There you can define which TTS provider is used and which voice can be heard.
             // The acceptable values for the Voice and the Language differ from TTS provider to provider.
             // Microsoft SAPI TTS provider takes either "Male" or "Female" value as a voice.
-            ttsConfiguration.Voice = "Female";
-            
+            // Cache is used to save the recorded TTS files into the Streaming Assets folder. This is useful, when 
+            // the TTS provider is not accessible all the time (no MicrosoftSapi on Android, no Internet connection, ...).
+
+            // To set the language we selected in our Language Picker, we need to change the field programmatically.
             // Microsoft SAPI TTS provider takes either natural language name, or two-letter ISO language code.
             ttsConfiguration.Language = selectedLanguage;
 
-            // If TTS config overload is set, it is used instead the config that is located at `[YOUR_PROJECT_ROOT_FOLDER]/Config/text-to-speech-config.json`.
-            RuntimeConfigurator.Configuration.SetTextToSpeechConfiguration(ttsConfiguration);
-
             // Load the localization file of the current selected language.
             LoadLocalizationForTraining();
+            
+            // Try to load the in the [TRAINING_CONFIGURATION] selected training course.
+            try
+            {
+                // Load training course from a file.
+                string coursePath = RuntimeConfigurator.Instance.GetSelectedCourse();
+                trainingCourse = RuntimeConfigurator.Configuration.LoadCourse(coursePath);
+            }
+            catch (Exception exception)
+            {
+                Debug.LogError($"{exception.GetType().Name}, {exception.Message}\n{exception.StackTrace}", RuntimeConfigurator.Instance.gameObject);
+            }
             
             // Initializes the training course. That will synthesize an audio for the training instructions, too.
             CourseRunner.Initialize(trainingCourse);
