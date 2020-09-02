@@ -432,6 +432,10 @@ namespace Innoactive.Creator.BaseTemplate
                 {
                     selectedLanguage = supportedLanguages[languagePicker.value];
                 }
+                else if (string.IsNullOrEmpty(RuntimeConfigurator.Configuration.GetTextToSpeechConfiguration().Language) == false)
+                {
+                    languagePicker.AddOptions(new List<string>() { RuntimeConfigurator.Configuration.GetTextToSpeechConfiguration().Language.ToUpper() });
+                }
                 // Or use the fallback language, if there is no valid localization file at all.
                 else
                 {
