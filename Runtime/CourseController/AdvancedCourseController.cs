@@ -114,9 +114,16 @@ namespace Innoactive.Creator.BaseTemplate
                 fallbackLanguage = "EN";
             }
 
+            // You can define which TTS engine is used through TTS config.
+            TextToSpeechConfiguration ttsConfiguration = RuntimeConfigurator.Configuration.GetTextToSpeechConfiguration();
+            if (string.IsNullOrEmpty(ttsConfiguration.Language) == false)
+            {
+                selectedLanguage = ttsConfiguration.Language;
+            }
+            
             // Get all the available localization files for the selected training.
             localizationFileNames = FetchAvailableLocalizationsForTraining();
-
+            
             // Setup UI controls.
             SetupChapterPicker();
             SetupStepInfoToggle();
@@ -126,7 +133,7 @@ namespace Innoactive.Creator.BaseTemplate
             SetupSoundToggle();
             SetupLanguagePicker();
             SetupModePicker();
-
+            
             // Load the training and localize it to the selected language.
             SetupTraining();
             
@@ -184,21 +191,6 @@ namespace Innoactive.Creator.BaseTemplate
 
         private void SetupTraining()
         {
-            // You can define which TTS engine is used through TTS config.
-            TextToSpeechConfiguration ttsConfiguration = RuntimeConfigurator.Configuration.GetTextToSpeechConfiguration();
-            
-            // If you want to change the default TTS settings,
-            // go to `Innoactive > Creator > Windows > TextToSpeech Settings` in your Unity Editor.
-            // There you can define which TTS provider is used and which voice can be heard.
-            // The acceptable values for the Voice and the Language differ from TTS provider to provider.
-            // Microsoft SAPI TTS provider takes either "Male" or "Female" value as a voice.
-            // Cache is used to save the recorded TTS files into the Streaming Assets folder. This is useful, when 
-            // the TTS provider is not accessible all the time (no MicrosoftSapi on Android, no Internet connection, ...).
-
-            // To set the language we selected in our Language Picker, we need to change the field programmatically.
-            // Microsoft SAPI TTS provider takes either natural language name, or two-letter ISO language code.
-            ttsConfiguration.Language = selectedLanguage;
-
             // Load the localization file of the current selected language.
             LoadLocalizationForTraining();
             
@@ -454,6 +446,7 @@ namespace Innoactive.Creator.BaseTemplate
             {
                 // Set the supported language based on the user selection.
                 selectedLanguage = supportedLanguages[itemIndex];
+                RuntimeConfigurator.Configuration.GetTextToSpeechConfiguration().Language = selectedLanguage;
                 // Load the training and localize it to the selected language.
                 SetupTraining();
                 // Update the UI.
