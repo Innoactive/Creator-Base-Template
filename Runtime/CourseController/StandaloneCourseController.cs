@@ -98,19 +98,8 @@ namespace Innoactive.Creator.BaseTemplate
 
         private void Awake()
         {
-            try
-            {
-                // Load training course from a file.
-                string coursePath = RuntimeConfigurator.Instance.GetSelectedCourse();
-                trainingCourse = RuntimeConfigurator.Configuration.LoadCourse(coursePath);
-            }
-            catch (Exception exception)
-            {
-                Debug.LogError($"{exception.GetType().Name}, {exception.Message}\n{exception.StackTrace}", RuntimeConfigurator.Instance.gameObject);
-            }
-            
             // Get the current system language as default language.
-            selectedLanguage = LocalizationUtils.GetSystemLanguageAsTwoLetterIsoCode();
+            selectedLanguage = LocalizationUtils.GetSystemLanguageAsTwoLetterIsoCode().ToUpper();
 
             // Check if the fallback language is a valid language.
             fallbackLanguage = fallbackLanguage.Trim();
@@ -126,9 +115,16 @@ namespace Innoactive.Creator.BaseTemplate
                 fallbackLanguage = "EN";
             }
 
+            // You can define which TTS engine is used through TTS config.
+            TextToSpeechConfiguration ttsConfiguration = RuntimeConfigurator.Configuration.GetTextToSpeechConfiguration();
+            if (string.IsNullOrEmpty(ttsConfiguration.Language) == false)
+            {
+                selectedLanguage = ttsConfiguration.Language;
+            }
+            
             // Get all the available localization files for the selected training.
             localizationFileNames = FetchAvailableLocalizationsForTraining();
-
+            
             // Setup UI controls.
             SetupChapterPicker();
             SetupStepInfoToggle();
@@ -138,7 +134,7 @@ namespace Innoactive.Creator.BaseTemplate
             SetupSoundToggle();
             SetupLanguagePicker();
             SetupModePicker();
-
+            
             // Load the training and localize it to the selected language.
             SetupTraining();
             
@@ -196,25 +192,21 @@ namespace Innoactive.Creator.BaseTemplate
 
         private void SetupTraining()
         {
-            // You can define which TTS engine is used through TTS config.
-            TextToSpeechConfiguration ttsConfiguration = RuntimeConfigurator.Configuration.GetTextToSpeechConfiguration();
-            
-            // Define which TTS provider is used.
-            ttsConfiguration.Provider = nameof(MicrosoftSapiTextToSpeechProvider);
-            
-            // The acceptable values for the Voice and the Language differ from TTS provider to provider.
-            // Microsoft SAPI TTS provider takes either "Male" or "Female" value as a voice.
-            ttsConfiguration.Voice = "Female";
-            
-            // Microsoft SAPI TTS provider takes either natural language name, or two-letter ISO language code.
-            ttsConfiguration.Language = selectedLanguage;
-
-            // If TTS config overload is set, it is used instead the config that is located at `[YOUR_PROJECT_ROOT_FOLDER]/Config/text-to-speech-config.json`.
-            RuntimeConfigurator.Configuration.SetTextToSpeechConfiguration(ttsConfiguration);
-
             // Load the localization file of the current selected language.
             LoadLocalizationForTraining();
-
+            
+            // Try to load the in the [TRAINING_CONFIGURATION] selected training course.
+            try
+            {
+                // Load training course from a file.
+                string coursePath = RuntimeConfigurator.Instance.GetSelectedCourse();
+                trainingCourse = RuntimeConfigurator.Configuration.LoadCourse(coursePath);
+            }
+            catch (Exception exception)
+            {
+                Debug.LogError($"{exception.GetType().Name}, {exception.Message}\n{exception.StackTrace}", RuntimeConfigurator.Instance.gameObject);
+            }
+            
             // Initializes the training course. That will synthesize an audio for the training instructions, too.
             CourseRunner.Initialize(trainingCourse);
         }
@@ -441,6 +433,10 @@ namespace Innoactive.Creator.BaseTemplate
                 {
                     selectedLanguage = supportedLanguages[languagePicker.value];
                 }
+                else if (string.IsNullOrEmpty(RuntimeConfigurator.Configuration.GetTextToSpeechConfiguration().Language) == false)
+                {
+                    languagePicker.AddOptions(new List<string>() { RuntimeConfigurator.Configuration.GetTextToSpeechConfiguration().Language.ToUpper() });
+                }
                 // Or use the fallback language, if there is no valid localization file at all.
                 else
                 {
@@ -455,6 +451,7 @@ namespace Innoactive.Creator.BaseTemplate
             {
                 // Set the supported language based on the user selection.
                 selectedLanguage = supportedLanguages[itemIndex];
+                RuntimeConfigurator.Configuration.GetTextToSpeechConfiguration().Language = selectedLanguage;
                 // Load the training and localize it to the selected language.
                 SetupTraining();
                 // Update the UI.
