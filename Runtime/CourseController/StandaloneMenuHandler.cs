@@ -47,14 +47,12 @@ namespace Innoactive.Creator.BaseTemplate
             }
             catch (Exception exception)
             {
-                Debug.LogError(
-                    $"{exception.GetType().Name} while initializing {GetType().Name}.\n{exception.StackTrace}",
-                    gameObject);
+                Debug.LogError($"{exception.GetType().Name} while initializing {GetType().Name}.\n{exception.StackTrace}", gameObject);
             }
 
             Vector3 position = trainee.position + (trainee.forward * appearanceDistance);
             Quaternion rotation = new Quaternion(0.0f, trainee.rotation.y, 0.0f, trainee.rotation.w);
-            position.y = trainee.position.y;
+            position.y = 1f;
 
             transform.SetPositionAndRotation(position, rotation);
             dropdownsList.AddRange(GetComponentsInChildren<TMP_Dropdown>());
