@@ -459,7 +459,7 @@ namespace Innoactive.Creator.BaseTemplate
             });
             
             // If there is only one option, the dropdown is currently disabled.
-            if (supportedLanguages.Count > 1 == false)
+            if (supportedLanguages.Count <= 1)
             {
                 ColorBlock colorBlock = languagePicker.colors;
                 colorBlock.normalColor = Color.gray;
