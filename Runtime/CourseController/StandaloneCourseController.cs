@@ -486,7 +486,7 @@ namespace Innoactive.Creator.BaseTemplate
             modePicker.value = RuntimeConfigurator.Configuration.Modes.CurrentModeIndex;
             
             // If there is only one option, the dropdown is currently disabled.
-            if (availableModes.Count > 1 == false)
+            if (availableModes.Count <= 1)
             {
                 ColorBlock colorBlock = modePicker.colors;
                 colorBlock.normalColor = Color.gray;
