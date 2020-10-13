@@ -541,7 +541,7 @@ namespace Innoactive.Creator.BaseTemplate
                 
                 // If there is only one option, the dropdown is currently disabled.
                 chapterPicker.enabled = dropdownOptions.Count > 1;
-                if (dropdownOptions.Count > 1 == false)
+                if (dropdownOptions.Count <= 1)
                 {
                     
                     ColorBlock colorBlock = chapterPicker.colors;
