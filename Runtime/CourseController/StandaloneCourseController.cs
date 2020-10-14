@@ -459,7 +459,13 @@ namespace Innoactive.Creator.BaseTemplate
             });
             
             // If there is only one option, the dropdown is currently disabled.
-            languagePicker.enabled = supportedLanguages.Count > 1;
+            if (supportedLanguages.Count <= 1)
+            {
+                ColorBlock colorBlock = languagePicker.colors;
+                colorBlock.normalColor = Color.gray;
+                languagePicker.colors = colorBlock;
+                languagePicker.enabled = false;
+            }
         }
 
         private void SetupModePicker()
@@ -480,7 +486,13 @@ namespace Innoactive.Creator.BaseTemplate
             modePicker.value = RuntimeConfigurator.Configuration.Modes.CurrentModeIndex;
             
             // If there is only one option, the dropdown is currently disabled.
-            modePicker.enabled = availableModes.Count > 1;
+            if (availableModes.Count <= 1)
+            {
+                ColorBlock colorBlock = modePicker.colors;
+                colorBlock.normalColor = Color.gray;
+                modePicker.colors = colorBlock;
+                modePicker.enabled = false;
+            }
             
             // When the selected mode is changed,
             modePicker.onValueChanged.AddListener(itemIndex =>
@@ -529,7 +541,14 @@ namespace Innoactive.Creator.BaseTemplate
                 chapterPicker.value = 0;
 
                 // If there is only one option, the dropdown is currently disabled.
-                chapterPicker.enabled = dropdownOptions.Count > 1;
+                if (dropdownOptions.Count <= 1)
+                {
+                    
+                    ColorBlock colorBlock = chapterPicker.colors;
+                    colorBlock.normalColor = Color.gray;
+                    chapterPicker.colors = colorBlock;
+                    chapterPicker.enabled = false;
+                }
             }
         }
 
