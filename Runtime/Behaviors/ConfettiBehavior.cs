@@ -8,6 +8,7 @@ using Innoactive.Creator.Core.Behaviors;
 using Innoactive.Creator.Core.Attributes;
 using Innoactive.Creator.Core.SceneObjects;
 using Innoactive.Creator.Core.Configuration;
+using Innoactive.Creator.Core.Validation;
 using Object = UnityEngine.Object;
 
 namespace Innoactive.Creator.BaseTemplate.Behaviors
@@ -33,6 +34,7 @@ namespace Innoactive.Creator.BaseTemplate.Behaviors
             /// Name of the training object where to spawn the confetti machine.
             /// Only needed if "Spawn Above Trainee" is not checked.
             /// </summary>
+            [OptionalValue]
             [DataMember]
             [DisplayName("Position Provider")]
             public SceneObjectReference PositionProvider { get; set; }
