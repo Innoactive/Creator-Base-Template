@@ -244,12 +244,14 @@ namespace Innoactive.Creator.BaseTemplate
 
         private void LoadLocalizationForTraining(string coursePath)
         {
+            string courseName = Path.GetFileNameWithoutExtension(coursePath);
+            
             // Find the correct file name of the current selected language.
             string language = localizationFileNames.Find(f => string.Equals(f, selectedLanguage, StringComparison.CurrentCultureIgnoreCase));
 
             // Get the path to the file.
             // It should be in the '[YOUR_PROJECT_ROOT_FOLDER]/StreamingAssets/Training/[TRAINING_NAME]/Localization' folder.
-            string localizationFilePath = Path.Combine("Training", Path.GetFileNameWithoutExtension(coursePath), "Localization", $"{language}.json");
+            string localizationFilePath = Path.Combine("Training", courseName, "Localization", $"{language}.json");
 
             // Check if the file really exists and load it.
             if (FileManager.Exists(localizationFilePath))
@@ -259,7 +261,7 @@ namespace Innoactive.Creator.BaseTemplate
             }
 
             // Log a warning if no language file was found.
-            Debug.LogWarningFormat("No language file for language '{0}' found for training at '{1}'.", selectedLanguage, trainingCourse.Data.Name);
+            Debug.LogWarningFormat("No language file for language '{0}' found for training at '{1}'.", selectedLanguage, courseName);
         }
 
         private void FastForwardChapters(int numberOfChapters)
@@ -453,13 +455,7 @@ namespace Innoactive.Creator.BaseTemplate
             });
             
             // If there is only one option, the dropdown is currently disabled.
-            if (supportedLanguages.Count <= 1)
-            {
-                ColorBlock colorBlock = languagePicker.colors;
-                colorBlock.normalColor = Color.gray;
-                languagePicker.colors = colorBlock;
-                languagePicker.enabled = false;
-            }
+            SetDropDownStatus(languagePicker);
         }
 
         private void SetupModePicker()
@@ -480,13 +476,7 @@ namespace Innoactive.Creator.BaseTemplate
             modePicker.value = RuntimeConfigurator.Configuration.Modes.CurrentModeIndex;
             
             // If there is only one option, the dropdown is currently disabled.
-            if (availableModes.Count <= 1)
-            {
-                ColorBlock colorBlock = modePicker.colors;
-                colorBlock.normalColor = Color.gray;
-                modePicker.colors = colorBlock;
-                modePicker.enabled = false;
-            }
+            SetDropDownStatus(modePicker);
             
             // When the selected mode is changed,
             modePicker.onValueChanged.AddListener(itemIndex =>
@@ -535,14 +525,7 @@ namespace Innoactive.Creator.BaseTemplate
                 chapterPicker.value = 0;
                 
                 // If there is only one option, the dropdown is currently disabled.
-                if (dropdownOptions.Count <= 1)
-                {
-                    
-                    ColorBlock colorBlock = chapterPicker.colors;
-                    colorBlock.normalColor = Color.gray;
-                    chapterPicker.colors = colorBlock;
-                    chapterPicker.enabled = false;
-                }
+                SetDropDownStatus(chapterPicker);
             }
         }
 
@@ -595,6 +578,17 @@ namespace Innoactive.Creator.BaseTemplate
                     trainingStateIndicator.enabled = false;
                 }
             };
+        }
+        
+        private void SetDropDownStatus(Dropdown dropdown)
+        {
+            if (dropdown.options.Count <= 1)
+            {
+                ColorBlock colorBlock = dropdown.colors;
+                colorBlock.normalColor = Color.gray;
+                dropdown.colors = colorBlock;
+                dropdown.enabled = false;
+            }
         }
         #endregion
     }
