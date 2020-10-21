@@ -32,6 +32,17 @@ namespace Innoactive.Creator.BaseTemplate
         
         private void OnValidate()
         {
+            // MenuButton does not exits in OpenVR, so it is switched to PrimaryButton (sandwich button).
+            if (Application.isPlaying && buttonName == "MenuButton")
+            {
+                string deviceName = XRSettings.loadedDeviceName;
+
+                if (string.IsNullOrEmpty(deviceName) == false && deviceName.ToLower().Contains("openvr"))
+                {
+                    buttonName = "PrimaryButton";
+                }
+            }
+
             buttonType = Type.GetType(buttonTypeName);
         }
 

@@ -64,8 +64,7 @@ namespace Innoactive.CreatorEditor.BaseTemplate
             {Button.SecondaryAxis2DRight, typeof(Vector2)}
         };
 
-        private readonly GUIContent actionButtonInformation =
-            new GUIContent("Action Button", "The button that triggers the Standalone Course Controller");
+        private readonly GUIContent actionButtonInformation = new GUIContent("Action Button", "The button that triggers the Standalone Course Controller");
 
         private SerializedProperty buttonTypeNameProperty;
         private SerializedProperty buttonNameProperty;
@@ -76,7 +75,7 @@ namespace Innoactive.CreatorEditor.BaseTemplate
         {
             buttonTypeNameProperty = serializedObject.FindProperty("buttonTypeName");
             buttonNameProperty = serializedObject.FindProperty("buttonName");
-
+            
             if (Enum.TryParse(buttonNameProperty.stringValue, out Button value))
             {
                 button = value;
