@@ -8,6 +8,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using Innoactive.Creator.Core;
 using Innoactive.Creator.Unity;
+using Innoactive.Creator.Core.IO;
 using Innoactive.Creator.TextToSpeech;
 using Innoactive.Creator.Core.Configuration;
 using Innoactive.Creator.Core.Configuration.Modes;
@@ -191,19 +192,21 @@ namespace Innoactive.Creator.BaseTemplate
 
         private void SetupTraining()
         {
+            // Load training course from a file.
+            string coursePath = RuntimeConfigurator.Instance.GetSelectedCourse();
+            
             // Load the localization file of the current selected language.
-            LoadLocalizationForTraining();
+            LoadLocalizationForTraining(coursePath);
             
             // Try to load the in the [TRAINING_CONFIGURATION] selected training course.
             try
             {
-                // Load training course from a file.
-                string coursePath = RuntimeConfigurator.Instance.GetSelectedCourse();
                 trainingCourse = RuntimeConfigurator.Configuration.LoadCourse(coursePath);
             }
             catch (Exception exception)
             {
                 Debug.LogError($"{exception.GetType().Name}, {exception.Message}\n{exception.StackTrace}", RuntimeConfigurator.Instance.gameObject);
+                return;
             }
             
             // Initializes the training course. That will synthesize an audio for the training instructions, too.
@@ -214,57 +217,51 @@ namespace Innoactive.Creator.BaseTemplate
         {
             // Get the directory of all localization files of the selected training.
             // It should be in the '[YOUR_PROJECT_ROOT_FOLDER]/StreamingAssets/Training/[TRAINING_NAME]' folder.
-            string pathToCourse = Path.GetDirectoryName(Path.Combine(Application.streamingAssetsPath, RuntimeConfigurator.Instance.GetSelectedCourse()));
-            string pathToLocalizations = $"{pathToCourse}/Localization/".Replace('/', Path.DirectorySeparatorChar);
+            string pathToCourse = Path.GetDirectoryName(RuntimeConfigurator.Instance.GetSelectedCourse());
+            string pathToLocalizations = Path.Combine(pathToCourse, "Localization");
 
             // Save all existing localization files in a list.
             List<string> availableLocalizations = new List<string>();
 
-            // Check if the "Localization" directory really exists.
-            if (Directory.Exists(pathToLocalizations))
+            try
             {
                 // Parse the names without extension (.json) of all localization files.
                 // The name should be a valid two-letter ISO code (which also can be three letters long).
-                availableLocalizations = Directory.GetFiles(pathToLocalizations, "*.json").ToList()
+                availableLocalizations = FileManager.FetchStreamingAssetsFilesAt(pathToLocalizations, "*.json")
+                    .ToList()
                     .ConvertAll(Path.GetFileNameWithoutExtension)
                     .Where(f => f.Length <= 3 && f.TryConvertToTwoLetterIsoCode(out f))
                     .ToList();
-
-                // If there are no valid files, log a warning.
-                if (availableLocalizations.Count == 0)
-                {
-                    Debug.LogWarningFormat("There are no valid localization files in '{0}'. Make sure that the JSON files are named after their languages in the two-letter ISO code format.", pathToLocalizations);
-                }
             }
-            else
+            catch (Exception exception)
             {
-                // If there is no "Localization" directory, log a warning.
-                Debug.LogWarningFormat("The localization path '{0}' does not exist. No localization files can be loaded.", pathToLocalizations);
+                Debug.LogWarning(exception is DirectoryNotFoundException ? $"The localization path '{pathToLocalizations}' does not exist. No localization files can be loaded." : $"{exception.Message}");
             }
 
             // Return the list of all available valid localizations.
             return availableLocalizations;
         }
 
-        private void LoadLocalizationForTraining()
+        private void LoadLocalizationForTraining(string coursePath)
         {
+            string courseName = Path.GetFileNameWithoutExtension(coursePath);
+            
             // Find the correct file name of the current selected language.
             string language = localizationFileNames.Find(f => string.Equals(f, selectedLanguage, StringComparison.CurrentCultureIgnoreCase));
 
             // Get the path to the file.
             // It should be in the '[YOUR_PROJECT_ROOT_FOLDER]/StreamingAssets/Training/[TRAINING_NAME]/Localization' folder.
-            string pathToCourse = Path.GetDirectoryName(Path.Combine(Application.streamingAssetsPath, RuntimeConfigurator.Instance.GetSelectedCourse()));
-            string pathToLocalization = $"{pathToCourse}/Localization/{language}.json".Replace('/', Path.DirectorySeparatorChar);
+            string localizationFilePath = Path.Combine("Training", courseName, "Localization", $"{language}.json");
 
             // Check if the file really exists and load it.
-            if (File.Exists(pathToLocalization))
+            if (FileManager.Exists(localizationFilePath))
             {
-                Localization.LoadLocalization(pathToLocalization);
+                Localization.LoadLocalization(localizationFilePath);
                 return;
             }
 
             // Log a warning if no language file was found.
-            Debug.LogWarningFormat("No language file for language '{0}' found for training at '{1}'.", selectedLanguage, pathToCourse);
+            Debug.LogWarningFormat("No language file for language '{0}' found for training at '{1}'.", selectedLanguage, courseName);
         }
 
         private void FastForwardChapters(int numberOfChapters)
@@ -458,13 +455,7 @@ namespace Innoactive.Creator.BaseTemplate
             });
             
             // If there is only one option, the dropdown is currently disabled.
-            if (supportedLanguages.Count <= 1)
-            {
-                ColorBlock colorBlock = languagePicker.colors;
-                colorBlock.normalColor = Color.gray;
-                languagePicker.colors = colorBlock;
-                languagePicker.enabled = false;
-            }
+            SetDropDownStatus(languagePicker);
         }
 
         private void SetupModePicker()
@@ -485,13 +476,7 @@ namespace Innoactive.Creator.BaseTemplate
             modePicker.value = RuntimeConfigurator.Configuration.Modes.CurrentModeIndex;
             
             // If there is only one option, the dropdown is currently disabled.
-            if (availableModes.Count <= 1)
-            {
-                ColorBlock colorBlock = modePicker.colors;
-                colorBlock.normalColor = Color.gray;
-                modePicker.colors = colorBlock;
-                modePicker.enabled = false;
-            }
+            SetDropDownStatus(modePicker);
             
             // When the selected mode is changed,
             modePicker.onValueChanged.AddListener(itemIndex =>
@@ -540,15 +525,7 @@ namespace Innoactive.Creator.BaseTemplate
                 chapterPicker.value = 0;
                 
                 // If there is only one option, the dropdown is currently disabled.
-                chapterPicker.enabled = dropdownOptions.Count > 1;
-                if (dropdownOptions.Count <= 1)
-                {
-                    
-                    ColorBlock colorBlock = chapterPicker.colors;
-                    colorBlock.normalColor = Color.gray;
-                    chapterPicker.colors = colorBlock;
-                    chapterPicker.enabled = false;
-                }
+                SetDropDownStatus(chapterPicker);
             }
         }
 
@@ -601,6 +578,17 @@ namespace Innoactive.Creator.BaseTemplate
                     trainingStateIndicator.enabled = false;
                 }
             };
+        }
+        
+        private void SetDropDownStatus(Dropdown dropdown)
+        {
+            if (dropdown.options.Count <= 1)
+            {
+                ColorBlock colorBlock = dropdown.colors;
+                colorBlock.normalColor = Color.gray;
+                dropdown.colors = colorBlock;
+                dropdown.enabled = false;
+            }
         }
         #endregion
     }
