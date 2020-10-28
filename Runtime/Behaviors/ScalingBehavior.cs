@@ -28,7 +28,9 @@ namespace Innoactive.Creator.BaseTemplate.Behaviors
             public Vector3 TargetScale { get; set; }
 
             // Duration of the animation in seconds.
+#if CREATOR_PRO     
             [OptionalValue]
+#endif
             [DataMember]
             [DisplayName("Animation Duration")]
             public float Duration { get; set; }

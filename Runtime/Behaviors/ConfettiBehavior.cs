@@ -34,7 +34,9 @@ namespace Innoactive.Creator.BaseTemplate.Behaviors
             /// Name of the training object where to spawn the confetti machine.
             /// Only needed if "Spawn Above Trainee" is not checked.
             /// </summary>
+#if CREATOR_PRO     
             [OptionalValue]
+#endif
             [DataMember]
             [DisplayName("Position Provider")]
             public SceneObjectReference PositionProvider { get; set; }
