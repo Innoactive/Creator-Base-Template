@@ -709,15 +709,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PossibleInteractionRigs:
-  - Name: XR Legacy Rig
-    Enabled: 1
   - Name: XR Rig
+    Enabled: 1
+  - Name: XR Legacy Rig
     Enabled: 1
   - Name: XR Simulator
     Enabled: 1
   - Name: <None>
-    Enabled: 1
-  - Name: Novice Desktop Mode
     Enabled: 1
   DummyTrainee: {fileID: 560356279}
 --- !u!4 &1119056338
