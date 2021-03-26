@@ -119,7 +119,7 @@ namespace Innoactive.Creator.BaseTemplate.Behaviors
                 }
 
                 // Load the given prefab and stop the coroutine if not possible.
-                confettiPrefab = Resources.Load<GameObject>(Data.ConfettiMachinePrefabPath);
+                confettiPrefab = ConfettiProvider.GetConfettiPrefab();
 
                 if (confettiPrefab == null)
                 {
